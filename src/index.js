@@ -75,7 +75,7 @@ class XepubCommand extends Command {
 }
 
 XepubCommand.description = `Describe the command here`;
-XepubCommand.usage = `noval.epub`;
+XepubCommand.usage = `novel.epub`;
 XepubCommand.args = [ { name: 'file', required: true } ];
 XepubCommand.flags = {
   version: flags.version({char: 'v', description: 'show xepub version'}),
