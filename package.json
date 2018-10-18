@@ -1,7 +1,7 @@
 {
   "name": "xepub",
   "description": "A simple epub reader",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": "swwind @swwind",
   "bin": {
     "xepub": "./bin/run"
@@ -26,7 +26,7 @@
   "homepage": "https://github.com/swwind/xepub",
   "keywords": [
     "epub",
-    "reader"
+    "epub-reader"
   ],
   "license": "MIT",
   "main": "src/index.js",
