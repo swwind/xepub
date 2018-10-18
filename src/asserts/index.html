@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>首页 - 洛谷 | 计算机科学教育新生态</title>
+  <link rel="shortcut icon" type="image/x-icon" href="favicon.ico" media="screen">
+  <script type="text/javascript">
+    const resizeIframe = (obj) => {
+      obj.style.height = Math.max(obj.contentWindow.document.body.scrollHeight + 50, obj.clientWidth * 1.414) + 'px';
+      obj.contentWindow.document.head.innerHTML += '<style>img{max-width:100%;user-select:none;}</style>';
+      obj.classList.remove('opacity');
+      scrollTo(document.querySelector('.container'), + obj.getAttribute('data-top'), 500);
+      obj.contentWindow.document.body.addEventListener('click', hideMenu);
+      obj.contentWindow.document.addEventListener('keydown', keyEvent);
+      Array.from(obj.contentWindow.document.querySelectorAll('a')).forEach((item) => {
+        let href = item.getAttribute('href');
+        if (/^#/.test(href)) return;
+        href = href.replace(/^\.?\.?\//, '');
+        item.addEventListener('click', (e) => {
+          jumpToSrc(href);
+          e.preventDefault();
+        })
+      });
+    }
+  </script>
+  <style type="text/css">
+    :root {
+      --width: 60%;
+      --rewidth: 20%;
+    }
+  </style>
+  <style type="text/css">
+    body, html {
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+    div.nav {
+      width: 100%;
+      height: 50px;
+      box-shadow: 0 0 5px #ccc;
+    }
+    div.container {
+      width: 100%;
+      flex: 1;
+      overflow: auto;
+    }
+    iframe {
+      margin: 50px auto;
+      width: var(--width);
+      display: block;
+      border: none;
+      user-select: none;
+      transition: opacity .5s;
+    }
+    iframe.opacity {
+      opacity: 0;
+      transition: opacity .5s;
+    }
+    div.nav-init {
+      margin: 0 auto;
+      width: var(--width);
+      height: 100%;
+      display: flex;
+    }
+    div.title {
+      height: 100%;
+      line-height: 50px;
+      font-size: 1.5em;
+      vertical-align: middle;
+      flex: 1;
+    }
+    div.menu {
+      line-height: 50px;
+      padding: 0 1rem;
+      cursor: pointer;
+      transition: background-color .2s;
+      user-select: none;
+    }
+    div.menu:hover {
+      background-color: #00000011;
+      transition: background-color .2s;
+    }
+    div.fix-menu {
+      position: fixed;
+      right: var(--rewidth);
+      top: 50px;
+      background-color: white;
+      padding: 5px 0;
+      box-shadow: 0 0 5px #ccc;
+      max-height: 500px;
+      overflow-x: auto;
+      user-select: none;
+      transition: opacity .2s;
+    }
+    div.fix-menu.opacity {
+      opacity: 0;
+      transition: opacity .2s;
+    }
+    div.fix-menu div.item {
+      height: 30px;
+      line-height: 30px;
+      padding: 5px 30px;
+      cursor: pointer;
+      transition: background-color .2s;
+    }
+    div.fix-menu div.item:hover {
+      background-color: #00000011;
+      transition: background-color .2s;
+    }
+    div.button-set {
+      width: var(--width);
+      margin: 0 auto 100px;
+      display: flex;
+    }
+    div.button {
+      height: 50px;
+      line-height: 50px;
+      flex: 1;
+      display: inline-block;
+      padding: 0 100px;
+      font-size: 1.2rem;
+      user-select: none;
+      cursor: pointer;
+      transition: background-color .2s;
+    }
+    div.button:hover {
+      background-color: #00000011;
+      transition: background-color .2s;
+    }
+    div.button.prev {
+      text-align: left;
+    }
+    div.button.next {
+      text-align: right;
+    }
+    div.button.disabled {
+      color: #000000aa;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+  <div class="nav">
+    <div class="nav-init">
+      <div class="title">Here is Title!</div>
+      <div class="menu">Bookmarks</div>
+    </div>
+  </div>
+  <div class="container">
+    <iframe scrolling="no" onload="resizeIframe(this)"></iframe>
+    <div class="button-set">
+      <div class="button prev">&lt;&lt; PREV</div>
+      <div class="button next">NEXT &gt;&gt;</div>
+    </div>
+  </div>
+  <div class="fix-menu opacity" style="display: none;"></div>
+  <script type="text/javascript">
+
+    const mfs = new Map();
+    const caplist = [];
+    let nowindex = 0;
+    let title = '';
+    const showMenu = () => {
+      document.querySelector('.fix-menu').style.display = 'block';
+      setTimeout(() => {
+        document.querySelector('.fix-menu').classList.remove('opacity');
+      }, 0)
+    }
+    const hideMenu = () => {
+      document.querySelector('.fix-menu').classList.add('opacity');
+      setTimeout(() => {
+        document.querySelector('.fix-menu').style.display = 'none';
+      }, 200);
+    }
+    const scrollTo = (elem, pos, time) => {
+      const timefn = x => x*x / (x*x + (1-x)*(1-x));
+      let last = new Date().getTime();
+      let lastpos = elem.scrollTop;
+      let fn = (now) => {
+        now = new Date().getTime() - last;
+        if (now < time) {
+          let nowpos = (pos - lastpos) * timefn(now / time) + lastpos;
+          elem.scrollTop = nowpos;
+          requestAnimationFrame(fn);
+        } else {
+          elem.scrollTop = pos;
+        }
+      }
+      requestAnimationFrame(fn);
+    }
+    document.body.addEventListener('click', hideMenu);
+    document.querySelector('.menu').addEventListener('click', (e) => {
+      showMenu();
+      e.stopPropagation();
+    });
+    const jumpToSrc = (src, top = 0) => {
+      document.querySelector('iframe').classList.add('opacity');
+      setTimeout(() => {
+        document.querySelector('iframe').src = src + '?data=' + new Date();
+        document.querySelector('iframe').setAttribute('data-top', top);
+      }, 500);
+      nowindex = caplist.indexOf(src);
+      document.querySelector('.prev').classList[nowindex === 0                  ? 'add' : 'remove']('disabled');
+      document.querySelector('.next').classList[nowindex === caplist.length - 1 ? 'add' : 'remove']('disabled');
+    }
+    const jumpToPrev = () => {
+      if (nowindex === 0) return;
+      jumpToSrc(caplist[-- nowindex]);
+    }
+    const jumpToNext = () => {
+      if (nowindex === caplist.length - 1) return;
+      jumpToSrc(caplist[++ nowindex]);
+    }
+    document.querySelector('.prev').addEventListener('click', jumpToPrev);
+    document.querySelector('.next').addEventListener('click', jumpToNext);
+
+    fetch('content.opf')
+    .then(response => response.text())
+    .then(str => (new window.DOMParser()).parseFromString(str, "text/xml"))
+    .then(data => {
+      const manifest = data.querySelector('manifest');
+      Array.from(manifest.querySelectorAll('item')).forEach((item) => {
+        mfs.set(item.getAttribute('id'), item.getAttribute('href'));
+      });
+      const spine = data.querySelector('spine');
+      Array.from(spine.querySelectorAll('itemref')).forEach((item) => {
+        caplist.push(mfs.get(item.getAttribute('idref')));
+      });
+      
+      title = data.querySelector('metadata title').innerHTML;
+      document.querySelector('title').innerHTML = title;
+      document.querySelector('.title').innerHTML = title;
+
+      const lastRead = JSON.parse(localStorage.getItem(title));
+      if (lastRead) {
+        jumpToSrc(lastRead.page, lastRead.top);
+      } else {
+        jumpToSrc(caplist[0]);
+      }
+
+    });
+
+    fetch('toc.ncx')
+    .then(response => response.text())
+    .then(str => (new window.DOMParser()).parseFromString(str, "text/xml"))
+    .then(data => {
+      const navMap = data.querySelector('navMap');
+      Array.from(navMap.querySelectorAll('navPoint')).sort((a, b) => {
+        return (+ a.getAttribute('playOrder')) - (+ b.getAttribute('playOrder'));
+      }).forEach((item) => {
+        const menu = document.querySelector('.fix-menu');
+        const div = document.createElement('div');
+        div.classList.add('item');
+        div.innerHTML = item.querySelector('text').innerHTML;
+        div.addEventListener('click', (e) => {
+          jumpToSrc(item.querySelector('content').getAttribute('src'));
+        });
+        menu.appendChild(div);
+      });
+    });
+
+    // on exit
+    window.addEventListener('beforeunload', (e) => {
+      const data = {
+        page: caplist[nowindex],
+        top:  document.querySelector('.container').scrollTop
+      }
+      localStorage.setItem(title, JSON.stringify(data));
+      fetch('/leave-page');
+    });
+
+    document.addEventListener("visibilitychange", function() {
+      if (document.hidden){
+        document.querySelector('title').innerHTML = '【P2767】树的数量 - 洛谷';
+      } else {
+        document.querySelector('title').innerHTML = title;
+      }
+    });
+
+    const keyEvent = (e) => {
+      if (e.code === 'ArrowLeft') {
+        jumpToPrev();
+      }
+      if (e.code === 'ArrowRight') {
+        jumpToNext();
+      }
+    }
+    window.addEventListener('keydown', keyEvent);
+
+  </script>
+</body>
+</html>

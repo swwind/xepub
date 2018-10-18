@@ -1,0 +1,40 @@
+{
+  "name": "xepub",
+  "description": "A simple epub reader",
+  "version": "0.0.1",
+  "author": "swwind @swwind",
+  "bin": {
+    "xepub": "./bin/run"
+  },
+  "bugs": "https://github.com/swwind/xepub/issues",
+  "dependencies": {
+    "@oclif/command": "^1.5.4",
+    "@oclif/config": "^1.8.8",
+    "@oclif/plugin-help": "^2.1.3",
+    "express": "^4.16.4",
+    "opn": "^5.4.0",
+    "unzip": "^0.1.11"
+  },
+  "devDependencies": {},
+  "engines": {
+    "node": ">=8.0.0"
+  },
+  "files": [
+    "/bin",
+    "/src"
+  ],
+  "homepage": "https://github.com/swwind/xepub",
+  "keywords": [
+    "epub",
+    "reader"
+  ],
+  "license": "MIT",
+  "main": "src/index.js",
+  "oclif": {
+    "bin": "xepub"
+  },
+  "repository": "swwind/xepub",
+  "scripts": {
+    "test": "echo NO TESTS"
+  }
+}
