@@ -100,15 +100,6 @@ class XepubCommand extends Command {
       copyAssert('nprogress/nprogress.js');
       copyAssert('nprogress/nprogress.css');
 
-      // load reading progress
-      const databasePath = path.resolve(__dirname, '../data/reading-progress.json');
-      if (!fs.existsSync(databasePath)) {
-        if (!fs.existsSync(path.dirname(databasePath))) {
-          fs.mkdirSync(path.dirname(databasePath));
-        }
-        fs.writeFileSync(databasePath, '[]');
-      }
-
       const app = express();
       app.get('/rootfile', (req, res) => {
         res.writeHead(200, { 'Content-Type': 'text/plain' });
