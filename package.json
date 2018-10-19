@@ -1,7 +1,7 @@
 {
   "name": "xepub",
   "description": "A lightweight epub reader",
-  "version": "0.1.0-beta.1",
+  "version": "0.1.0-beta.2",
   "author": "swwind @swwind",
   "bin": {
     "xepub": "./bin/run"
