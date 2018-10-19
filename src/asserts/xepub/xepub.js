@@ -1,3 +1,6 @@
+'use strict';
+
+fetch('/enter-page');
 
 const mfs = new Map();
 const caplist = [];
@@ -10,7 +13,6 @@ const showMenu = () => {
     document.querySelector('.fix-menu').classList.remove('opacity');
   }, 0)
 }
-
 const hideMenu = () => {
   document.querySelector('.fix-menu').classList.add('opacity');
   setTimeout(() => {
@@ -18,35 +20,56 @@ const hideMenu = () => {
   }, 200);
 }
 
-const scrollTo = (elem, pos, time) => {
+const scrollTo = (pos, time) => {
+  const setScrollTop = (top) => {
+    document.body.scrollTop = top; // For Safari
+    document.documentElement.scrollTop = top; // For Chrome, Firefox, IE and Opera
+  }
   const timefn = x => x*x / (x*x + (1-x)*(1-x));
-  let last = new Date().getTime();
-  let lastpos = elem.scrollTop;
-  let fn = (now) => {
+  const last = new Date().getTime();
+  const lastpos = document.documentElement.scrollTop || document.body.scrollTop;;
+  const fn = (now) => {
     now = new Date().getTime() - last;
     if (now < time) {
-      let nowpos = (pos - lastpos) * timefn(now / time) + lastpos;
-      elem.scrollTop = nowpos;
+      const nowpos = (pos - lastpos) * timefn(now / time) + lastpos;
+      setScrollTop(nowpos);
       requestAnimationFrame(fn);
     } else {
-      elem.scrollTop = pos;
+      setScrollTop(pos);
     }
   }
   requestAnimationFrame(fn);
 }
 
-document.body.addEventListener('click', hideMenu);
+document.addEventListener('click', hideMenu);
 document.querySelector('.menu').addEventListener('click', (e) => {
   showMenu();
   e.stopPropagation();
 });
+
+const resizeFrame = (iframe) => {
+  iframe.style.height = Math.max(iframe.contentWindow.document.body.scrollHeight + 50,
+      iframe.clientWidth * 1.4142135623730951) + 'px';
+}
+
+const keyEvent = (e) => {
+  if (e.code === 'ArrowLeft') {
+    jumpToPrev();
+  }
+  if (e.code === 'ArrowRight') {
+    jumpToNext();
+  }
+}
+window.addEventListener('keydown', keyEvent);
+
+// on load iframe
 document.querySelector('iframe').addEventListener('load', (e) => {
   const obj = e.target;
-  obj.style.height = Math.max(obj.contentWindow.document.body.scrollHeight + 50, obj.clientWidth * 1.414) + 'px';
   obj.contentWindow.document.head.innerHTML += '<style>img{max-width:100%;user-select:none;}</style>';
+  resizeFrame(obj);
   obj.classList.remove('opacity');
-  scrollTo(document.querySelector('.container'), + obj.getAttribute('data-top'), 500);
-  obj.contentWindow.document.body.addEventListener('click', hideMenu);
+  scrollTo(+ obj.getAttribute('data-top'), 500);
+  obj.contentWindow.document.addEventListener('click', hideMenu);
   obj.contentWindow.document.addEventListener('keydown', keyEvent);
   Array.from(obj.contentWindow.document.querySelectorAll('a')).forEach((item) => {
     let href = item.getAttribute('href');
@@ -57,12 +80,18 @@ document.querySelector('iframe').addEventListener('load', (e) => {
       e.preventDefault();
     })
   });
+  NProgress.done();
 });
 
+// resize iframe
+window.addEventListener('resize', () => resizeFrame(document.querySelector('iframe')));
+
+// jump to page src with scrollTop = top
 const jumpToSrc = (src, top = 0) => {
   document.querySelector('iframe').classList.add('opacity');
+  NProgress.start();
   setTimeout(() => {
-    document.querySelector('iframe').src = src + '?data=' + new Date();
+    document.querySelector('iframe').src = src + '?data=' + new Date().getTime();
     document.querySelector('iframe').setAttribute('data-top', top);
   }, 500);
   nowindex = caplist.indexOf(src);
@@ -139,30 +168,24 @@ fetch('/rootfile')
 .then(res => res.text())
 .then(fetchContent);
 
+const saveProgress = () => {
+  localStorage.setItem(title, JSON.stringify({
+    page: caplist[nowindex],
+    top:  document.body.scrollTop
+  }));
+}
+
 // on exit
 window.addEventListener('beforeunload', (e) => {
-  const data = {
-    page: caplist[nowindex],
-    top:  document.querySelector('.container').scrollTop
-  }
-  localStorage.setItem(title, JSON.stringify(data));
+  saveProgress();
   fetch('/leave-page');
 });
 
-document.addEventListener("visibilitychange", function() {
+document.addEventListener('visibilitychange', function() {
   if (document.hidden){
     document.querySelector('title').innerHTML = '【P2767】树的数量 - 洛谷';
+    saveProgress();
   } else {
     document.querySelector('title').innerHTML = title;
   }
 });
-
-const keyEvent = (e) => {
-  if (e.code === 'ArrowLeft') {
-    jumpToPrev();
-  }
-  if (e.code === 'ArrowRight') {
-    jumpToNext();
-  }
-}
-window.addEventListener('keydown', keyEvent);

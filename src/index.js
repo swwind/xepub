@@ -27,6 +27,7 @@ const deleteFolderRecursive = (path) => {
 };
 
 let outputpath;
+let exitTimeout;
 
 const saveExit = () => {
   deleteFolderRecursive(outputpath);
@@ -60,15 +61,29 @@ class XepubCommand extends Command {
       const copyAssert = (name) => {
         const index_path = path.resolve(__dirname, 'asserts/' + name);
         const index_path_to = path.resolve(outputpath, rootdir + '/' + name);
-        fs.copyFileSync(index_path, index_path_to);
+        // fs.copyFileSync(index_path, index_path_to);
+        if (!fs.existsSync(path.dirname(index_path_to))) {
+          fs.mkdirSync(path.dirname(index_path_to));
+        }
+        fs.createReadStream(index_path).pipe(fs.createWriteStream(index_path_to));
       }
       copyAssert('index.html');
       copyAssert('favicon.ico');
-      copyAssert('js-xepub.js');
-      copyAssert('style-xepub.css');
+      copyAssert('xepub/xepub.js');
+      copyAssert('xepub/xepub.css');
+      copyAssert('nprogress/nprogress.js');
+      copyAssert('nprogress/nprogress.css');
 
       const app = express();
-      app.get('/leave-page', saveExit);
+      app.get('/enter-page', () => {
+        if (exitTimeout) {
+          clearTimeout(exitTimeout);
+          exitTimeout = 0;
+        }
+      });
+      app.get('/leave-page', () => {
+        exitTimeout = setTimeout(saveExit, 2000);
+      });
       app.get('/rootfile', (req, res) => {
         res.writeHead(200, { 'Content-Type': 'text/plain' });
         res.end(rootfile);
