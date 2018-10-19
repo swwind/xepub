@@ -15,7 +15,7 @@ div.nav {
   left: 0;
   z-index: 5;
   box-shadow: 0 0 5px #aaa;
-  background-color: #ffffff88;
+  background: white;
 }
 div.container {
   width: 100%;

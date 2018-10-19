@@ -1,11 +1,25 @@
 'use strict';
 
-fetch('/enter-page');
-
 const mfs = new Map();
 const caplist = [];
 let nowindex = 0;
 let title = '';
+let readingProgress;
+
+const ws = new WebSocket('ws://' + window.location.host);
+ws.onmessage = ({ data }) => {
+  if (data === 'close') {
+    window.close();
+    return;
+  }
+  readingProgress = new Map(JSON.parse(data));
+  const progress = readingProgress.get(title);
+  if (!progress) {
+    jumpToSrc(caplist[0]);
+  } else {
+    jumpToSrc(progress.page, progress.top);
+  }
+}
 
 const showMenu = () => {
   document.querySelector('.fix-menu').style.display = 'block';
@@ -27,7 +41,7 @@ const scrollTo = (pos, time) => {
   }
   const timefn = x => x*x / (x*x + (1-x)*(1-x));
   const last = new Date().getTime();
-  const lastpos = document.documentElement.scrollTop || document.body.scrollTop;;
+  const lastpos = document.documentElement.scrollTop || document.body.scrollTop;
   const fn = (now) => {
     now = new Date().getTime() - last;
     if (now < time) {
@@ -152,12 +166,7 @@ const fetchContent = (contentPath) => {
     document.querySelector('title').innerHTML = title;
     document.querySelector('.title').innerHTML = title;
 
-    const lastRead = JSON.parse(localStorage.getItem(title));
-    if (lastRead) {
-      jumpToSrc(lastRead.page, lastRead.top);
-    } else {
-      jumpToSrc(caplist[0]);
-    }
+    ws.send('reading-progress');
 
     fetchTocNcx(mfs.get('ncx'));
   });
@@ -169,10 +178,9 @@ fetch('/rootfile')
 .then(fetchContent);
 
 const saveProgress = () => {
-  localStorage.setItem(title, JSON.stringify({
-    page: caplist[nowindex],
-    top:  document.body.scrollTop
-  }));
+  const page = caplist[nowindex];
+  const top = document.documentElement.scrollTop || document.body.scrollTop;
+  ws.send(JSON.stringify([title, page, top]));
 }
 
 // on exit
