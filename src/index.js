@@ -7,15 +7,14 @@ const os = require('os');
 const opn = require('opn');
 const http = require('http');
 const path = require('path');
-const Store = require('data-store');
 const unzip = require('unzip');
 const express = require('express');
 const WebSocket = require('ws');
 const tcpPortUsed = require('tcp-port-used');
+
 const nope = () => {};
 
-const homePath = process.env.XDG_CONFIG_HOME || path.join(os.homedir(), '.config');
-const store = new Store('xepub', { base: path.join(homePath, 'xepub') });
+const store = require('./data-store.js')('xepub');
 
 const getRandomString = () => {
   return Math.floor(Math.random() * 4294967296).toString(16);
@@ -39,16 +38,19 @@ let outputpath;
 let connections = 0;
 let wss;
 
-const saveExit = () => {
+const _saveExit = () => {
   deleteFolderRecursive(outputpath);
-  if (wss && wss.clients) {
-    wss.clients.forEach((client) => {
-      if (client.readyState === WebSocket.OPEN) {
-        client.send('close');
-      }
-    });
-  }
   process.exit(0);
+}
+let exitTimeout;
+const saveExit = () => {
+  exitTimeout = setTimeout(_saveExit, 2000);
+}
+const cancelExit = () => {
+  if (exitTimeout) {
+    clearTimeout(exitTimeout);
+    exitTimeout = 0;
+  }
 }
 
 
@@ -112,6 +114,7 @@ class XepubCommand extends Command {
       wss = new WebSocket.Server({ server });
       wss.on('connection', (ws) => {
         ++ connections;
+        cancelExit();
         ws.on('close', () => {
           -- connections;
           if (!connections) {

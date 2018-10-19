@@ -7,10 +7,6 @@ let title = '';
 
 const ws = new WebSocket('ws://' + window.location.host);
 ws.onmessage = ({ data }) => {
-  if (data === 'close') {
-    window.close();
-    return;
-  }
   console.log(data);
   const readingProgress = JSON.parse(data);
   const progress = readingProgress[title];
@@ -19,6 +15,9 @@ ws.onmessage = ({ data }) => {
   } else {
     jumpToSrc(progress.page, progress.top);
   }
+}
+ws.onclose = () => {
+  window.close();
 }
 
 const showMenu = () => {
@@ -62,6 +61,7 @@ document.querySelector('.menu').addEventListener('click', (e) => {
 });
 
 const resizeFrame = (iframe) => {
+  iframe.style.height = '0px';
   iframe.style.height = Math.max(iframe.contentWindow.document.body.scrollHeight + 50,
       iframe.clientWidth * 1.4142135623730951) + 'px';
 }
@@ -80,7 +80,6 @@ window.addEventListener('keydown', keyEvent);
 document.querySelector('iframe').addEventListener('load', (e) => {
   const obj = e.target;
   obj.contentWindow.document.head.innerHTML += '<style>img{max-width:100%;user-select:none;}</style>';
-  resizeFrame(obj);
   obj.classList.remove('opacity');
   scrollTo(+ obj.getAttribute('data-top'), 500);
   obj.contentWindow.document.addEventListener('click', hideMenu);
@@ -94,6 +93,7 @@ document.querySelector('iframe').addEventListener('load', (e) => {
       e.preventDefault();
     })
   });
+  resizeFrame(obj);
   NProgress.done();
 });
 
