@@ -3,14 +3,19 @@
 const { Command, flags } = require('@oclif/command');
 
 const fs = require('fs');
+const os = require('os');
 const opn = require('opn');
 const http = require('http');
 const path = require('path');
+const Store = require('data-store');
 const unzip = require('unzip');
 const express = require('express');
 const WebSocket = require('ws');
 const tcpPortUsed = require('tcp-port-used');
 const nope = () => {};
+
+const homePath = process.env.XDG_CONFIG_HOME || path.join(os.homedir(), '.config');
+const store = new Store('xepub', { base: path.join(homePath, 'xepub') });
 
 const getRandomString = () => {
   return Math.floor(Math.random() * 4294967296).toString(16);
@@ -33,7 +38,6 @@ const deleteFolderRecursive = (path) => {
 let outputpath;
 let connections = 0;
 let wss;
-let readingProgress;
 
 const saveExit = () => {
   deleteFolderRecursive(outputpath);
@@ -104,16 +108,6 @@ class XepubCommand extends Command {
         }
         fs.writeFileSync(databasePath, '[]');
       }
-      readingProgress = new Map(JSON.parse(fs.readFileSync(databasePath)));
-      const getReadingProgress = () => {
-        return JSON.stringify(Array.from(readingProgress));
-      }
-      // rp = [ name, page, top ]
-      const updateReadingProgress = (rp) => {
-        const [ name, page, top ] = rp;
-        readingProgress.set(name, { page, top });
-        fs.writeFile(databasePath, getReadingProgress(), nope);
-      }
 
       const app = express();
       app.get('/rootfile', (req, res) => {
@@ -135,11 +129,11 @@ class XepubCommand extends Command {
         });
         ws.on('message', (data) => {
           if (data === 'reading-progress') {
-            ws.send(getReadingProgress());
+            ws.send(store.json());
             return;
           }
           const [name, page, top] = JSON.parse(data);
-          updateReadingProgress([name, page, top]);
+          store.set(name, { page, top });
         });
       });
 

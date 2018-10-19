@@ -4,7 +4,6 @@ const mfs = new Map();
 const caplist = [];
 let nowindex = 0;
 let title = '';
-let readingProgress;
 
 const ws = new WebSocket('ws://' + window.location.host);
 ws.onmessage = ({ data }) => {
@@ -12,8 +11,9 @@ ws.onmessage = ({ data }) => {
     window.close();
     return;
   }
-  readingProgress = new Map(JSON.parse(data));
-  const progress = readingProgress.get(title);
+  console.log(data);
+  const readingProgress = JSON.parse(data);
+  const progress = readingProgress[title];
   if (!progress) {
     jumpToSrc(caplist[0]);
   } else {
