@@ -7,7 +7,6 @@ let title = '';
 
 const ws = new WebSocket('ws://' + window.location.host);
 ws.onmessage = ({ data }) => {
-  console.log(data);
   const readingProgress = JSON.parse(data);
   const progress = readingProgress[title];
   if (!progress) {
@@ -60,8 +59,8 @@ document.querySelector('.menu').addEventListener('click', (e) => {
   e.stopPropagation();
 });
 
-const resizeFrame = (iframe) => {
-  iframe.style.height = '0px';
+const resizeFrame = (iframe, force) => {
+  if (force) iframe.style.height = '0px';
   iframe.style.height = Math.max(iframe.contentWindow.document.body.scrollHeight + 50,
       iframe.clientWidth * 1.4142135623730951) + 'px';
 }
@@ -81,7 +80,10 @@ document.querySelector('iframe').addEventListener('load', (e) => {
   const obj = e.target;
   obj.contentWindow.document.head.innerHTML += '<style>img{max-width:100%;user-select:none;}</style>';
   obj.classList.remove('opacity');
-  scrollTo(+ obj.getAttribute('data-top'), 500);
+  if (obj.getAttribute('data-top')) {
+    scrollTo(+ obj.getAttribute('data-top'), 500);
+    obj.removeAttribute('data-top');
+  }
   obj.contentWindow.document.addEventListener('click', hideMenu);
   obj.contentWindow.document.addEventListener('keydown', keyEvent);
   Array.from(obj.contentWindow.document.querySelectorAll('a')).forEach((item) => {
@@ -93,7 +95,7 @@ document.querySelector('iframe').addEventListener('load', (e) => {
       e.preventDefault();
     })
   });
-  resizeFrame(obj);
+  resizeFrame(obj, true);
   NProgress.done();
 });
 
