@@ -8,8 +8,9 @@ const opn = require('opn');
 const http = require('http');
 const path = require('path');
 const unzip = require('unzip');
-const express = require('express');
 const WebSocket = require('ws');
+const express = require('express');
+const sockets = require('./sockets.js');
 const tcpPortUsed = require('tcp-port-used');
 
 const nope = () => {};
@@ -36,9 +37,9 @@ const deleteFolderRecursive = (path) => {
 
 let outputpath;
 let connections = 0;
-let wss;
 
 const _saveExit = () => {
+  console.log('exiting...');
   deleteFolderRecursive(outputpath);
   process.exit(0);
 }
@@ -84,7 +85,8 @@ class XepubCommand extends Command {
 
       const metainf = fs.readFileSync(path.resolve(outputpath, 'META-INF/container.xml'));
       const roots = /full-path="([^"]+)"/i.exec(metainf)[1];
-      const [ rootdir, rootfile ] = roots.split('/');
+      const rootdir = path.dirname(roots);
+      const rootfile = path.basename(roots);
 
       const copyAssert = (name) => {
         const index_path = path.resolve(__dirname, 'asserts/' + name);
@@ -99,36 +101,38 @@ class XepubCommand extends Command {
       copyAssert('favicon.ico');
       copyAssert('xepub/xepub.js');
       copyAssert('xepub/xepub.css');
-      copyAssert('nprogress/nprogress.js');
-      copyAssert('nprogress/nprogress.css');
+      copyAssert('xepub/path.min.js');
+      copyAssert('xepub/nprogress.js');
+      copyAssert('xepub/nprogress.css');
 
       const app = express();
-      app.get('/rootfile', (req, res) => {
-        res.writeHead(200, { 'Content-Type': 'text/plain' });
-        res.end(rootfile);
-      });
       app.use(express.static(path.resolve(outputpath, rootdir)));
 
       const server = http.createServer(app);
 
-      wss = new WebSocket.Server({ server });
+      const wss = new WebSocket.Server({ server });
+
       wss.on('connection', (ws) => {
+
         ++ connections;
         cancelExit();
+
         ws.on('close', () => {
           -- connections;
           if (!connections) {
             saveExit();
           }
         });
-        ws.on('message', (data) => {
-          if (data === 'reading-progress') {
-            ws.send(store.json());
-            return;
-          }
-          const [name, page, top] = JSON.parse(data);
+
+        const client = sockets(ws);
+        client.on('save', (name, page, top) => {
           store.set(name, { page, top });
         });
+        client.on('progress', () => {
+          client.remote('progress', store.get());
+        });
+        client.remote('rootfile', rootfile);
+
       });
 
       server.listen(port);

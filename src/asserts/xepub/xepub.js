@@ -1,23 +1,48 @@
 'use strict';
 
+class EventEmitter {
+  constructor() {
+    this.event = {};
+  }
+  on(type, fn) {
+    this.event[type] = fn;
+  }
+  emit(type, ...args) {
+    args = args
+    this.event[type] && this.event[type](...args);
+  }
+}
+
+const socket = (ws) => {
+  const event = {};
+  const on = (type, fn) => {
+    event[type] = fn;
+  }
+  const emit = (type, ...args) => {
+    event[type] && event[type](...(args || []));
+  }
+  ws.onmessage = ({ data }) => {
+    const obj = JSON.parse(data);
+    emit(obj.type, ...obj.args);
+  }
+  const remote = (type, ...args) => {
+    args = args || [];
+    ws.send(JSON.stringify({ type, args }));
+  }
+  return { on, emit, remote };
+}
+
+
+
 const mfs = new Map();
 const caplist = [];
 let nowindex = 0;
 let title = '';
 
 const ws = new WebSocket('ws://' + window.location.host);
-ws.onmessage = ({ data }) => {
-  const readingProgress = JSON.parse(data);
-  const progress = readingProgress[title];
-  if (!progress) {
-    jumpToSrc(caplist[0]);
-  } else {
-    jumpToSrc(progress.page, progress.top);
-  }
-}
-ws.onclose = () => {
-  window.close();
-}
+const server = socket(ws);
+ws.onclose = () => { window.close(); }
+
 
 const showMenu = () => {
   document.querySelector('.fix-menu').style.display = 'block';
@@ -60,9 +85,12 @@ document.querySelector('.menu').addEventListener('click', (e) => {
 });
 
 const resizeFrame = (iframe, force) => {
+  const top = document.documentElement.scrollTop || document.body.scrollTop;
+  const pct = top / document.body.scrollHeight;
   if (force) iframe.style.height = '0px';
   iframe.style.height = Math.max(iframe.contentWindow.document.body.scrollHeight + 50,
       iframe.clientWidth * 1.4142135623730951) + 'px';
+  scrollTo(document.body.scrollHeight * pct, 0);
 }
 
 const keyEvent = (e) => {
@@ -89,7 +117,7 @@ document.querySelector('iframe').addEventListener('load', (e) => {
   Array.from(obj.contentWindow.document.querySelectorAll('a')).forEach((item) => {
     let href = item.getAttribute('href');
     if (/^#/.test(href)) return;
-    href = href.replace(/^\.?\.?\//, '');
+    href = path.join(path.dirname(obj.src), href);
     item.addEventListener('click', (e) => {
       jumpToSrc(href);
       e.preventDefault();
@@ -139,7 +167,8 @@ const fetchTocNcx = (tocPath) => {
       const menu = document.querySelector('.fix-menu');
       const div = document.createElement('div');
       div.classList.add('item');
-      div.innerHTML = item.querySelector('text').innerHTML;
+      div.innerHTML = item.querySelector('text').childNodes[0].nodeValue;
+      console.log(item.querySelector('content').getAttribute('src'));
       div.addEventListener('click', (e) => {
         jumpToSrc(item.querySelector('content').getAttribute('src'));
       });
@@ -164,37 +193,43 @@ const fetchContent = (contentPath) => {
       caplist.push(mfs.get(item.getAttribute('idref')));
     });
     
-    title = data.querySelector('metadata title').innerHTML;
+    title = data.querySelector('metadata title').childNodes[0].nodeValue;
     document.querySelector('title').innerHTML = title;
     document.querySelector('.title').innerHTML = title;
 
-    ws.send('reading-progress');
-
     fetchTocNcx(mfs.get('ncx'));
+
+    server.remote('progress');
   });
 
 }
 
-fetch('/rootfile')
-.then(res => res.text())
-.then(fetchContent);
+server.on('rootfile', fetchContent);
+server.on('progress', (progress) => {
+  console.log(progress);
+  if (progress[title]) {
+    jumpToSrc(progress[title].page, progress[title].top);
+  } else {
+    jumpToSrc(caplist[0]);
+  }
+})
 
 const saveProgress = () => {
   const page = caplist[nowindex];
   const top = document.documentElement.scrollTop || document.body.scrollTop;
-  ws.send(JSON.stringify([title, page, top]));
+  server.remote('save', title, page, top);
 }
+
+setInterval(saveProgress, 1000);
 
 // on exit
 window.addEventListener('beforeunload', (e) => {
   saveProgress();
-  fetch('/leave-page');
 });
 
 document.addEventListener('visibilitychange', function() {
   if (document.hidden){
     document.querySelector('title').innerHTML = '【P2767】树的数量 - 洛谷';
-    saveProgress();
   } else {
     document.querySelector('title').innerHTML = title;
   }
