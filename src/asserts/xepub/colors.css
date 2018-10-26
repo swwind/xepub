@@ -1,0 +1,57 @@
+/*
+red         #ef5350
+pink        #e91e63
+purple      #ab47bc
+deep-purple #7e57c2
+indigo      #3f51b5
+blue        #2196f3
+light-blue  #03a9f4
+cyan        #00bcd4
+teal        #009688
+green       #4caf50
+light-green #7cb342
+lime        #c0ca33
+yellow      #f9a825
+amber       #ffa000
+orange      #fb8c00
+deep-orange #ff7043
+brown       #795548
+grey        #757575
+blue-grey   #546e7a
+white       #ffffff
+*/
+
+body.red         { --primary-color: #ef5350; --font-color: #ffffff; }
+body.pink        { --primary-color: #e91e63; --font-color: #ffffff; }
+body.purple      { --primary-color: #ab47bc; --font-color: #ffffff; }
+body.deep-purple { --primary-color: #7e57c2; --font-color: #ffffff; }
+body.indigo      { --primary-color: #3f51b5; --font-color: #ffffff; }
+body.blue        { --primary-color: #2196f3; --font-color: #ffffff; }
+body.light-blue  { --primary-color: #03a9f4; --font-color: #ffffff; }
+body.cyan        { --primary-color: #00bcd4; --font-color: #ffffff; }
+body.teal        { --primary-color: #009688; --font-color: #ffffff; }
+body.green       { --primary-color: #4caf50; --font-color: #ffffff; }
+body.light-green { --primary-color: #7cb342; --font-color: #ffffff; }
+body.lime        { --primary-color: #c0ca33; --font-color: #ffffff; }
+body.yellow      { --primary-color: #f9a825; --font-color: #ffffff; }
+body.amber       { --primary-color: #ffa000; --font-color: #ffffff; }
+body.orange      { --primary-color: #fb8c00; --font-color: #ffffff; }
+body.deep-orange { --primary-color: #ff7043; --font-color: #ffffff; }
+body.brown       { --primary-color: #795548; --font-color: #ffffff; }
+body.grey        { --primary-color: #757575; --font-color: #ffffff; }
+body.blue-grey   { --primary-color: #546e7a; --font-color: #ffffff; }
+body.white       { --primary-color: #ffffff; --font-color: #555555; }
+
+div.nav, .float-button {
+  background-color: var(--primary-color);
+}
+body {
+  color: var(--font-color);
+}
+svg path {
+  fill: var(--font-color);
+}
+
+div.nav, svg path { transition: background-color .5s, color .5s, fill .5s; }
+div.fix-menu { color: black; }
+

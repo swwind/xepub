@@ -1,18 +1,5 @@
 'use strict';
 
-class EventEmitter {
-  constructor() {
-    this.event = {};
-  }
-  on(type, fn) {
-    this.event[type] = fn;
-  }
-  emit(type, ...args) {
-    args = args
-    this.event[type] && this.event[type](...args);
-  }
-}
-
 const socket = (ws) => {
   const event = {};
   const on = (type, fn) => {
@@ -25,14 +12,22 @@ const socket = (ws) => {
     const obj = JSON.parse(data);
     emit(obj.type, ...obj.args);
   }
+  const eventList = [];
   const remote = (type, ...args) => {
     args = args || [];
-    ws.send(JSON.stringify({ type, args }));
+    if (ws.readyState === ws.OPEN) {
+      ws.send(JSON.stringify({ type, args }));
+    } else {
+      eventList.push({ type, args });
+    }
+  }
+  ws.onopen = () => {
+    eventList.forEach(({ type, args }) => {
+      remote(type, ...args);
+    });
   }
   return { on, emit, remote };
 }
-
-
 
 const mfs = new Map();
 const caplist = [];
@@ -84,13 +79,17 @@ document.querySelector('.menu').addEventListener('click', (e) => {
   e.stopPropagation();
 });
 
-const resizeFrame = (iframe, force) => {
+const getPorgress = () => {
   const top = document.documentElement.scrollTop || document.body.scrollTop;
-  const pct = top / document.body.scrollHeight;
-  if (force) iframe.style.height = '0px';
+  return top / document.body.scrollHeight;
+}
+
+const resizeFrame = (iframe, top, time = 0) => {
+  const pct = top === undefined ? getPorgress() : top;
+  iframe.style.height = '0px';
   iframe.style.height = Math.max(iframe.contentWindow.document.body.scrollHeight + 50,
       iframe.clientWidth * 1.4142135623730951) + 'px';
-  scrollTo(document.body.scrollHeight * pct, 0);
+  scrollTo(document.body.scrollHeight * pct, time);
 }
 
 const keyEvent = (e) => {
@@ -108,10 +107,6 @@ document.querySelector('iframe').addEventListener('load', (e) => {
   const obj = e.target;
   obj.contentWindow.document.head.innerHTML += '<style>img{max-width:100%;user-select:none;}</style>';
   obj.classList.remove('opacity');
-  if (obj.getAttribute('data-top')) {
-    scrollTo(+ obj.getAttribute('data-top'), 500);
-    obj.removeAttribute('data-top');
-  }
   obj.contentWindow.document.addEventListener('click', hideMenu);
   obj.contentWindow.document.addEventListener('keydown', keyEvent);
   Array.from(obj.contentWindow.document.querySelectorAll('a')).forEach((item) => {
@@ -121,9 +116,10 @@ document.querySelector('iframe').addEventListener('load', (e) => {
     item.addEventListener('click', (e) => {
       jumpToSrc(href);
       e.preventDefault();
-    })
+    });
   });
-  resizeFrame(obj, true);
+  resizeFrame(obj, (+ obj.getAttribute('data-top')), 500);
+  obj.removeAttribute('data-top');
   NProgress.done();
 });
 
@@ -135,7 +131,7 @@ const jumpToSrc = (src, top = 0) => {
   document.querySelector('iframe').classList.add('opacity');
   NProgress.start();
   setTimeout(() => {
-    document.querySelector('iframe').src = src + '?data=' + new Date().getTime();
+    document.querySelector('iframe').src = src + '?data=' + (+ new Date());
     document.querySelector('iframe').setAttribute('data-top', top);
   }, 500);
   nowindex = caplist.indexOf(src);
@@ -212,11 +208,16 @@ server.on('progress', (progress) => {
   } else {
     jumpToSrc(caplist[0]);
   }
-})
+});
+
+server.remote('theme');
+server.on('theme', (theme) => {
+  document.body.className = theme;
+});
 
 const saveProgress = () => {
   const page = caplist[nowindex];
-  const top = document.documentElement.scrollTop || document.body.scrollTop;
+  const top = getPorgress();
   server.remote('save', title, page, top);
 }
 
@@ -233,4 +234,8 @@ document.addEventListener('visibilitychange', function() {
   } else {
     document.querySelector('title').innerHTML = title;
   }
+});
+
+document.querySelector('.totop').addEventListener('click', () => {
+  scrollTo(0, 500);
 });

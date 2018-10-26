@@ -8,14 +8,17 @@ const opn = require('opn');
 const http = require('http');
 const path = require('path');
 const unzip = require('unzip');
+const { ncp } = require('ncp');
 const WebSocket = require('ws');
 const express = require('express');
 const sockets = require('./sockets.js');
+const DataStore = require('./data-store.js');
 const tcpPortUsed = require('tcp-port-used');
 
 const nope = () => {};
 
-const store = require('./data-store.js')('xepub');
+const store = DataStore('xepub', 'history');
+const config = DataStore('xepub', 'config', { theme: 'white' });
 
 const getRandomString = () => {
   return Math.floor(Math.random() * 4294967296).toString(16);
@@ -88,23 +91,6 @@ class XepubCommand extends Command {
       const rootdir = path.dirname(roots);
       const rootfile = path.basename(roots);
 
-      const copyAssert = (name) => {
-        const index_path = path.resolve(__dirname, 'asserts/' + name);
-        const index_path_to = path.resolve(outputpath, rootdir + '/' + name);
-
-        if (!fs.existsSync(path.dirname(index_path_to))) {
-          fs.mkdirSync(path.dirname(index_path_to));
-        }
-        fs.createReadStream(index_path).pipe(fs.createWriteStream(index_path_to));
-      }
-      copyAssert('index.html');
-      copyAssert('favicon.ico');
-      copyAssert('xepub/xepub.js');
-      copyAssert('xepub/xepub.css');
-      copyAssert('xepub/path.min.js');
-      copyAssert('xepub/nprogress.js');
-      copyAssert('xepub/nprogress.css');
-
       const app = express();
       app.use(express.static(path.resolve(outputpath, rootdir)));
 
@@ -132,12 +118,22 @@ class XepubCommand extends Command {
           client.remote('progress', store.get());
         });
         client.remote('rootfile', rootfile);
+        client.on('theme', () => {
+          client.remote('theme', config.get('theme'));
+        });
+        client.on('config', (type, value) => {
+          config.set(type, value);
+        });
 
       });
 
       server.listen(port);
 
-      opn(`http://localhost:${port}`);
+      ncp(path.resolve(__dirname, 'asserts'), path.resolve(outputpath, rootdir), (err) => {
+
+        opn(`http://localhost:${port}`);
+
+      });
 
     });
 
@@ -153,6 +149,6 @@ XepubCommand.flags = {
   port: flags.integer({char: 'p', description: 'port you want to open'}),
 }
 
-process.on('SIGINT', saveExit);
+process.on('SIGINT', _saveExit);
 
 module.exports = XepubCommand;

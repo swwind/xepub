@@ -14,9 +14,9 @@ const mkdirs = (dirname) => {
 };
 
 
-module.exports = (name, fname = name) => {
+module.exports = (name, fname = name, defaultData = {}) => {
 
-  let data = {};
+  let data = defaultData;
 
   const filename = path.resolve(homePath, name + '/' + fname + '.json');
 
@@ -41,9 +41,9 @@ module.exports = (name, fname = name) => {
   if (!fs.existsSync(filename)) {
     mkdirs(path.dirname(filename));
     writeFile();
+  } else {
+    data = JSON.parse(fs.readFileSync(filename));
   }
-
-  data = JSON.parse(fs.readFileSync(filename));
 
   return { json, set, get };
 

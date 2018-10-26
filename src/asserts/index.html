@@ -11,10 +11,11 @@
       --rewidth: 20%;
     }
   </style>
+  <link rel="stylesheet" type="text/css" href="xepub/colors.css">
   <link rel="stylesheet" type="text/css" href="xepub/xepub.css">
   <link rel="stylesheet" type="text/css" href="xepub/nprogress.css">
 </head>
-<body>
+<body class="red">
   <div class="container">
     <iframe scrolling="no"></iframe>
     <div class="button-set">
@@ -24,11 +25,18 @@
   </div>
   <div class="nav">
     <div class="nav-init">
-      <div class="title">Xepub Reader</div>
-      <div class="menu">Bookmarks</div>
+      <div class="title">Xepub</div>
+      <div class="menu svg" name="bookmark"></div>
     </div>
   </div>
   <div class="fix-menu opacity" style="display: none;"></div>
+  <div class="left-menu">
+    <div class="float-button totop svg" name="chevron-up">
+    </div>
+    <div class="float-button svg" name="cog">
+    </div>
+  </div>
+  <script type="text/javascript" src="xepub/load-icon.js"></script>
   <script type="text/javascript" src="xepub/nprogress.js"></script>
   <script type="text/javascript" src="xepub/path.min.js"></script>
   <script type="text/javascript" src="xepub/xepub.js"></script>

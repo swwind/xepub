@@ -1,11 +1,5 @@
 'use strict';
 
-class EventEmitter {
-  constructor() {
-    this.event = {};
-  }
-}
-
 module.exports = (ws) => {
 
   const event = {};
