@@ -1,5 +1,8 @@
 'use strict';
 
+const $ = (id) => document.querySelector(id);
+const $$ = (id) => document.querySelectorAll(id);
+
 const socket = (ws) => {
   const event = {};
   const on = (type, fn) => {
@@ -40,15 +43,15 @@ ws.onclose = () => { window.close(); }
 
 
 const showMenu = () => {
-  document.querySelector('.fix-menu').style.display = 'block';
+  $('.fix-menu').style.display = 'block';
   setTimeout(() => {
-    document.querySelector('.fix-menu').classList.remove('opacity');
+    $('.fix-menu').classList.remove('opacity');
   }, 0)
 }
 const hideMenu = () => {
-  document.querySelector('.fix-menu').classList.add('opacity');
+  $('.fix-menu').classList.add('opacity');
   setTimeout(() => {
-    document.querySelector('.fix-menu').style.display = 'none';
+    $('.fix-menu').style.display = 'none';
   }, 200);
 }
 
@@ -74,7 +77,7 @@ const scrollTo = (pos, time) => {
 }
 
 document.addEventListener('click', hideMenu);
-document.querySelector('.menu').addEventListener('click', (e) => {
+$('.menu').addEventListener('click', (e) => {
   showMenu();
   e.stopPropagation();
 });
@@ -103,12 +106,13 @@ const keyEvent = (e) => {
 window.addEventListener('keydown', keyEvent);
 
 // on load iframe
-document.querySelector('iframe').addEventListener('load', (e) => {
+$('iframe').addEventListener('load', (e) => {
   const obj = e.target;
   obj.contentWindow.document.head.innerHTML += '<style>img{max-width:100%;user-select:none;}</style>';
   obj.classList.remove('opacity');
   obj.contentWindow.document.addEventListener('click', hideMenu);
   obj.contentWindow.document.addEventListener('keydown', keyEvent);
+  obj.contentWindow.__server = server;
   Array.from(obj.contentWindow.document.querySelectorAll('a')).forEach((item) => {
     let href = item.getAttribute('href');
     if (/^#/.test(href)) return;
@@ -124,19 +128,25 @@ document.querySelector('iframe').addEventListener('load', (e) => {
 });
 
 // resize iframe
-window.addEventListener('resize', () => resizeFrame(document.querySelector('iframe')));
+window.addEventListener('resize', () => resizeFrame($('iframe')));
 
 // jump to page src with scrollTop = top
 const jumpToSrc = (src, top = 0) => {
-  document.querySelector('iframe').classList.add('opacity');
+  $('iframe').classList.add('opacity');
   NProgress.start();
   setTimeout(() => {
-    document.querySelector('iframe').src = src + '?data=' + (+ new Date());
-    document.querySelector('iframe').setAttribute('data-top', top);
+    $('iframe').src = src + '?data=' + (+ new Date());
+    $('iframe').setAttribute('data-top', top);
   }, 500);
   nowindex = caplist.indexOf(src);
-  document.querySelector('.prev').classList[nowindex === 0                  ? 'add' : 'remove']('disabled');
-  document.querySelector('.next').classList[nowindex === caplist.length - 1 ? 'add' : 'remove']('disabled');
+  if (nowindex === -1) {
+    // maybe on config page
+    $('.prev').classList.add('disabled');
+    $('.next').classList.add('disabled');
+  } else {
+    $('.prev').classList[nowindex === 0                  ? 'add' : 'remove']('disabled');
+    $('.next').classList[nowindex === caplist.length - 1 ? 'add' : 'remove']('disabled');
+  }
 }
 const jumpToPrev = () => {
   if (nowindex === 0) return;
@@ -147,8 +157,8 @@ const jumpToNext = () => {
   jumpToSrc(caplist[++ nowindex]);
 }
 
-document.querySelector('.prev').addEventListener('click', jumpToPrev);
-document.querySelector('.next').addEventListener('click', jumpToNext);
+$('.prev').addEventListener('click', jumpToPrev);
+$('.next').addEventListener('click', jumpToNext);
 
 const fetchTocNcx = (tocPath) => {
 
@@ -160,7 +170,7 @@ const fetchTocNcx = (tocPath) => {
     Array.from(navMap.querySelectorAll('navPoint')).sort((a, b) => {
       return (+ a.getAttribute('playOrder')) - (+ b.getAttribute('playOrder'));
     }).forEach((item) => {
-      const menu = document.querySelector('.fix-menu');
+      const menu = $('.fix-menu');
       const div = document.createElement('div');
       div.classList.add('item');
       div.innerHTML = item.querySelector('text').childNodes[0].nodeValue;
@@ -190,11 +200,12 @@ const fetchContent = (contentPath) => {
     });
     
     title = data.querySelector('metadata title').childNodes[0].nodeValue;
-    document.querySelector('title').innerHTML = title;
-    document.querySelector('.title').innerHTML = title;
+    $('title').innerHTML = title;
+    $('.title').innerHTML = title;
 
     fetchTocNcx(mfs.get('ncx'));
 
+    // load progress
     server.remote('progress');
   });
 
@@ -216,6 +227,8 @@ server.on('theme', (theme) => {
 });
 
 const saveProgress = () => {
+  // maybe on setting page
+  if (nowindex === -1) return;
   const page = caplist[nowindex];
   const top = getPorgress();
   server.remote('save', title, page, top);
@@ -230,12 +243,15 @@ window.addEventListener('beforeunload', (e) => {
 
 document.addEventListener('visibilitychange', function() {
   if (document.hidden){
-    document.querySelector('title').innerHTML = '【P2767】树的数量 - 洛谷';
+    $('title').innerHTML = '【P2767】树的数量 - 洛谷';
   } else {
-    document.querySelector('title').innerHTML = title;
+    $('title').innerHTML = title;
   }
 });
 
-document.querySelector('.totop').addEventListener('click', () => {
+$('.totop').addEventListener('click', () => {
   scrollTo(0, 500);
+});
+$('.settings').addEventListener('click', () => {
+  jumpToSrc('config.html');
 });

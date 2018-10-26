@@ -42,8 +42,11 @@ let outputpath;
 let connections = 0;
 
 const _saveExit = () => {
-  console.log('exiting...');
+  console.log();
+  console.log('Exiting...');
+  console.log('Removing tmp files...');
   deleteFolderRecursive(outputpath);
+  console.log('GL & HF');
   process.exit(0);
 }
 let exitTimeout;
@@ -81,10 +84,13 @@ class XepubCommand extends Command {
       deleteFolderRecursive(outputpath);
     }
 
+    console.log('Unzipping file...');
     // unzip file
     fs.createReadStream(filepath)
     .pipe(unzip.Extract({ path: outputpath }))
     .on('close', () => {
+
+      console.log('Starting http and websocket server...');
 
       const metainf = fs.readFileSync(path.resolve(outputpath, 'META-INF/container.xml'));
       const roots = /full-path="([^"]+)"/i.exec(metainf)[1];
@@ -103,11 +109,14 @@ class XepubCommand extends Command {
         ++ connections;
         cancelExit();
 
+        console.log('Connected to a new user. (' + connections + ' users online)');
+
         ws.on('close', () => {
           -- connections;
           if (!connections) {
             saveExit();
           }
+          console.log('A user leaved.           (' + connections + ' users online)');
         });
 
         const client = sockets(ws);
@@ -123,15 +132,21 @@ class XepubCommand extends Command {
         });
         client.on('config', (type, value) => {
           config.set(type, value);
+          client.remote(type, value);
         });
 
       });
 
       server.listen(port);
 
+      console.log('Copying asserts...');
+
       ncp(path.resolve(__dirname, 'asserts'), path.resolve(outputpath, rootdir), (err) => {
 
-        opn(`http://localhost:${port}`);
+        const url = 'http://localhost:' + port;
+        console.log('All finished, opening ' + url);
+        console.log();
+        opn(url);
 
       });
 

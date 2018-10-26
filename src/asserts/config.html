@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" type="text/css" href="/xepub/colors.css">
+  <style type="text/css">
+    .colors div {
+      display: inline-block;
+      width: 50px;
+      height: 50px;
+      background-color: var(--primary-color);
+    }
+  </style>
+</head>
+<body>
+  <div class="colors">
+    <div class="red        "></div>
+    <div class="pink       "></div>
+    <div class="purple     "></div>
+    <div class="deep-purple"></div>
+    <div class="indigo     "></div>
+    <div class="blue       "></div>
+    <div class="light-blue "></div>
+    <div class="cyan       "></div>
+    <div class="teal       "></div>
+    <div class="green      "></div>
+    <div class="light-green"></div>
+    <div class="lime       "></div>
+    <div class="yellow     "></div>
+    <div class="amber      "></div>
+    <div class="orange     "></div>
+    <div class="deep-orange"></div>
+    <div class="brown      "></div>
+    <div class="grey       "></div>
+    <div class="blue-grey  "></div>
+    <div class="white      "></div>
+  </div>
+
+<button id="back">Back</button>
+
+<script type="text/javascript">
+
+const $ = (id) => document.querySelector(id);
+const $$ = (id) => Array.from(document.querySelectorAll(id));
+
+$('#back').addEventListener('click', () => {
+  __server.remote('progress');
+});
+$$('.colors div').forEach((item) => {
+  item.addEventListener('click', () => {
+    __server.remote('config', 'theme', item.className.trim());
+  });
+});
+
+</script>
+
+</body>
+</html>

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>首页 - 洛谷 | 计算机科学教育新生态</title>
+  <title>Xepub - A lightweight epub reader</title>
   <link rel="shortcut icon" type="image/x-icon" href="favicon.ico" media="screen">
   <script type="text/javascript">
   </script>
@@ -15,26 +15,27 @@
   <link rel="stylesheet" type="text/css" href="xepub/xepub.css">
   <link rel="stylesheet" type="text/css" href="xepub/nprogress.css">
 </head>
-<body class="red">
+<body class="white">
   <div class="container">
     <iframe scrolling="no"></iframe>
     <div class="button-set">
-      <div class="button prev">&lt;&lt; PREV</div>
-      <div class="button next">NEXT &gt;&gt;</div>
+      <div class="button prev"><i class="icon svg" name="chevron-left"></i>PREV</div>
+      <div class="button next">NEXT<i class="icon svg" name="chevron-right"></i></div>
     </div>
   </div>
   <div class="nav">
     <div class="nav-init">
       <div class="title">Xepub</div>
-      <div class="menu svg" name="bookmark"></div>
+      <div class="menu svg" name="bookmark" title="Bookmarks"></div>
     </div>
   </div>
   <div class="fix-menu opacity" style="display: none;"></div>
   <div class="left-menu">
-    <div class="float-button totop svg" name="chevron-up">
-    </div>
-    <div class="float-button svg" name="cog">
-    </div>
+    <div class="float-button totop svg" name="chevron-up"></div>
+    <div class="float-button settings svg" name="cog"></div>
+  </div>
+  <div class="config">
+    
   </div>
   <script type="text/javascript" src="xepub/load-icon.js"></script>
   <script type="text/javascript" src="xepub/nprogress.js"></script>
