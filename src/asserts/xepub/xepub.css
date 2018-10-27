@@ -1,3 +1,18 @@
+
+/* desktop */
+@media only screen and (min-width: 900px) {
+  :root {
+    --width: 800px;
+    --rewidth: calc((100% - 800px) / 2);
+  }
+}
+@media only screen and (max-width: 900px) {
+  :root {
+    --width: calc(100% - 32px);
+    --rewidth: 16px;
+  }
+}
+
 body, html {
   margin: 0;
   padding: 0;

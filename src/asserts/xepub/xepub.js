@@ -6,10 +6,14 @@ const $$ = (id) => document.querySelectorAll(id);
 const socket = (ws) => {
   const event = {};
   const on = (type, fn) => {
-    event[type] = fn;
+    if (!event[type]) event[type] = [fn];
+    else event[type].push(fn);
   }
   const emit = (type, ...args) => {
-    event[type] && event[type](...(args || []));
+    args = args || [];
+    event[type] && event[type].forEach((fn) => {
+      fn(...args);
+    });
   }
   ws.onmessage = ({ data }) => {
     const obj = JSON.parse(data);
@@ -111,8 +115,12 @@ $('iframe').addEventListener('load', (e) => {
   obj.contentWindow.document.head.innerHTML += '<style>img{max-width:100%;user-select:none;}</style>';
   obj.classList.remove('opacity');
   obj.contentWindow.document.addEventListener('click', hideMenu);
-  obj.contentWindow.document.addEventListener('keydown', keyEvent);
-  obj.contentWindow.__server = server;
+  if (nowindex !== -1) {
+    obj.contentWindow.document.addEventListener('keydown', keyEvent);
+  }
+  if (obj.contentWindow.onserverload) {
+    obj.contentWindow.onserverload(server);
+  }
   Array.from(obj.contentWindow.document.querySelectorAll('a')).forEach((item) => {
     let href = item.getAttribute('href');
     if (/^#/.test(href)) return;
@@ -199,7 +207,7 @@ const fetchContent = (contentPath) => {
       caplist.push(mfs.get(item.getAttribute('idref')));
     });
     
-    title = data.querySelector('metadata title').childNodes[0].nodeValue;
+    title = data.querySelector('metadata title').childNodes[0].nodeValue + ' - Xepub';
     $('title').innerHTML = title;
     $('.title').innerHTML = title;
 
@@ -221,10 +229,15 @@ server.on('progress', (progress) => {
   }
 });
 
-server.remote('theme');
+let camouflageTitle = '';
+
 server.on('theme', (theme) => {
   document.body.className = theme;
 });
+server.on('title', (title) => {
+  camouflageTitle = title;
+});
+server.remote('load-config');
 
 const saveProgress = () => {
   // maybe on setting page
@@ -242,8 +255,8 @@ window.addEventListener('beforeunload', (e) => {
 });
 
 document.addEventListener('visibilitychange', function() {
-  if (document.hidden){
-    $('title').innerHTML = '【P2767】树的数量 - 洛谷';
+  if (document.hidden && camouflageTitle) {
+    $('title').innerHTML = camouflageTitle;
   } else {
     $('title').innerHTML = title;
   }

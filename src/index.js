@@ -18,7 +18,10 @@ const tcpPortUsed = require('tcp-port-used');
 const nope = () => {};
 
 const store = DataStore('xepub', 'history');
-const config = DataStore('xepub', 'config', { theme: 'white' });
+const config = DataStore('xepub', 'config', {
+  theme: 'white',
+  title: 'Google'
+});
 
 const getRandomString = () => {
   return Math.floor(Math.random() * 4294967296).toString(16);
@@ -78,7 +81,7 @@ class XepubCommand extends Command {
     const port = flags.port || await getFreePort(15635);
     const file = argv[0];
     const filepath = path.resolve(__thisdir, file);
-    outputpath = path.resolve(__thisdir, `.tmp-${getRandomString()}/`);
+    outputpath = path.resolve(os.tmpdir(), 'xepub', `.tmp-${getRandomString()}`);
 
     if (fs.existsSync(outputpath)) {
       deleteFolderRecursive(outputpath);
@@ -126,14 +129,18 @@ class XepubCommand extends Command {
         client.on('progress', () => {
           client.remote('progress', store.get());
         });
-        client.remote('rootfile', rootfile);
-        client.on('theme', () => {
+        client.on('load-config', () => {
           client.remote('theme', config.get('theme'));
+          client.remote('title', config.get('title'));
         });
         client.on('config', (type, value) => {
           config.set(type, value);
           client.remote(type, value);
         });
+        client.on('query-config', () => {
+          client.remote('query-config', config.get());
+        })
+        client.remote('rootfile', rootfile);
 
       });
 

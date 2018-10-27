@@ -8,6 +8,7 @@ module.exports = (ws) => {
     event[type] = fn;
   }
   const emit = (type, ...args) => {
+    // console.log('[emit ' + type + ']', args);
     event[type] && event[type](...(args || []));
   }
 

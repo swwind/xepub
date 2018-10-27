@@ -5,52 +5,117 @@
   <style type="text/css">
     .colors div {
       display: inline-block;
-      width: 50px;
-      height: 50px;
+      width: 100px;
       background-color: var(--primary-color);
+      padding: 2rem .5rem .5rem;
+      color: var(--font-color);
+      margin: 2px 0;
+      transition: opacity .2s;
+      cursor: pointer;
+      user-select: none;
+    }
+    .colors div:hover {
+      opacity: .8;
+      transition: opacity .2s;
+    }
+    input[type="text"] {
+      border: none;
+      border-bottom: 2px solid;
+      border-bottom-color: var(--primary-color);
+      background-color: rgba(0, 0, 0, .05);
+      padding: 10px;
+      font-size: 1em;
+      width: 100%;
+      box-sizing: border-box;
+      outline: none;
+      transition: background-color .2s, border-bottom-color .2s;
+    }
+    input[type="text"]:focus {
+      background-color: rgba(0, 0, 0, .1);
+      transition: background-color .2s, border-bottom-color .2s;
+    }
+    h2 {
+      color: #666666;
+    }
+    button {
+      background-color: var(--primary-color);
+      height: 40px;
+      line-height: 40px;
+      font-size: 16px;
+      color: var(--font-color);
+      border-radius: 20px;
+      border: none;
+      padding: 0 40px;
+      margin-top: 20px;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    button:hover {
+      opacity: .8;
+      transition: all .2s;
     }
   </style>
 </head>
 <body>
+  <h2>Primary Color</h2>
   <div class="colors">
-    <div class="red        "></div>
-    <div class="pink       "></div>
-    <div class="purple     "></div>
-    <div class="deep-purple"></div>
-    <div class="indigo     "></div>
-    <div class="blue       "></div>
-    <div class="light-blue "></div>
-    <div class="cyan       "></div>
-    <div class="teal       "></div>
-    <div class="green      "></div>
-    <div class="light-green"></div>
-    <div class="lime       "></div>
-    <div class="yellow     "></div>
-    <div class="amber      "></div>
-    <div class="orange     "></div>
-    <div class="deep-orange"></div>
-    <div class="brown      "></div>
-    <div class="grey       "></div>
-    <div class="blue-grey  "></div>
-    <div class="white      "></div>
+    <div class="red        ">Red</div>
+    <div class="pink       ">Pink</div>
+    <div class="purple     ">Purple</div>
+    <div class="deep-purple">Deep Purple</div>
+    <div class="indigo     ">Indigo</div>
+    <div class="blue       ">Blue</div>
+    <div class="light-blue ">Light Blue</div>
+    <div class="cyan       ">Cyan</div>
+    <div class="teal       ">Teal</div>
+    <div class="green      ">Green</div>
+    <div class="light-green">Light Green</div>
+    <div class="lime       ">Lime</div>
+    <div class="yellow     ">Yellow</div>
+    <div class="amber      ">Amber</div>
+    <div class="orange     ">Orange</div>
+    <div class="deep-orange">Deep Orange</div>
+    <div class="brown      ">Brown</div>
+    <div class="grey       ">Grey</div>
+    <div class="blue-grey  ">Blue Grey</div>
+    <div class="white      ">White</div>
   </div>
 
-<button id="back">Back</button>
+  <h2>Camouflage Title</h2>
+  <input type="text" id="title">
+
+  <button id="back">Save And Back</button>
 
 <script type="text/javascript">
 
 const $ = (id) => document.querySelector(id);
 const $$ = (id) => Array.from(document.querySelectorAll(id));
 
-$('#back').addEventListener('click', () => {
-  __server.remote('progress');
-});
-$$('.colors div').forEach((item) => {
-  item.addEventListener('click', () => {
-    __server.remote('config', 'theme', item.className.trim());
-  });
-});
+window.onserverload = (server) => {
 
+  $('#back').addEventListener('click', () => {
+    server.remote('progress');
+  });
+  $$('.colors div').forEach((item) => {
+    item.addEventListener('click', () => {
+      server.remote('config', 'theme', item.className.trim());
+    });
+  });
+  $('#title').addEventListener('input', (e) => {
+    server.remote('config', 'title', e.target.value);
+  });
+
+  server.on('query-config', (config) => {
+    console.log(config);
+    $('#title').value = config.title;
+    document.body.className = config.theme;
+  });
+  server.on('theme', (theme) => {
+    document.body.className = theme;
+  })
+  server.remote('query-config');
+
+}
 </script>
 
 </body>

@@ -48,7 +48,7 @@ div.nav, .float-button {
 body {
   color: var(--font-color);
 }
-svg path {
+div.nav svg path, .float-button svg path {
   fill: var(--font-color);
 }
 
