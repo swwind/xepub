@@ -21,7 +21,7 @@ body {
   flex-direction: column;
   height: 100vh;
   overflow: auto;
-  background-color: rgba(0, 0, 0, .03);
+  background-color: #0000000a;
 }
 div.nav {
   width: 100%;
@@ -148,13 +148,13 @@ div.button.disabled {
   box-shadow: 0 3px 5px -1px rgba(0, 0, 0, .2),
               0 6px 10px 0 rgba(0, 0, 0, .14),
               0 1px 18px 0 rgba(0, 0, 0, .12);
-  transition: box-shadow .2s;
+  transition: box-shadow .2s, background-color .5s;
 }
 .float-button:hover {
   box-shadow: 0 5px 5px -3px rgba(0, 0, 0, .2),
               0 8px 10px 1px rgba(0, 0, 0, .14),
               0 3px 14px 2px rgba(0, 0, 0, .12);
-  transition: box-shadow .2s;
+  transition: box-shadow .2s, background-color .5s;
 }
 .float-button svg {
   width: 18px;

@@ -139,7 +139,7 @@ class XepubCommand extends Command {
         });
         client.on('query-config', () => {
           client.remote('query-config', config.get());
-        })
+        });
         client.remote('rootfile', rootfile);
 
       });
@@ -162,7 +162,7 @@ class XepubCommand extends Command {
   }
 }
 
-XepubCommand.description = `Describe the command here`;
+XepubCommand.description = `A lightweight epub reader`;
 XepubCommand.usage = `novel.epub`;
 XepubCommand.args = [ { name: 'file', required: true } ];
 XepubCommand.flags = {
