@@ -24,7 +24,11 @@ const config = DataStore('xepub', 'config', {
 });
 
 const getRandomString = () => {
-  return Math.floor(Math.random() * 4294967296).toString(16);
+  let res = '';
+  for (let i = 1; i <= 10; ++ i) {
+    res += i.toString(16);
+  }
+  return res;
 }
 
 const deleteFolderRecursive = (path) => {
@@ -53,8 +57,11 @@ const _saveExit = () => {
   process.exit(0);
 }
 let exitTimeout;
+let keep;
 const saveExit = () => {
-  exitTimeout = setTimeout(_saveExit, 2000);
+  if (!keep) {
+    exitTimeout = setTimeout(_saveExit, 2000);
+  }
 }
 const cancelExit = () => {
   if (exitTimeout) {
@@ -79,9 +86,11 @@ class XepubCommand extends Command {
 
     const { flags, argv } = this.parse(XepubCommand);
     const port = flags.port || await getFreePort(15635);
+    keep = flags.keep;
+    const maxUser = flags['max-user'];
     const file = argv[0];
     const filepath = path.resolve(__thisdir, file);
-    outputpath = path.resolve(os.tmpdir(), 'xepub', `.tmp-${getRandomString()}`);
+    outputpath = path.resolve(os.tmpdir(), 'xepub', getRandomString());
 
     if (fs.existsSync(outputpath)) {
       deleteFolderRecursive(outputpath);
@@ -108,6 +117,12 @@ class XepubCommand extends Command {
       const wss = new WebSocket.Server({ server });
 
       wss.on('connection', (ws) => {
+
+        if (connections == maxUser) {
+          ws.close();
+          console.log('Aborted a connection.');
+          return;
+        }
 
         ++ connections;
         cancelExit();
@@ -169,6 +184,8 @@ XepubCommand.flags = {
   version: flags.version({char: 'v', description: 'show xepub version'}),
   help: flags.help({char: 'h', description: 'show this help'}),
   port: flags.integer({char: 'p', description: 'port you want to open'}),
+  keep: flags.boolean({char: 'k', description: 'disable auto close when no people was online'}),
+  'max-user': flags.integer({description: 'max online user', default: 1}),
 }
 
 process.on('SIGINT', _saveExit);
