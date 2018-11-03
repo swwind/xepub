@@ -26,7 +26,7 @@ const config = DataStore('xepub', 'config', {
 const getRandomString = () => {
   let res = '';
   for (let i = 1; i <= 10; ++ i) {
-    res += i.toString(16);
+    res += Math.floor(Math.random() * 16).toString(16);
   }
   return res;
 }
