@@ -15,8 +15,9 @@
     "ncp": "^2.0.0",
     "opn": "^5.4.0",
     "tcp-port-used": "^1.0.0",
-    "unzip": "^0.1.11",
-    "ws": "^6.1.0"
+    "unzipper": "^0.9.4",
+    "ws": "^6.1.0",
+    "xml2js": "^0.4.19"
   },
   "devDependencies": {},
   "engines": {

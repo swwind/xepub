@@ -36,16 +36,21 @@ const socket = (ws) => {
   return { on, emit, remote };
 }
 
-const mfs = new Map();
-const caplist = [];
+let spine = [];
 let nowindex = 0;
-let title = '';
 
+let title = '';
+const setTitle = (title) => {
+  $('title').innerHTML = title;
+  $('.title').innerHTML = title;
+}
+
+// websocket
 const ws = new WebSocket('ws://' + window.location.host);
 const server = socket(ws);
 ws.onclose = () => { window.close(); }
 
-
+// toggle menu
 const showMenu = () => {
   $('.fix-menu').style.display = 'block';
   setTimeout(() => {
@@ -58,8 +63,15 @@ const hideMenu = () => {
     $('.fix-menu').style.display = 'none';
   }, 200);
 }
+// bind menu toggle events
+document.addEventListener('click', hideMenu);
+$('.menu').addEventListener('click', (e) => {
+  showMenu();
+  e.stopPropagation();
+});
 
-const scrollTo = (pos, time) => {
+// scroll animation
+const scrollTo = (pos, time = 500) => {
   const setScrollTop = (top) => {
     document.body.scrollTop = top; // For Safari
     document.documentElement.scrollTop = top; // For Chrome, Firefox, IE and Opera
@@ -80,25 +92,30 @@ const scrollTo = (pos, time) => {
   requestAnimationFrame(fn);
 }
 
-document.addEventListener('click', hideMenu);
-$('.menu').addEventListener('click', (e) => {
-  showMenu();
-  e.stopPropagation();
-});
-
+// get reading progress [0, 1)
 const getPorgress = () => {
   const top = document.documentElement.scrollTop || document.body.scrollTop;
   return top / document.body.scrollHeight;
 }
 
+// resize iframe
 const resizeFrame = (iframe, top, time = 0) => {
-  const pct = top === undefined ? getPorgress() : top;
-  iframe.style.height = '0px';
-  iframe.style.height = Math.max(iframe.contentWindow.document.body.scrollHeight + 50,
-      iframe.clientWidth * 1.4142135623730951) + 'px';
-  scrollTo(document.body.scrollHeight * pct, time);
+
+  if ('string' === typeof top && top.charAt(0) === '#') {
+    iframe.style.height = '0px';
+    iframe.style.height = Math.max(iframe.contentWindow.document.body.scrollHeight + 50,
+        iframe.clientWidth * 1.4142135623730951) + 'px';
+    jumpToId(top.slice(1));
+  } else {
+    const pct = top === undefined ? getPorgress() : top;
+    iframe.style.height = '0px';
+    iframe.style.height = Math.max(iframe.contentWindow.document.body.scrollHeight + 50,
+        iframe.clientWidth * 1.4142135623730951) + 'px';
+    scrollTo(document.body.scrollHeight * pct, time);
+  }
 }
 
+// key events
 const keyEvent = (e) => {
   if (e.code === 'ArrowLeft') {
     jumpToPrev();
@@ -107,30 +124,52 @@ const keyEvent = (e) => {
     jumpToNext();
   }
 }
+// bind key events
 window.addEventListener('keydown', keyEvent);
 
 // on load iframe
 $('iframe').addEventListener('load', (e) => {
   const obj = e.target;
+
+  nowindex = spine.indexOf(obj.contentDocument.location.pathname);
+  if (nowindex === -1) {
+    // maybe on config page
+    $('.prev').classList.add('disabled');
+    $('.next').classList.add('disabled');
+  } else {
+    $('.prev').classList[nowindex === 0                ? 'add' : 'remove']('disabled');
+    $('.next').classList[nowindex === spine.length - 1 ? 'add' : 'remove']('disabled');
+  }
+
   obj.contentWindow.document.head.innerHTML += '<style>img{max-width:100%;user-select:none;}</style>';
   obj.classList.remove('opacity');
   obj.contentWindow.document.addEventListener('click', hideMenu);
   if (nowindex !== -1) {
     obj.contentWindow.document.addEventListener('keydown', keyEvent);
   }
+  // config page need `server` object
   if (obj.contentWindow.onserverload) {
     obj.contentWindow.onserverload(server);
   }
-  Array.from(obj.contentWindow.document.querySelectorAll('a')).forEach((item) => {
-    let href = item.getAttribute('href');
-    if (/^#/.test(href)) return;
-    href = path.join(path.dirname(obj.src), href);
-    item.addEventListener('click', (e) => {
-      jumpToSrc(href);
-      e.preventDefault();
-    });
+  Array.from(obj.contentWindow.document.querySelectorAll('a[href]')).forEach((item) => {
+    const href = item.getAttribute('href');
+    if (/^(https?:)?\/\//.test(href)) {
+      item.setAttribute('target', '_blank');
+    } else if (/^#/.test(href)) {
+      item.addEventListener('click', (e) => {
+        jumpToId(href.slice(1));
+        e.preventDefault();
+      });
+    } else {
+      const src = path.resolve(path.dirname(obj.contentDocument.location.pathname), href);
+      item.addEventListener('click', (e) => {
+        jumpToSrc(src);
+        e.preventDefault();
+      });
+    }
   });
-  resizeFrame(obj, (+ obj.getAttribute('data-top')), 500);
+  const dataTop = obj.getAttribute('data-top') || '0';
+  resizeFrame(obj, dataTop, 500);
   obj.removeAttribute('data-top');
   NProgress.done();
 });
@@ -138,94 +177,92 @@ $('iframe').addEventListener('load', (e) => {
 // resize iframe
 window.addEventListener('resize', () => resizeFrame($('iframe')));
 
+const getFileName = (url) => {
+  return path.resolve(path.dirname(url), path.basename(url));
+}
+const getIdFromUrl = (url) => {
+  return url.indexOf('#') > -1 ? url.slice(url.indexOf('#') + 1) : '';
+}
+
+const jumpToId = (id) => {
+  const to = $('iframe').contentDocument.getElementById(id);
+  if (!to) return;
+
+  const rect = to.getBoundingClientRect();
+  const win = to.ownerDocument.defaultView;
+
+  scrollTo((rect.top + win.pageYOffset), 500);
+  return;
+}
+
 // jump to page src with scrollTop = top
-const jumpToSrc = (src, top = 0) => {
-  $('iframe').classList.add('opacity');
-  NProgress.start();
-  setTimeout(() => {
-    $('iframe').src = src + '?data=' + (+ new Date());
-    $('iframe').setAttribute('data-top', top);
-  }, 500);
-  nowindex = caplist.indexOf(src);
-  if (nowindex === -1) {
-    // maybe on config page
-    $('.prev').classList.add('disabled');
-    $('.next').classList.add('disabled');
+const jumpToSrc = (src, top) => {
+
+  const iframe = $('iframe');
+
+  if (getFileName(iframe.src) === getFileName(src)) {
+    // just jump refers to id
+    const id = getIdFromUrl(src);
+    id && jumpToId(id);
+
   } else {
-    $('.prev').classList[nowindex === 0                  ? 'add' : 'remove']('disabled');
-    $('.next').classList[nowindex === caplist.length - 1 ? 'add' : 'remove']('disabled');
+
+    const page = getFileName(src);
+    const id = getIdFromUrl(src);
+    if ('number' !== typeof top) {
+      top = id && ('#' + id) || 0;
+    }
+
+    iframe.classList.add('opacity');
+    NProgress.start();
+    setTimeout(() => {
+      iframe.src = page;
+      console.log(page);
+      iframe.setAttribute('data-top', top);
+    }, 500);
+
   }
 }
 const jumpToPrev = () => {
   if (nowindex === 0) return;
-  jumpToSrc(caplist[-- nowindex]);
+  jumpToSrc(spine[-- nowindex]);
 }
 const jumpToNext = () => {
-  if (nowindex === caplist.length - 1) return;
-  jumpToSrc(caplist[++ nowindex]);
+  if (nowindex === spine.length - 1) return;
+  jumpToSrc(spine[++ nowindex]);
 }
 
 $('.prev').addEventListener('click', jumpToPrev);
 $('.next').addEventListener('click', jumpToNext);
 
-const fetchTocNcx = (tocPath) => {
+const init = (epub) => {
+  console.log(epub);
 
-  fetch(tocPath)
-  .then(response => response.text())
-  .then(str => (new window.DOMParser()).parseFromString(str, "text/xml"))
-  .then(data => {
-    const navMap = data.querySelector('navMap');
-    Array.from(navMap.querySelectorAll('navPoint')).sort((a, b) => {
-      return (+ a.getAttribute('playOrder')) - (+ b.getAttribute('playOrder'));
-    }).forEach((item) => {
-      const menu = $('.fix-menu');
-      const div = document.createElement('div');
-      div.classList.add('item');
-      div.innerHTML = item.querySelector('text').childNodes[0].nodeValue;
-      console.log(item.querySelector('content').getAttribute('src'));
-      div.addEventListener('click', (e) => {
-        jumpToSrc(item.querySelector('content').getAttribute('src'));
-      });
-      menu.appendChild(div);
+  spine = epub.spine;
+
+  setTitle(title = (epub.docTitle || epub.metadata.title) + ' - Xepub');
+
+  const menu = $('.fix-menu');
+  epub.navMap.forEach((item) => {
+    const div = document.createElement('div');
+    div.classList.add('item');
+    div.innerHTML = item.label;
+    div.addEventListener('click', (e) => {
+      jumpToSrc(item.src);
     });
+    menu.appendChild(div);
   });
 
+  server.remote('progress');
 }
 
-const fetchContent = (contentPath) => {
-
-  fetch(contentPath)
-  .then(response => response.text())
-  .then(str => (new window.DOMParser()).parseFromString(str, "text/xml"))
-  .then(data => {
-    const manifest = data.querySelector('manifest');
-    Array.from(manifest.querySelectorAll('item')).forEach((item) => {
-      mfs.set(item.getAttribute('id'), item.getAttribute('href'));
-    });
-    const spine = data.querySelector('spine');
-    Array.from(spine.querySelectorAll('itemref')).forEach((item) => {
-      caplist.push(mfs.get(item.getAttribute('idref')));
-    });
-    
-    title = data.querySelector('metadata title').childNodes[0].nodeValue + ' - Xepub';
-    $('title').innerHTML = title;
-    $('.title').innerHTML = title;
-
-    fetchTocNcx(mfs.get('ncx'));
-
-    // load progress
-    server.remote('progress');
-  });
-
-}
-
-server.on('rootfile', fetchContent);
+server.on('init', init);
 server.on('progress', (progress) => {
   console.log(progress);
   if (progress[title]) {
     jumpToSrc(progress[title].page, progress[title].top);
   } else {
-    jumpToSrc(caplist[0]);
+    jumpToSrc(spine[0]);
   }
 });
 
@@ -242,7 +279,7 @@ server.remote('load-config');
 const saveProgress = () => {
   // maybe on setting page
   if (nowindex === -1) return;
-  const page = caplist[nowindex];
+  const page = spine[nowindex];
   const top = getPorgress();
   server.remote('save', title, page, top);
 }
@@ -256,9 +293,9 @@ window.addEventListener('beforeunload', (e) => {
 
 document.addEventListener('visibilitychange', function() {
   if (document.hidden && camouflageTitle) {
-    $('title').innerHTML = camouflageTitle;
+    setTitle(camouflageTitle);
   } else {
-    $('title').innerHTML = title;
+    setTitle(title);
   }
 });
 

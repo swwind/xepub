@@ -100,10 +100,12 @@ window.onserverload = (server) => {
   $$('.colors div').forEach((item) => {
     item.addEventListener('click', () => {
       server.remote('config', 'theme', item.className.trim());
+      server.emit('theme', item.className.trim());
     });
   });
   $('#title').addEventListener('input', (e) => {
     server.remote('config', 'title', e.target.value);
+    server.emit('title', e.target.value);
   });
 
   server.on('query-config', (config) => {
@@ -113,7 +115,7 @@ window.onserverload = (server) => {
   });
   server.on('theme', (theme) => {
     document.body.className = theme;
-  })
+  });
   server.remote('query-config');
 
 }
