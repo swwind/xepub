@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="/xepub/colors.css">
+    <style type="text/css">
+    @media only screen and (min-width: 800px) {
+      .item {
+        display: flex;
+        margin-bottom: 20px;
+      }
+      .title {
+        flex: 2;
+      }
+      .value {
+        flex: 8;
+      }
+    }
+    @media only screen and (max-width: 800px) {
+      .item {
+        margin-bottom: 30px;
+      }
+      .title {
+        margin-bottom: 10px;
+        display: block;
+      }
+    }
+    .item {
+      color: black;
+    }
+    button {
+      background-color: var(--primary-color);
+      height: 40px;
+      line-height: 40px;
+      font-size: 16px;
+      color: var(--font-color);
+      border-radius: 20px;
+      border: none;
+      padding: 0 40px;
+      margin: 20px auto 0;
+      cursor: pointer;
+      transition: all .2s;
+      outline: none;
+    }
+    button:hover {
+      opacity: .8;
+      transition: all .2s;
+    }
+    </style>
+  </head>
+  <body>
+    <div>
+      <div class="item">
+        <b class="title">Title</b>
+        <div class="value" data-name="title"></div>
+      </div>
+      <div class="item">
+        <b class="title">Subject</b>
+        <div class="value" data-name="subject"></div>
+      </div>
+      <div class="item">
+        <b class="title">Description</b>
+        <div class="value" data-name="description"></div>
+      </div>
+      <div class="item">
+        <b class="title">Language</b>
+        <div class="value" data-name="language"></div>
+      </div>
+      <div class="item">
+        <b class="title">Indentifier</b>
+        <div class="value" data-name="indentifier"></div>
+      </div>
+      <div class="item">
+        <b class="title">Creater</b>
+        <div class="value" data-name="creater"></div>
+      </div>
+      <div class="item">
+        <b class="title">Contributor</b>
+        <div class="value" data-name="contributor"></div>
+      </div>
+      <div class="item">
+        <b class="title">Date</b>
+        <div class="value" data-name="date"></div>
+      </div>
+      <div class="item">
+        <b class="title">Type</b>
+        <div class="value" data-name="type"></div>
+      </div>
+      <div class="item">
+        <b class="title">Format</b>
+        <div class="value" data-name="format"></div>
+      </div>
+      <div class="item">
+        <b class="title">Source</b>
+        <div class="value" data-name="source"></div>
+      </div>
+      <div class="item">
+        <b class="title">Relation</b>
+        <div class="value" data-name="relation"></div>
+      </div>
+      <div class="item">
+        <b class="title">Coverage</b>
+        <div class="value" data-name="coverage"></div>
+      </div>
+      <div class="item">
+        <b class="title">Rights</b>
+        <div class="value" data-name="rights"></div>
+      </div>
+    </div>
+    <button>Back</button>
+    <script type="text/javascript">
+      window.__xepub_load = (server, epub, theme) => {
+        document.body.className = theme;
+        Array.from(document.querySelectorAll('.value')).forEach((item) => {
+          const text = epub.metadata[item.getAttribute('data-name')];
+          if (text) {
+            item.innerText = text;
+          } else {
+            item.parentNode.remove();
+          }
+        });
+        document.querySelector('button').addEventListener('click', (e) => {
+          server.remote('progress');
+        });
+      }
+    </script>
+  </body>
+</html>

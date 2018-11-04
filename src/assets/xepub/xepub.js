@@ -38,6 +38,7 @@ const socket = (ws) => {
 
 let spine = [];
 let nowindex = 0;
+let epub = {};
 
 let title = '';
 const setTitle = (title) => {
@@ -148,8 +149,8 @@ $('iframe').addEventListener('load', (e) => {
     obj.contentWindow.document.addEventListener('keydown', keyEvent);
   }
   // config page need `server` object
-  if (obj.contentWindow.onserverload) {
-    obj.contentWindow.onserverload(server);
+  if (obj.contentWindow.__xepub_load) {
+    obj.contentWindow.__xepub_load(server, epub, document.body.className);
   }
   Array.from(obj.contentWindow.document.querySelectorAll('a[href]')).forEach((item) => {
     const href = item.getAttribute('href');
@@ -224,23 +225,25 @@ const jumpToSrc = (src, top) => {
   }
 }
 const jumpToPrev = () => {
-  if (nowindex === 0) return;
+  if (nowindex === -1 || nowindex === 0) return;
   jumpToSrc(spine[-- nowindex]);
 }
 const jumpToNext = () => {
-  if (nowindex === spine.length - 1) return;
+  if (nowindex === -1 || nowindex === spine.length - 1) return;
   jumpToSrc(spine[++ nowindex]);
 }
 
 $('.prev').addEventListener('click', jumpToPrev);
 $('.next').addEventListener('click', jumpToNext);
 
-const init = (epub) => {
+const init = (_epub) => {
+  epub = _epub;
+
   console.log(epub);
 
   spine = epub.spine;
 
-  setTitle(title = (epub.docTitle || epub.metadata.title) + ' - Xepub');
+  setTitle(title = (epub.metadata.title || epub.docTitle) + ' - Xepub');
 
   const menu = $('.fix-menu');
   epub.navMap.forEach((item) => {
@@ -303,5 +306,8 @@ $('.totop').addEventListener('click', () => {
   scrollTo(0, 500);
 });
 $('.settings').addEventListener('click', () => {
-  jumpToSrc('config.html');
+  jumpToSrc('/xepub/config.html');
+});
+$('.info').addEventListener('click', () => {
+  jumpToSrc('/xepub/info.html');
 });
