@@ -15,21 +15,25 @@ npm install xepub -g
 xepub novel.epub
 ```
 
-This will open `http://localhost:15635` by default.
+### Arguments
 
-If your 15635 port is occupied, it can automatically choose 15636 port, etc.
-
-If you want to open a specific port, use `-p, --port` flag.
-
-```bash
-xepub novel.epub -p 23333
-```
+Flag         | Char | Description
+------------ | ---- | --------------------------------------------
+`--help`     | `-h` | show this help
+`--keep`     | `-k` | disable auto close when no people was online
+`--max-user` |      | [default: 1] max online user
+`--port`     | `-p` | [default: 15635+] port you want to open
+`--version`  | `-v` | show xepub version
 
 ## Feature
 
-- Cleanest user interface.
-- Automatically save reading progress.
-- Automatically camouflage title as other websites.
+- Lightweight (~4.7MB with all dependencies)
+- Cross-platform
+
+## TODO
+
+- [ ] global font
+- [ ] night mode
 
 ## License
 
