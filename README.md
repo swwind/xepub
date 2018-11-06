@@ -25,6 +25,7 @@ Install
 ```bash
 git clone https://github.com/swwind/xepub .xepub
 cd .xepub
+npm install
 sudo npm link
 ```
 
