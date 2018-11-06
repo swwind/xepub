@@ -10,9 +10,28 @@ A lightweight epub reader.
 
 ## Usage
 
+**Stable(from npm)**
+
+Install & Update
+
 ```bash
 npm install xepub -g
-xepub novel.epub
+```
+
+**Develop(from github)**
+
+Install
+
+```bash
+git clone https://github.com/swwind/xepub .xepub
+cd .xepub
+sudo npm link
+```
+
+Update
+
+```bash
+git pull
 ```
 
 ### Arguments
@@ -33,7 +52,7 @@ Flag         | Char | Description
 ## TODO
 
 - [ ] global font
-- [ ] night mode
+- [x] night mode
 
 ## License
 
