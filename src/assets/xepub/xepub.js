@@ -56,7 +56,7 @@ const showMenu = () => {
   $('.fix-menu').style.display = 'block';
   setTimeout(() => {
     $('.fix-menu').classList.remove('opacity');
-  }, 0)
+  }, 0);
 }
 const hideMenu = () => {
   $('.fix-menu').classList.add('opacity');
@@ -142,7 +142,12 @@ $('iframe').addEventListener('load', (e) => {
     $('.next').classList[nowindex === spine.length - 1 ? 'add' : 'remove']('disabled');
   }
 
-  obj.contentWindow.document.head.innerHTML += '<style>img{max-width:100%;user-select:none;}</style>';
+  if (nowindex > -1) {
+    obj.contentWindow.document.head.innerHTML += '<link rel="stylesheet" type="text/css" href="/xepub/page.css">';
+  }
+  document.body.className.split(' ').forEach((cls) => {
+    obj.contentWindow.document.body.classList.add(cls);
+  })
   obj.classList.remove('opacity');
   obj.contentWindow.document.addEventListener('click', hideMenu);
   if (nowindex !== -1) {
@@ -150,7 +155,7 @@ $('iframe').addEventListener('load', (e) => {
   }
   // config page need `server` object
   if (obj.contentWindow.__xepub_load) {
-    obj.contentWindow.__xepub_load(server, epub, document.body.className);
+    obj.contentWindow.__xepub_load(server, epub);
   }
   Array.from(obj.contentWindow.document.querySelectorAll('a[href]')).forEach((item) => {
     const href = item.getAttribute('href');

@@ -21,7 +21,6 @@ body {
   flex-direction: column;
   height: 100vh;
   overflow: auto;
-  background-color: #0000000a;
 }
 div.nav {
   width: 100%;
@@ -29,7 +28,6 @@ div.nav {
   position: fixed;
   top: 0;
   left: 0;
-  box-shadow: 0 0 5px #aaa;
 }
 div.container {
   width: 100%;
@@ -62,6 +60,7 @@ div.title {
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
+  transition: color .5s;
 }
 div.menu {
   line-height: 50px;
@@ -69,20 +68,18 @@ div.menu {
   width: 24px;
   padding: 8px 20px 18px;
   cursor: pointer;
-  transition: background-color .2s;
+  transition: background-color .5s;
   user-select: none;
 }
 div.menu:hover {
   background-color: #00000011;
-  transition: background-color .2s;
+  transition: background-color .5s;
 }
 div.fix-menu {
   position: fixed;
   right: var(--rewidth);
   top: 50px;
-  background-color: white;
   padding: 5px 0;
-  box-shadow: 0 0 5px #ccc;
   max-height: 500px;
   overflow-x: auto;
   user-select: none;
@@ -130,8 +127,7 @@ div.button.next {
   text-align: right;
 }
 div.button.disabled {
-  color: #000000aa;
-  cursor: not-allowed;
+  visibility: hidden;
 }
 .left-menu {
   position: fixed;
@@ -171,4 +167,46 @@ div.button.disabled {
   line-height: 50px;
   padding: 0 1rem;
   transform: translateY(-2px);
+}
+
+/* colors */
+
+div.nav, .float-button {
+  background-color: var(--primary-color);
+}
+body {
+  background-color: var(--bg-color);
+  transition: color .5s, background-color .5s;
+}
+svg path {
+  fill: var(--font-color1);
+}
+
+div.nav, svg path {
+  transition: background-color .5s, color .5s, fill .5s;
+}
+div.fix-menu, .button-set {
+  color: var(--font-color2);
+}
+div.fix-menu {
+  background-color: var(--bg-color);
+}
+div.title {
+  color: var(--font-color1);
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+  background-color: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #424242;
+  border-radius: 8px;
+}
+
+body:not(.disable-box-shadow) div.fix-menu,
+body:not(.disable-box-shadow) div.nav {
+  box-shadow: 0 0 5px #ccc;
+  transition: all .5s;
 }

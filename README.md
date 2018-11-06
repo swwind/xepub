@@ -21,8 +21,8 @@ Flag         | Char | Description
 ------------ | ---- | --------------------------------------------
 `--help`     | `-h` | show this help
 `--keep`     | `-k` | disable auto close when no people was online
-`--max-user` |      | [default: 1] max online user
-`--port`     | `-p` | [default: 15635+] port you want to open
+`--max-user` |      | max online user [default: 1]
+`--port`     | `-p` | port you want to open [default: 15635+]
 `--version`  | `-v` | show xepub version
 
 ## Feature

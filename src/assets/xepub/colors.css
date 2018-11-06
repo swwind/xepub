@@ -21,37 +21,26 @@ blue-grey   #546e7a
 white       #ffffff
 */
 
-.red         { --primary-color: #ef5350; --font-color: #ffffff; }
-.pink        { --primary-color: #e91e63; --font-color: #ffffff; }
-.purple      { --primary-color: #ab47bc; --font-color: #ffffff; }
-.deep-purple { --primary-color: #7e57c2; --font-color: #ffffff; }
-.indigo      { --primary-color: #3f51b5; --font-color: #ffffff; }
-.blue        { --primary-color: #2196f3; --font-color: #ffffff; }
-.light-blue  { --primary-color: #03a9f4; --font-color: #ffffff; }
-.cyan        { --primary-color: #00bcd4; --font-color: #ffffff; }
-.teal        { --primary-color: #009688; --font-color: #ffffff; }
-.green       { --primary-color: #4caf50; --font-color: #ffffff; }
-.light-green { --primary-color: #7cb342; --font-color: #ffffff; }
-.lime        { --primary-color: #c0ca33; --font-color: #ffffff; }
-.yellow      { --primary-color: #f9a825; --font-color: #ffffff; }
-.amber       { --primary-color: #ffa000; --font-color: #ffffff; }
-.orange      { --primary-color: #fb8c00; --font-color: #ffffff; }
-.deep-orange { --primary-color: #ff7043; --font-color: #ffffff; }
-.brown       { --primary-color: #795548; --font-color: #ffffff; }
-.grey        { --primary-color: #757575; --font-color: #ffffff; }
-.blue-grey   { --primary-color: #546e7a; --font-color: #ffffff; }
-.white       { --primary-color: #ffffff; --font-color: #555555; }
+.red         { --primary-color: #ef5350; --font-color1: #ffffff; --font-color2: #222222; --bg-color: #eeeeee; }
+.pink        { --primary-color: #e91e63; --font-color1: #ffffff; --font-color2: #222222; --bg-color: #eeeeee; }
+.purple      { --primary-color: #ab47bc; --font-color1: #ffffff; --font-color2: #222222; --bg-color: #eeeeee; }
+.deep-purple { --primary-color: #7e57c2; --font-color1: #ffffff; --font-color2: #222222; --bg-color: #eeeeee; }
+.indigo      { --primary-color: #3f51b5; --font-color1: #ffffff; --font-color2: #222222; --bg-color: #eeeeee; }
+.blue        { --primary-color: #2196f3; --font-color1: #ffffff; --font-color2: #222222; --bg-color: #eeeeee; }
+.light-blue  { --primary-color: #03a9f4; --font-color1: #ffffff; --font-color2: #222222; --bg-color: #eeeeee; }
+.cyan        { --primary-color: #00bcd4; --font-color1: #ffffff; --font-color2: #222222; --bg-color: #eeeeee; }
+.teal        { --primary-color: #009688; --font-color1: #ffffff; --font-color2: #222222; --bg-color: #eeeeee; }
+.green       { --primary-color: #4caf50; --font-color1: #ffffff; --font-color2: #222222; --bg-color: #eeeeee; }
+.light-green { --primary-color: #7cb342; --font-color1: #ffffff; --font-color2: #222222; --bg-color: #eeeeee; }
+.lime        { --primary-color: #c0ca33; --font-color1: #ffffff; --font-color2: #222222; --bg-color: #eeeeee; }
+.yellow      { --primary-color: #f9a825; --font-color1: #ffffff; --font-color2: #222222; --bg-color: #eeeeee; }
+.amber       { --primary-color: #ffa000; --font-color1: #ffffff; --font-color2: #222222; --bg-color: #eeeeee; }
+.orange      { --primary-color: #fb8c00; --font-color1: #ffffff; --font-color2: #222222; --bg-color: #eeeeee; }
+.deep-orange { --primary-color: #ff7043; --font-color1: #ffffff; --font-color2: #222222; --bg-color: #eeeeee; }
+.brown       { --primary-color: #795548; --font-color1: #ffffff; --font-color2: #222222; --bg-color: #eeeeee; }
+.grey        { --primary-color: #757575; --font-color1: #ffffff; --font-color2: #222222; --bg-color: #eeeeee; }
+.blue-grey   { --primary-color: #546e7a; --font-color1: #ffffff; --font-color2: #222222; --bg-color: #eeeeee; }
+.white       { --primary-color: #ffffff; --font-color1: #555555; --font-color2: #222222; --bg-color: #eeeeee; }
+.black       { --primary-color: #222222; --font-color1: #c1c1c1; --font-color2: #efefef; --bg-color: #333333; }
 
-div.nav, .float-button {
-  background-color: var(--primary-color);
-}
-body {
-  color: var(--font-color);
-}
-div.nav svg path, .float-button svg path {
-  fill: var(--font-color);
-}
-
-div.nav, svg path { transition: background-color .5s, color .5s, fill .5s; }
-div.fix-menu, .button-set { color: black; }
 

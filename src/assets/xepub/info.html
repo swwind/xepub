@@ -27,12 +27,15 @@
     .item {
       color: black;
     }
+    .item, .title {
+      color: var(--font-color2);
+    }
     button {
       background-color: var(--primary-color);
       height: 40px;
       line-height: 40px;
       font-size: 16px;
-      color: var(--font-color);
+      color: var(--font-color1);
       border-radius: 20px;
       border: none;
       padding: 0 40px;
@@ -108,8 +111,7 @@
     </div>
     <button>Back</button>
     <script type="text/javascript">
-      window.__xepub_load = (server, epub, theme) => {
-        document.body.className = theme;
+      window.__xepub_load = (server, epub) => {
         Array.from(document.querySelectorAll('.value')).forEach((item) => {
           const text = epub.metadata[item.getAttribute('data-name')];
           if (text) {

@@ -1,0 +1,10 @@
+@import url("./colors.css");
+
+img {
+  max-width: 100%;
+  user-select: none;
+}
+
+* {
+  color: var(--font-color2);
+}
