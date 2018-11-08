@@ -143,7 +143,7 @@ $('iframe').addEventListener('load', (e) => {
   }
 
   if (nowindex > -1) {
-    obj.contentWindow.document.head.innerHTML += '<link rel="stylesheet" type="text/css" href="/xepub/page.css">';
+    obj.contentWindow.document.head.innerHTML += '<link rel="stylesheet" type="text/css" href="/xepub/page.css"/>';
   }
   document.body.className.split(' ').forEach((cls) => {
     obj.contentWindow.document.body.classList.add(cls);
