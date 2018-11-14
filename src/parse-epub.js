@@ -10,7 +10,8 @@ module.exports = async (tmpdir) => {
     return new Promise((resolve, reject) => {
       fs.readFile(path.resolve(tmpdir, filename), (err, xml) => {
         if (err) return reject(err);
-        xml2js.parseString(xml, (err, res) => {
+        const fixed = xml.replace(/&([^;]*)(?=[&<])/g, '&amp;$1');
+        xml2js.parseString(fixed, (err, res) => {
           if (err) reject(err);
           else resolve(res);
         });
@@ -53,7 +54,7 @@ module.exports = async (tmpdir) => {
   const manifest = {};
 
   content.package.manifest[0].item.forEach(({ $ }) => {
-    manifest[$.id] = path.join(path.dirname(rootfile), $.href);
+    manifest[$.id] = path.join(path.dirname(rootfile), $.href).replace('\\', '/');
   });
 
   const spine = [];
@@ -70,7 +71,8 @@ module.exports = async (tmpdir) => {
 
   toc.ncx.navMap[0].navPoint.forEach((navPoint) => {
     const label = getText(navPoint, ['navLabel', 0, 'text', 0]);
-    const src = '/' + path.join(path.dirname(tocfilename), getText(navPoint, ['content', 0, '$', 'src']));
+    const src = '/' + path.join(path.dirname(tocfilename),
+        getText(navPoint, ['content', 0, '$', 'src'])).replace('\\', '/');
     navMap.push({ label, src });
   });
 
