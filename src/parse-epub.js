@@ -10,7 +10,7 @@ module.exports = async (tmpdir) => {
     return new Promise((resolve, reject) => {
       fs.readFile(path.resolve(tmpdir, filename), (err, xml) => {
         if (err) return reject(err);
-        const fixed = xml.replace(/&([^;]*)(?=[&<])/g, '&amp;$1');
+        const fixed = xml.toString().replace(/&([^;]*)(?=[&<])/g, '&amp;$1');
         xml2js.parseString(fixed, (err, res) => {
           if (err) reject(err);
           else resolve(res);
