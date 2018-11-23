@@ -200,6 +200,7 @@ $('iframe').addEventListener('load', (e) => {
 
   // copy theme
   if (nowindex > -1) {
+    obj.contentWindow.document.head.innerHTML += '<style>img{max-width:100%;user-select:none;}</style>';
     obj.contentWindow.document.head.innerHTML += '<link rel="stylesheet" type="text/css" href="/xepub/page.css"/>';
     if (global_font) {
       obj.contentWindow.document.head.innerHTML += `<style>:root{--font-family:${global_font},sans-serif;}</style>`;
