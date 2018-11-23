@@ -7,4 +7,5 @@ img {
 
 * {
   color: var(--font-color2);
+  font-family: var(--font-family) !important;
 }

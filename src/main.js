@@ -7,8 +7,8 @@ const http = require('http');
 const path = require('path');
 const { ncp } = require('ncp');
 const WebSocket = require('ws');
-const unzipper = require('unzipper');
 const express = require('express');
+const unzipper = require('unzipper');
 const sockets = require('./sockets.js');
 const parseEpub = require('./parse-epub.js');
 const DataStore = require('./data-store.js');
@@ -16,7 +16,8 @@ const DataStore = require('./data-store.js');
 const store = DataStore('xepub', 'history');
 const config = DataStore('xepub', 'config', {
   theme: 'white',
-  title: ''
+  title: '',
+  fonts: '',
 });
 
 const getRandomString = () => {
@@ -146,7 +147,7 @@ module.exports = async (file, { keep, port, maxUser }) => {
 
       if (connections === maxUser) {
         ws.close();
-        console.log(`Aborted a connection     (ip ${ip})`);
+        console.log(`Aborted a connection     (ip: ${ip})`);
         return;
       }
 
@@ -177,6 +178,7 @@ module.exports = async (file, { keep, port, maxUser }) => {
       client.on('load-config', () => {
         client.remote('theme', config.get('theme'));
         client.remote('title', config.get('title'));
+        client.remote('fonts', config.get('fonts'));
       });
 
       // request to save modified configurations

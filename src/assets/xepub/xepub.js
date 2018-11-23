@@ -117,16 +117,72 @@ const resizeFrame = (iframe, top, time = 0) => {
 }
 
 // key events
-const keyEvent = (e) => {
-  if (e.code === 'ArrowLeft') {
+const _document = document;
+const scrolling = (delta) => {
+  const setScrollTop = (top) => {
+    _document.body.scrollTop = top; // For Safari
+    _document.documentElement.scrollTop = top; // For Chrome, Firefox, IE and Opera
+  }
+  let stoped = false;
+  const fn = () => {
+    const lastpos = _document.documentElement.scrollTop || _document.body.scrollTop;
+    setScrollTop(lastpos + delta);
+    if (!stoped) requestAnimationFrame(fn);
+  }
+  requestAnimationFrame(fn);
+  return {
+    delta,
+    stop: () => {
+      stoped = true;
+    }
+  };
+}
+// now scrolling task
+let scrolls = null;
+
+const keyDownEvent = (e) => {
+  if (e.code === 'ArrowLeft' || e.code === 'KeyH') {
     jumpToPrev();
   }
-  if (e.code === 'ArrowRight') {
+  if (e.code === 'ArrowRight' || e.code === 'KeyL') {
     jumpToNext();
+  }
+  if (e.code === 'KeyJ') {
+    if (!scrolls) {
+      scrolls = scrolling(10);
+    } else if (scrolls && scrolls.delta < 0) {
+      scrolls.stop();
+      scrolls = scrolling(10);
+    }
+  }
+  if (e.code === 'KeyK') {
+    if (!scrolls) {
+      scrolls = scrolling(-10);
+    } else if (scrolls && scrolls.delta > 0) {
+      scrolls.stop();
+      scrolls = scrolling(-10);
+    }
+  }
+}
+const keyUpEvent = (e) => {
+  if (e.code === 'KeyJ') {
+    if (scrolls && scrolls.delta > 0) {
+      scrolls.stop();
+      scrolls = null;
+    }
+  }
+  if (e.code === 'KeyK') {
+    if (scrolls && scrolls.delta < 0) {
+      scrolls.stop();
+      scrolls = null;
+    }
   }
 }
 // bind key events
-window.addEventListener('keydown', keyEvent);
+window.addEventListener('keydown', keyDownEvent);
+window.addEventListener('keyup', keyUpEvent);
+
+let global_font = '';
 
 // on load iframe
 $('iframe').addEventListener('load', (e) => {
@@ -142,16 +198,22 @@ $('iframe').addEventListener('load', (e) => {
     $('.next').classList[nowindex === spine.length - 1 ? 'add' : 'remove']('disabled');
   }
 
+  // copy theme
   if (nowindex > -1) {
     obj.contentWindow.document.head.innerHTML += '<link rel="stylesheet" type="text/css" href="/xepub/page.css"/>';
+    if (global_font) {
+      obj.contentWindow.document.head.innerHTML += `<style>:root{--font-family:${global_font},sans-serif;}</style>`;
+    }
   }
   document.body.className.split(' ').forEach((cls) => {
     obj.contentWindow.document.body.classList.add(cls);
-  })
+  });
+
   obj.classList.remove('opacity');
   obj.contentWindow.document.addEventListener('click', hideMenu);
   if (nowindex !== -1) {
-    obj.contentWindow.document.addEventListener('keydown', keyEvent);
+    obj.contentWindow.document.addEventListener('keydown', keyDownEvent);
+    obj.contentWindow.document.addEventListener('keyup', keyUpEvent);
   }
   // config page need `server` object
   if (obj.contentWindow.__xepub_load) {
@@ -281,6 +343,9 @@ server.on('theme', (theme) => {
 });
 server.on('title', (title) => {
   camouflageTitle = title;
+});
+server.on('fonts', (fonts) => {
+  global_font = fonts;
 });
 server.remote('load-config');
 

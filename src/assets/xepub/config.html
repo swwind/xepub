@@ -38,6 +38,7 @@
       box-sizing: border-box;
       outline: none;
       transition: background-color .2s, border-bottom-color .2s;
+      color: var(--font-color2);
     }
     input[type="text"]:focus {
       background-color: rgba(0, 0, 0, .1);
@@ -101,6 +102,9 @@
   <h2>Camouflage Title</h2>
   <input type="text" id="title">
 
+  <h2>Global Font</h2>
+  <input type="text" id="fonts">
+
   <button id="back">Save And Back</button>
 
 <script type="text/javascript">
@@ -123,10 +127,15 @@ window.__xepub_load = (server, epub) => {
     server.remote('config', 'title', e.target.value);
     server.emit('title', e.target.value);
   });
+  $('#fonts').addEventListener('input', (e) => {
+    server.remote('config', 'fonts', e.target.value);
+    server.emit('fonts', e.target.value);
+  });
 
   server.on('query-config', (config) => {
     console.log(config);
     $('#title').value = config.title;
+    $('#fonts').value = config.fonts;
     document.body.className = config.theme;
   });
   server.on('theme', (theme) => {
