@@ -42,22 +42,21 @@ const deleteFolderRecursive = (path) => {
   }
 }
 
-const unzipFile = (file, path) => {
-  return new Promise((resolve, reject) => {
+const unzipFile = (file, path) =>
+  new Promise((resolve, reject) => {
     fs.createReadStream(file)
     .pipe(unzipper.Extract({ path }))
     .on('close', resolve)
     .on('error', reject);
   });
-}
-const copydir = (fromdir, todir) => {
-  return new Promise((resolve, reject) => {
-    ncp(fromdir, todir, (err) => {
+
+const copydir = (fromdir, todir) =>
+  new Promise((resolve, reject) => {
+    ncp(fromdir, todir, err => {
       if (err) reject(err);
       else resolve();
     });
   });
-}
 
 class Timer {
   constructor(func) {
