@@ -72,8 +72,12 @@
 </head>
 <body>
   <h2>Primary Color</h2>
-  <div class="colors">
-    <span>White theme</span>
+  <div>
+    <input type="checkbox" id="use-book-text-color">
+    <span>Use text colors from books</span>
+  </div>
+  <div id="colors">
+    <h3>White theme</h3>
     <div class="red">Red</div>
     <div class="pink">Pink</div>
     <div class="purple">Purple</div>
@@ -95,7 +99,7 @@
     <div class="blue-grey">Blue Grey</div>
     <div class="white">White</div>
 
-    <span>Night theme</span>
+    <h3>Night theme</h3>
     <div class="black disable-box-shadow">Black</div>
   </div>
 
@@ -113,36 +117,40 @@ const $ = (id) => document.querySelector(id);
 const $$ = (id) => Array.from(document.querySelectorAll(id));
 
 window.__xepub_load = (server, epub) => {
-
   $('#back').addEventListener('click', () => {
     server.remote('progress');
   });
-  $$('.colors div').forEach((item) => {
+  $('#use-book-text-color').addEventListener('change', e => {
+    server.remote('config', 'use-book-text-color', e.target.checked);
+    server.emit('use-book-text-color', e.target.checked);
+  });
+  $$('#colors div').forEach((item) => {
     item.addEventListener('click', () => {
       server.remote('config', 'theme', item.className);
       server.emit('theme', item.className);
     });
   });
-  $('#title').addEventListener('input', (e) => {
+  $('#title').addEventListener('input', e => {
     server.remote('config', 'title', e.target.value);
     server.emit('title', e.target.value);
   });
-  $('#fonts').addEventListener('input', (e) => {
+  $('#fonts').addEventListener('input', e => {
     server.remote('config', 'fonts', e.target.value);
     server.emit('fonts', e.target.value);
   });
 
-  server.on('query-config', (config) => {
+  server.on('query-config', config => {
     console.log(config);
+    $('#use-book-text-color').checked = config["use-book-text-color"];
     $('#title').value = config.title;
     $('#fonts').value = config.fonts;
-    document.body.className = config.theme;
-  });
-  server.on('theme', (theme) => {
-    document.body.className = theme;
+    document.body.className = 
+      [].concat(
+        config.theme,
+        config["use-book-text-color"] ? [] : ["use-custom-text-color"])
+      .join(" ");
   });
   server.remote('query-config');
-
 }
 </script>
 

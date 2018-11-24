@@ -173,13 +173,6 @@ module.exports = async (file, { keep, port, maxUser }) => {
         client.remote('progress', store.get());
       });
 
-      // request to load current configurations
-      client.on('load-config', () => {
-        client.remote('theme', config.get('theme'));
-        client.remote('title', config.get('title'));
-        client.remote('fonts', config.get('fonts'));
-      });
-
       // request to save modified configurations
       client.on('config', (type, value) => {
         config.set(type, value);
@@ -207,5 +200,3 @@ module.exports = async (file, { keep, port, maxUser }) => {
   }
 
 }
-
-

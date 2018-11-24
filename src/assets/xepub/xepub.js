@@ -339,16 +339,16 @@ server.on('progress', (progress) => {
 
 let camouflageTitle = '';
 
-server.on('theme', (theme) => {
-  document.body.className = theme;
+server.on('query-config', config => {
+  camouflageTitle = config.title;
+  global_font = config.fonts;
+  document.body.className = 
+    [].concat(
+      config.theme,
+      config["use-book-text-color"] ? [] : ["use-custom-text-color"])
+    .join(" ");
 });
-server.on('title', (title) => {
-  camouflageTitle = title;
-});
-server.on('fonts', (fonts) => {
-  global_font = fonts;
-});
-server.remote('load-config');
+server.remote('query-config');
 
 const saveProgress = () => {
   // maybe on setting page
