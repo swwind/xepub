@@ -198,7 +198,9 @@ module.exports = async (file, { keep, port, maxUser }) => {
 
     server.listen(port);
 
-    opn('http://localhost:' + port);
+    const url = 'http://localhost:' + port;
+    console.log('opening ' + url);
+    opn(url);
 
   } catch (e) {
     // delete tmpdir
