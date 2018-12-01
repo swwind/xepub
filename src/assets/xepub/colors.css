@@ -42,5 +42,3 @@ white       #ffffff
 .blue-grey   { --primary-color: #546e7a; --font-color1: #ffffff; --font-color2: #222222; --bg-color: #eeeeee; }
 .white       { --primary-color: #ffffff; --font-color1: #555555; --font-color2: #222222; --bg-color: #eeeeee; }
 .black       { --primary-color: #222222; --font-color1: #c1c1c1; --font-color2: #efefef; --bg-color: #333333; }
-
-

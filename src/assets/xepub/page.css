@@ -1,6 +1,9 @@
 @import url("./colors.css");
 
-* {
+.use-custom-text-color {
   color: var(--font-color2);
-  font-family: var(--font-family) !important;
 }
+
+/* TODO use book defaults or custom fonts
+font-family: var(--font-family) !important;
+*/

@@ -42,22 +42,21 @@ const deleteFolderRecursive = (path) => {
   }
 }
 
-const unzipFile = (file, path) => {
-  return new Promise((resolve, reject) => {
+const unzipFile = (file, path) =>
+  new Promise((resolve, reject) => {
     fs.createReadStream(file)
     .pipe(unzipper.Extract({ path }))
     .on('close', resolve)
     .on('error', reject);
   });
-}
-const copydir = (fromdir, todir) => {
-  return new Promise((resolve, reject) => {
-    ncp(fromdir, todir, (err) => {
+
+const copydir = (fromdir, todir) =>
+  new Promise((resolve, reject) => {
+    ncp(fromdir, todir, err => {
       if (err) reject(err);
       else resolve();
     });
   });
-}
 
 class Timer {
   constructor(func) {
@@ -174,13 +173,6 @@ module.exports = async (file, { keep, port, maxUser }) => {
         client.remote('progress', store.get());
       });
 
-      // request to load current configurations
-      client.on('load-config', () => {
-        client.remote('theme', config.get('theme'));
-        client.remote('title', config.get('title'));
-        client.remote('fonts', config.get('fonts'));
-      });
-
       // request to save modified configurations
       client.on('config', (type, value) => {
         config.set(type, value);
@@ -208,5 +200,3 @@ module.exports = async (file, { keep, port, maxUser }) => {
   }
 
 }
-
-
