@@ -18,9 +18,8 @@
     #colors {
       user-select: none;
     }
-    #colors span {
+    #colors h3 {
       display: block;
-      color: var(--font-color2);
       margin: 10px 0;
     }
     #colors div:hover {
@@ -38,14 +37,10 @@
       box-sizing: border-box;
       outline: none;
       transition: background-color .2s, border-bottom-color .2s;
-      color: var(--font-color2);
     }
     input[type="text"]:focus {
       background-color: rgba(0, 0, 0, .1);
       transition: background-color .2s, border-bottom-color .2s;
-    }
-    h2 {
-      color: var(--font-color2);
     }
     button {
       background-color: var(--primary-color);
@@ -66,16 +61,20 @@
       transition: all .2s;
     }
     * {
+      color: var(--font-color2);
       transition: all .5s;
+    }
+    label {
+      margin: 10px 0;
     }
   </style>
 </head>
 <body>
   <h2>Primary Color</h2>
-  <div>
-    <input type="checkbox" id="use-book-text-color">
-    <span>Use text colors from books</span>
-  </div>
+  <label>
+    <input type="checkbox" id="use-custom-text-color">
+    <span>Use recommended font color</span>
+  </label>
   <div id="colors">
     <h3>White theme</h3>
     <div class="red">Red</div>
@@ -107,6 +106,10 @@
   <input type="text" id="title">
 
   <h2>Global Font</h2>
+  <label>
+    <input type="checkbox" id="use-custom-font-family">
+    <span>Custom font</span>
+  </label>
   <input type="text" id="fonts">
 
   <button id="back">Save And Back</button>
@@ -120,35 +123,33 @@ window.__xepub_load = (server, epub) => {
   $('#back').addEventListener('click', () => {
     server.remote('progress');
   });
-  $('#use-book-text-color').addEventListener('change', e => {
-    server.remote('config', 'use-book-text-color', e.target.checked);
-    server.emit('use-book-text-color', e.target.checked);
+  $('#use-custom-text-color').addEventListener('change', e => {
+    server.remote('config', 'use-custom-text-color', e.target.checked);
+  });
+  $('#use-custom-font-family').addEventListener('change', e => {
+    server.remote('config', 'use-custom-font-family', e.target.checked);
   });
   $$('#colors div').forEach((item) => {
     item.addEventListener('click', () => {
       server.remote('config', 'theme', item.className);
-      server.emit('theme', item.className);
     });
   });
   $('#title').addEventListener('input', e => {
     server.remote('config', 'title', e.target.value);
-    server.emit('title', e.target.value);
   });
   $('#fonts').addEventListener('input', e => {
     server.remote('config', 'fonts', e.target.value);
-    server.emit('fonts', e.target.value);
   });
 
   server.on('query-config', config => {
     console.log(config);
-    $('#use-book-text-color').checked = config["use-book-text-color"];
+    $('#use-custom-text-color').checked = config["use-custom-text-color"];
+    $('#use-custom-font-family').checked = config["use-custom-font-family"];
     $('#title').value = config.title;
     $('#fonts').value = config.fonts;
-    document.body.className = 
-      [].concat(
-        config.theme,
-        config["use-book-text-color"] ? [] : ["use-custom-text-color"])
-      .join(" ");
+  });
+  server.on('config-change', config => {
+    document.body.className = config.theme;
   });
   server.remote('query-config');
 }

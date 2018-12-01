@@ -3,7 +3,6 @@
 .use-custom-text-color {
   color: var(--font-color2);
 }
-
-/* TODO use book defaults or custom fonts
-font-family: var(--font-family) !important;
-*/
+.use-custom-font-family * {
+  font-family: var(--font-family) !important;
+}

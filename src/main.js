@@ -18,6 +18,8 @@ const config = DataStore('xepub', 'config', {
   theme: 'white',
   title: '',
   fonts: '',
+  'use-custom-text-color': true,
+  'use-custom-font-family': false,
 });
 
 const getRandomString = () => {
@@ -176,14 +178,20 @@ module.exports = async (file, { keep, port, maxUser }) => {
       // request to save modified configurations
       client.on('config', (type, value) => {
         config.set(type, value);
+        client.remote('config-change', config.get());
       });
 
-      // config.html page request currect configurations
+      // config.html page request for current configurations
       client.on('query-config', () => {
         client.remote('query-config', config.get());
       });
 
-      // emit client to start parsing file
+      // main page request for initalize the configurations
+      client.on('load-config', () => {
+        client.remote('config-change', config.get());
+      });
+
+      // emit client to start load the file
       client.remote('init', epub);
 
     });

@@ -182,7 +182,8 @@ const keyUpEvent = (e) => {
 window.addEventListener('keydown', keyDownEvent);
 window.addEventListener('keyup', keyUpEvent);
 
-let global_font = '';
+let globalFont = '';
+let camouflageTitle = '';
 
 // on load iframe
 $('iframe').addEventListener('load', (e) => {
@@ -202,8 +203,8 @@ $('iframe').addEventListener('load', (e) => {
   if (nowindex > -1) {
     obj.contentWindow.document.head.innerHTML += '<style>img{max-width:100%;user-select:none;}</style>';
     obj.contentWindow.document.head.innerHTML += '<link rel="stylesheet" type="text/css" href="/xepub/page.css"/>';
-    if (global_font) {
-      obj.contentWindow.document.head.innerHTML += `<style>:root{--font-family:${global_font},sans-serif;}</style>`;
+    if (globalFont) {
+      obj.contentWindow.document.head.innerHTML += `<style>:root{--font-family:${globalFont},sans-serif;}</style>`;
     }
   }
   document.body.className.split(' ').forEach((cls) => {
@@ -337,18 +338,19 @@ server.on('progress', (progress) => {
   }
 });
 
-let camouflageTitle = '';
-
-server.on('query-config', config => {
+server.on('config-change', config => {
+  console.log(config);
   camouflageTitle = config.title;
-  global_font = config.fonts;
-  document.body.className = 
-    [].concat(
-      config.theme,
-      config["use-book-text-color"] ? [] : ["use-custom-text-color"])
-    .join(" ");
+  globalFont = config.fonts;
+  document.body.className = config.theme;
+  if (config['use-custom-text-color']) {
+    document.body.classList.add('use-custom-text-color');
+  }
+  if (config['use-custom-font-family']) {
+    document.body.classList.add('use-custom-font-family');
+  }
 });
-server.remote('query-config');
+server.remote('load-config');
 
 const saveProgress = () => {
   // maybe on setting page
