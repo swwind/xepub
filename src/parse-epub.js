@@ -54,7 +54,7 @@ module.exports = async (tmpdir) => {
   const manifest = {};
 
   content.package.manifest[0].item.forEach(({ $ }) => {
-    manifest[$.id] = path.join(path.dirname(rootfile), $.href).replace('\\', '/');
+    manifest[$.id] = path.join(path.dirname(rootfile), $.href).replace(/\\/g, '/');
   });
 
   const spine = [];
@@ -72,7 +72,7 @@ module.exports = async (tmpdir) => {
   toc.ncx.navMap[0].navPoint.forEach((navPoint) => {
     const label = getText(navPoint, ['navLabel', 0, 'text', 0]);
     const src = '/' + path.join(path.dirname(tocfilename),
-        getText(navPoint, ['content', 0, '$', 'src'])).replace('\\', '/');
+        getText(navPoint, ['content', 0, '$', 'src'])).replace(/\\/g, '/');
     navMap.push({ label, src });
   });
 
