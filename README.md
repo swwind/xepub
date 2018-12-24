@@ -1,7 +1,7 @@
 xepub
 =====
 
-A lightweight epub reader.
+A lightweight epub reader(need a browser).
 
 [![oclif](https://img.shields.io/badge/cli-oclif-brightgreen.svg)](https://oclif.io)
 [![Version](https://img.shields.io/npm/v/xepub.svg)](https://npmjs.org/package/xepub)
@@ -25,15 +25,20 @@ Flag         | Char | Description
 `--port`     | `-p` | port you want to open [default: 15635+]
 `--version`  | `-v` | show xepub version
 
+### Keys
+
+```plain
+      ^
+      k
+< h       l >
+      j
+      v
+```
+
 ## Feature
 
 - Lightweight (~4.7MB with all dependencies)
 - Cross-platform
-
-## TODO
-
-- [x] global font
-- [x] night mode
 
 ## License
 
