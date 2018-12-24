@@ -327,14 +327,14 @@ const init = (_epub) => {
     menu.appendChild(div);
   });
 
-  server.remote('progress');
+  server.remote('progress', title);
 }
 
 server.on('init', init);
 server.on('progress', (_progress) => {
-  progress = _progress[title];
+  progress = _progress;
   console.log(progress);
-  if (progress) {
+  if (progress.now) {
     jumpToSrc(progress.now, progress.pages[progress.now]);
   } else {
     jumpToSrc(spine[0], 0);

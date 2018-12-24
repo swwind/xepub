@@ -179,8 +179,11 @@ module.exports = async (file, { keep, port, maxUser }) => {
       });
 
       // request to load progress
-      client.on('progress', () => {
-        client.remote('progress', store.get());
+      client.on('progress', (title) => {
+        if (!store.get(title)) {
+          store.set(title, { pages: {}, now: '' });
+        }
+        client.remote('progress', store.get(title));
       });
 
       // request to save modified configurations
