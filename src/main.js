@@ -87,7 +87,11 @@ module.exports = async (file, { keep, port, maxUser }) => {
   const tmpdir = path.resolve(os.tmpdir(), 'xepub', getRandomString());
 
   if (!fs.existsSync(filepath)) {
-    console.error('File not found');
+    console.error(`xepub: cannot open '${file}': No such file or directory`);
+    process.exit(1);
+  }
+  if (fs.lstatSync(filepath).isDirectory()) {
+    console.error(`xepub: cannot open '${file}': Is a directory`);
     process.exit(1);
   }
 
@@ -107,7 +111,7 @@ module.exports = async (file, { keep, port, maxUser }) => {
   } catch (e) {
     console.error(e);
     timer.func();
-    process.exit(2);
+    process.exit(1);
   }
 
 
@@ -118,7 +122,7 @@ module.exports = async (file, { keep, port, maxUser }) => {
   } catch (e) {
     console.error(e);
     timer.func();
-    process.exit(3);
+    process.exit(1);
   }
 
   console.log('Parsing epub files...');
@@ -129,7 +133,7 @@ module.exports = async (file, { keep, port, maxUser }) => {
   } catch (e) {
     console.error(e);
     timer.func();
-    process.exit(4);
+    process.exit(1);
   }
 
   console.log('Setting up http and websocket server...');
@@ -167,7 +171,11 @@ module.exports = async (file, { keep, port, maxUser }) => {
 
       // request to save progress
       client.on('save', (name, page, top) => {
-        store.set(name, { page, top });
+        let obj = store.get(name);
+        if (!obj) obj = { pages: {}, now: page };
+        obj.pages[page] = top;
+        obj.now = page;
+        store.set(name, obj);
       });
 
       // request to load progress
@@ -199,8 +207,14 @@ module.exports = async (file, { keep, port, maxUser }) => {
     server.listen(port);
 
     const url = 'http://localhost:' + port;
-    console.log('opening ' + url);
-    opn(url);
+    if (!keep) {
+      // start as self reading
+      console.log('Opening ' + url);
+      opn(url);
+    } else {
+      // start as network server
+      console.log('Listening on ' + url);
+    }
 
   } catch (e) {
     // delete tmpdir

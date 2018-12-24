@@ -39,6 +39,7 @@ const socket = (ws) => {
 let spine = [];
 let nowindex = 0;
 let epub = {};
+let progress = {};
 
 let title = '';
 const setTitle = (title) => {
@@ -267,6 +268,7 @@ const jumpToId = (id) => {
 
 // jump to page src with scrollTop = top
 const jumpToSrc = (src, top) => {
+  top = top || progress.pages[src] || 0;
 
   const iframe = $('iframe');
 
@@ -329,12 +331,13 @@ const init = (_epub) => {
 }
 
 server.on('init', init);
-server.on('progress', (progress) => {
+server.on('progress', (_progress) => {
+  progress = _progress[title];
   console.log(progress);
-  if (progress[title]) {
-    jumpToSrc(progress[title].page, progress[title].top);
+  if (progress) {
+    jumpToSrc(progress.now, progress.pages[progress.now]);
   } else {
-    jumpToSrc(spine[0]);
+    jumpToSrc(spine[0], 0);
   }
 });
 
