@@ -111,7 +111,7 @@
     </div>
     <button>Back</button>
     <script type="text/javascript">
-      window.__xepub_load = (server, epub) => {
+      window.__xepub_load = (server, epub, back) => {
         Array.from(document.querySelectorAll('.value')).forEach((item) => {
           const text = epub.metadata[item.getAttribute('data-name')];
           if (text) {
@@ -120,9 +120,7 @@
             item.parentNode.remove();
           }
         });
-        document.querySelector('button').addEventListener('click', (e) => {
-          server.remote('progress');
-        });
+        document.querySelector('button').addEventListener('click', back);
       }
     </script>
   </body>

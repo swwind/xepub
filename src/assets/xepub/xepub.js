@@ -220,7 +220,9 @@ $('iframe').addEventListener('load', (e) => {
   }
   // config page need `server` object
   if (obj.contentWindow.__xepub_load) {
-    obj.contentWindow.__xepub_load(server, epub);
+    obj.contentWindow.__xepub_load(server, epub, () => {
+      server.remote('progress', title);
+    });
   }
   Array.from(obj.contentWindow.document.querySelectorAll('a[href]')).forEach((item) => {
     const href = item.getAttribute('href');

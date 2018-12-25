@@ -120,10 +120,8 @@
 const $ = (id) => document.querySelector(id);
 const $$ = (id) => Array.from(document.querySelectorAll(id));
 
-window.__xepub_load = (server, epub) => {
-  $('#back').addEventListener('click', () => {
-    server.remote('progress');
-  });
+window.__xepub_load = (server, epub, back) => {
+  $('#back').addEventListener('click', back);
   $('#use-custom-text-color').addEventListener('change', e => {
     server.remote('config', 'use-custom-text-color', e.target.checked);
   });
