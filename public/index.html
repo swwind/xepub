@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <title>Xepub</title>
+    <link rel="stylesheet" href="/css/materialize.min.css" />
+    <link rel="stylesheet" href="/css/xepub.css" />
+    <link href="https://fonts.loli.net/icon?family=Material+Icons" rel="stylesheet">
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+
+    <nav class="blue header">
+      <div class="nav-wrapper container">
+        <span class="brand-logo left">Xepub</span>
+      </div>
+      <!-- <img src="/img/logo.svg" alt="logo" class="logo" height="30" width="30"> -->
+    </nav>
+    <div class="inner">
+      <div class="container">
+        <div id="top"></div>
+        <div class="content"></div>
+      </div>
+    </div>
+
+    <ul id="bookmark-sidenav" class="sidenav collapsible collapsible-accordion">
+      <li><a class="subheader">Bookmarks</a></li>
+    </ul>
+
+    <div class="fixed-action-btn">
+      <a class="btn-floating btn-large red waves-effect">
+        <i class="large material-icons">menu</i>
+      </a>
+      <ul>
+        <li><a class="tooltipped btn-floating red" data-position="left" data-tooltip="Settings" id="settings"><i class="material-icons">settings</i></a></li>
+        <li><a class="tooltipped btn-floating green" data-position="left" data-tooltip="Infomations" id="info"><i class="material-icons">info</i></a></li>
+        <li><a class="tooltipped btn-floating blue" data-position="left" data-tooltip="Bookmarks" id="bookmark"><i class="material-icons">bookmark</i></a></li>
+        <li><a class="tooltipped btn-floating yellow" data-position="left" data-tooltip="To Top" href="#top" id="totop"><i class="material-icons">arrow_upward</i></a></li>
+      </ul>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/materialize.min.js"></script>
+    <script src="/js/xepub.min.js"></script>
+  </body>
+</html>

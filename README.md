@@ -1,47 +1,27 @@
-xepub
-=====
+# Xepub
 
-A lightweight epub reader(need a browser).
+Xepub is a lightwight cross-platform epub reader written in NodeJS, which need a modern browser like *Google Chrome* or *Firefox*.
 
-[![oclif](https://img.shields.io/badge/cli-oclif-brightgreen.svg)](https://oclif.io)
-[![Version](https://img.shields.io/npm/v/xepub.svg)](https://npmjs.org/package/xepub)
-[![Downloads/week](https://img.shields.io/npm/dw/xepub.svg)](https://npmjs.org/package/xepub)
-[![License](https://img.shields.io/npm/l/xepub.svg)](https://github.com/swwind/xepub/blob/master/package.json)
+It opens a http service so as to diliver contents to browser.
+
+## Install
+
+```bash
+npm install -g xepub
+# or
+yarn global add xepub
+```
 
 ## Usage
 
 ```bash
-npm install xepub -g
-xepub my_novel.epub -p 2333
+xepub [options] mybook.epub
 ```
 
-### Arguments
+Avaliable options:
 
-Flag         | Char | Description
------------- | ---- | --------------------------------------------
-`--help`     | `-h` | show this help
-`--keep`     | `-k` | disable auto close when no people was online
-`--max-user` |      | max online user [default: 1]
-`--port`     | `-p` | port you want to open [default: 15635+]
-`--version`  | `-v` | show xepub version
-
-### Keys
-
-```plain
-      ^
-      k
-< h       l >
-      j
-      v
-```
-
-## Feature
-
-- Lightweight (~4.7MB with all dependencies)
-- Cross-platform
-
-## License
-
-MIT
-
-
+name | default | usage
+---- | ------- | ---------
+`-p` | 23333   | http port
+`-6` |         | use ipv6
+`-o` |         | open browser automaticly

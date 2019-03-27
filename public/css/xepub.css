@@ -1,0 +1,33 @@
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+}
+
+.inner {
+  width: 100vw;
+  margin: 100px 0;
+}
+
+.content img {
+  max-width: 100%;
+}
+
+body {
+  overflow-x: hidden;
+  overflow-y: scroll;
+}
+
+.content.open {
+  opacity: 1;
+  visibility: visible;
+  transition: all 1s;
+}
+.content {
+  opacity: 0;
+  visibility: hidden;
+  transition: all 1s;
+}
+
+

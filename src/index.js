@@ -1,41 +1,60 @@
 'use strict';
 
-const tcpPortUsed = require('tcp-port-used');
-const { Command, flags } = require('@oclif/command');
+import * as SmoothScroll from 'smooth-scroll';
+import createMenu from './createMenu';
+import loadUrl from './loadUrl';
 
-const main = require('./main.js');
+const socket = io();
+const $ = name => document.querySelector(name);
+const $$ = name => document.querySelectorAll(name);
 
-const getFreePort = async (port) => {
-  for (let i = port; i < 65535; ++ i) {
-    const isUse = await tcpPortUsed.check(i, '127.0.0.1');
-    if (!isUse) return i;
+const sidenav = M.Sidenav.init($('.sidenav'));
+M.FloatingActionButton.init($('.fixed-action-btn'));
+M.Tooltip.init($$('.tooltipped'));
+
+new SmoothScroll('a[href*="#"]', {
+  speed: 150,
+  offset: 100
+});
+
+$('#bookmark').addEventListener('click', (e) => {
+  sidenav.open();
+});
+
+socket.on('initialize', (epub) => {
+  window.epub = epub;
+
+  // create the menu
+  createMenu(epub.navMap, $('#bookmark-sidenav'), sidenav);
+  // I don't need to active collapsible any more
+  // M.Collapsible.init($$('.collapsible'));
+
+  loadUrl(epub.spine[0]);
+});
+socket.on('disconnect', (e) => {
+  M.toast({ html: 'Lost connection, you need to keep your xepub running background' });
+});
+let connected = false;
+socket.on('connect', () => {
+  if (connected) {
+    // flush window if reconnected
+    window.location = window.location;
   }
-  throw new Error('No free port avalible.');
+  connected = true;
+});
+
+document.onscroll = () => {
+  const imgs = Array.from(document.querySelectorAll('img[data-src]'));
+  imgs.forEach((img) => {
+    if (img.getBoundingClientRect().top < window.innerHeight + 100) {
+      img.setAttribute('src', img.getAttribute('data-src'));
+      img.removeAttribute('data-src');
+      img.setAttribute('alt', img.getAttribute('data-alt'));
+      img.removeAttribute('data-alt');
+      img.onload = () => {
+        img.removeAttribute('style');
+      }
+    }
+  })
 }
 
-class XepubCommand extends Command {
-  async run() {
-
-    const { flags, argv } = this.parse(XepubCommand);
-    const port = flags.port || await getFreePort(15635);
-    const keep = flags.keep;
-    const maxUser = flags['max-user'];
-    const file = argv[0];
-
-    main(file, { keep, port, maxUser });
-
-  }
-}
-
-XepubCommand.description = `A lightweight epub reader`;
-XepubCommand.usage = `[OPTIONS] FILE`;
-XepubCommand.args = [ { name: 'file', required: true } ];
-XepubCommand.flags = {
-  version: flags.version({char: 'v', description: 'show xepub version'}),
-  help: flags.help({char: 'h', description: 'show this help'}),
-  port: flags.integer({char: 'p', description: 'port you want to open'}),
-  keep: flags.boolean({char: 'k', description: 'disable auto close when no people was online'}),
-  'max-user': flags.integer({description: 'max online user', default: 1}),
-}
-
-module.exports = XepubCommand;

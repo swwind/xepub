@@ -1,8 +1,0 @@
-@import url("./colors.css");
-
-.use-custom-text-color {
-  color: var(--font-color2);
-}
-.use-custom-font-family * {
-  font-family: var(--font-family) !important;
-}
