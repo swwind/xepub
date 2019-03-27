@@ -1,8 +1,9 @@
 'use strict';
 
-import * as SmoothScroll from 'smooth-scroll';
 import createMenu from './createMenu';
 import loadUrl from './loadUrl';
+import { update } from './lazyload';
+import { scrollTo } from './animate';
 
 const socket = io();
 const $ = name => document.querySelector(name);
@@ -12,13 +13,11 @@ const sidenav = M.Sidenav.init($('.sidenav'));
 M.FloatingActionButton.init($('.fixed-action-btn'));
 M.Tooltip.init($$('.tooltipped'));
 
-new SmoothScroll('a[href*="#"]', {
-  speed: 150,
-  offset: 100
-});
-
 $('#bookmark').addEventListener('click', (e) => {
   sidenav.open();
+});
+$('#totop').addEventListener('click', (e) => {
+  scrollTo(0);
 });
 
 socket.on('initialize', (epub) => {
@@ -31,9 +30,11 @@ socket.on('initialize', (epub) => {
 
   loadUrl(epub.spine[0]);
 });
+
 socket.on('disconnect', (e) => {
-  M.toast({ html: 'Lost connection, you need to keep your xepub running background' });
+  M.toast({ html: 'Lost connection, you need to keep xepub running in background' });
 });
+
 let connected = false;
 socket.on('connect', () => {
   if (connected) {
@@ -43,18 +44,6 @@ socket.on('connect', () => {
   connected = true;
 });
 
-document.onscroll = () => {
-  const imgs = Array.from(document.querySelectorAll('img[data-src]'));
-  imgs.forEach((img) => {
-    if (img.getBoundingClientRect().top < window.innerHeight + 100) {
-      img.setAttribute('src', img.getAttribute('data-src'));
-      img.removeAttribute('data-src');
-      img.setAttribute('alt', img.getAttribute('data-alt'));
-      img.removeAttribute('data-alt');
-      img.onload = () => {
-        img.removeAttribute('style');
-      }
-    }
-  })
-}
+window.onscroll = update;
+window.onresize = update;
 

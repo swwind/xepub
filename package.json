@@ -1,6 +1,6 @@
 {
-  "name": "xepubg",
-  "version": "0.1.0",
+  "name": "xepub",
+  "version": "1.0.0-alpha.1",
   "private": true,
   "dependencies": {
     "adm-zip": "^0.4.13",
@@ -11,11 +11,10 @@
     "materialize-css": "^1.0.0-rc.2",
     "opn": "^5.5.0",
     "rimraf": "^2.6.3",
-    "smooth-scroll": "^16.0.0",
     "socket.io": "^2.2.0"
   },
   "bin": {
-    "xepubg": "./bin/run"
+    "xepub": "./bin/run"
   },
   "scripts": {
     "dev": "webpack --watch",

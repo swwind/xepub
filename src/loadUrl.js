@@ -1,12 +1,14 @@
 'use strict';
 
 import * as path from 'path';
+import { encode, update } from './lazyload';
+import * as URL from 'url';
+import { flyToElement } from './animate';
 
 const elem = document.querySelector('.content');
 
 const resolvePath = (dir) => (html) => {
-  // console.log(html);
-  const regex = /(href|src)="([^"]+)"/gi;
+  const regex = /(href|src)="((?!https?:\/\/)[\s\S]+?)"/gi;
   return html.replace(regex, (match) => {
     regex.lastIndex = 0;
     const res = regex.exec(match);
@@ -16,41 +18,28 @@ const resolvePath = (dir) => (html) => {
 const removeAll = (elems) => {
   Array.from(elems).forEach((elem) => elem.remove());
 }
-const levelUp = (elems, target) => {
+const replaceTag = (elems, target) => {
   Array.from(elems).forEach((elem) => {
     const div = document.createElement(target);
     div.textContent = elem.textContent;
     elem.parentNode.replaceChild(div, elem);
   })
 }
-const lazyload = (elems) => {
-  Array.from(elems).forEach((elem) => {
-    const src = elem.getAttribute('src');
-    const size = window.epub.sizes[src];
-    if (size) {
-      elem.setAttribute('data-src', src);
-      elem.setAttribute('data-alt', elem.getAttribute('alt'));
-      elem.removeAttribute('src');
-      elem.removeAttribute('alt');
-      elem.style.width = size.width + 'px';
-      elem.style.height = size.height + 'px';
-    } else {
-      console.warn('image not find ' + src);
-    }
-  })
-}
 const removeCSS = (html) => {
   const div = document.createElement('div');
   div.innerHTML = html;
+  // remove all custom style
   removeAll(div.querySelectorAll('style'));
   removeAll(div.querySelectorAll('link[rel="stylesheet"]'));
+  // remove title element
   removeAll(div.querySelectorAll('title'));
+  // remove all <meta/> tag
   removeAll(div.querySelectorAll('meta'));
-  // reduce head tag
+  // smaller header
   for (let i = 3; i; -- i) {
-    levelUp(div.querySelectorAll('h' + i), 'h' + (i + 3));
+    replaceTag(div.querySelectorAll('h' + i), 'h' + (i + 3));
   }
-  lazyload(div.querySelectorAll('img[src]'));
+  encode(div.querySelectorAll('img[src]'));
   return div.innerHTML;
 }
 
@@ -60,22 +49,31 @@ const setScrollTop = (top) => {
 }
 
 const loadUrl = (url) => {
+  console.log('switching to ' + url);
+  const { pathname, hash } = URL.parse(url);
+  if (window.epub.nowpage === pathname) {
+    flyToElement(hash);
+    return;
+  }
   Promise.all([
     // animation
-    new Promise((resolve, reject) => {
+    new Promise((resolve) => {
       elem.classList.remove('open');
       setTimeout(resolve, 1000);
     }),
     // fetch content
-    fetch(url)
+    fetch(pathname)
       .then(res => res.text())
       .then(resolvePath(path.dirname(url)))
       .then(removeCSS)
   ]).then(([_, html]) => {
+    window.epub.nowpage = pathname;
     setScrollTop(0);
     elem.innerHTML = html;
-    document.onscroll();
+    update();
     elem.classList.add('open');
+
+    setTimeout(flyToElement, 500, hash);
   })
 }
 

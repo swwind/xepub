@@ -1,4 +1,4 @@
-const colors = require('colors');
+require('colors');
 
 const flags = {
   unstable: false,
@@ -15,14 +15,14 @@ const info = (message) => {
 }
 const unstable = () => {
   if (!flags.unstable) {
-    warn('This book has some problem while parsing...');
+    warn('This book has some problems while parsing...');
     warn('I can not ensure whether xepub can deal it proper or not.');
     flags.unstable = true;
   }
 }
 const broken = () => {
   if (!flags.broken) {
-    error('This is book is broken!!!');
+    error('This book is almost broken!!!');
     error('Xepub may crash.');
     flags.broken = true;
   }
