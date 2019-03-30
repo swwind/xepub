@@ -1,7 +1,7 @@
 'use strict';
 
-import createMenu from './createMenu';
-import loadUrl from './loadUrl';
+import createMenu from './create-menu';
+import loadUrl from './load-url';
 import { update } from './lazyload';
 import { scrollTo } from './animate';
 
@@ -20,6 +20,12 @@ $('#totop').addEventListener('click', (e) => {
   scrollTo(0);
 });
 
+const setTitle = (title) => {
+  $('.brand-logo').textContent = title;
+  $('.brand-logo').setAttribute('title', title);
+  $('title').textContent = title;
+}
+
 socket.on('initialize', (epub) => {
   window.epub = epub;
 
@@ -29,6 +35,8 @@ socket.on('initialize', (epub) => {
   // M.Collapsible.init($$('.collapsible'));
 
   loadUrl(epub.spine[0]);
+
+  setTitle(epub.docTitle || epub.metadata.title || 'Xepub');
 });
 
 socket.on('disconnect', (e) => {

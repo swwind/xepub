@@ -1,3 +1,7 @@
+/*
+Lazy load all images in manifest
+*/
+
 export const encode = (elem) => {
 
   if (elem.length !== undefined) {
@@ -15,7 +19,8 @@ export const encode = (elem) => {
       elem.removeAttribute('alt');
     }
     elem.style.width = size.width + 'px';
-    elem.style.height = size.height + 'px';
+    elem.style.paddingBottom = (size.height / size.width * 100) + '%';
+    elem.style.backgroundColor = '#dcdcdc';
   } else {
     console.warn('image not in manifest: ' + src);
   }

@@ -9,6 +9,8 @@ const options = (args) => {
     port: 23333,
     ipv6: false,
     open: false,
+    help: false,
+    version: false,
     source: [],
   };
   for (let i = 0; i < args.length; ++ i) {
@@ -22,6 +24,14 @@ const options = (args) => {
     }
     if (args[i] === '-o' || args[i] === '--open') {
       res.open = true;
+      continue;
+    }
+    if (args[i] === '-h' || args[i] === '--help') {
+      res.help = true;
+      continue;
+    }
+    if (args[i] === '-v' || args[i] === '--version') {
+      res.version = true;
       continue;
     }
     res.source.push(args[i]);

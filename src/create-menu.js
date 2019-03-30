@@ -1,6 +1,8 @@
-'use strict';
+/*
+Create bookmark element
+*/
 
-import loadUrl from './loadUrl';
+import loadUrl from './load-url';
 
 const createMenu = (nav, elem, sidenav) => {
 

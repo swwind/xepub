@@ -13,17 +13,17 @@ const resolvePath = (absolute, filename) => {
  * Request for a value in an XML object safely
  */
 const safeQuery = (xml) => {
-  // if defaults provided, means it is not a required value
-  // otherwise it will invoke `alert.broken`
+  // if defaults provided, means it is not a required value in an XML file
+  // otherwise it will invoke `alert.unstable`
   return (arr, defaults) => {
-    const fix = (res) => {
+    const fixString = (res) => {
       if (res === undefined) return res;
       if (res.hasOwnProperty('#text')) {
         return res['#text'];
       }
       return res;
     }
-    const res = fix(arr.reduce((obj, key) => {
+    const res = fixString(arr.reduce((obj, key) => {
       if (!obj) return obj;
       return obj[key];
     }, xml));
@@ -100,7 +100,7 @@ module.exports = (zip) => {
 
   const spine = content(['package', 'spine', 'itemref']).map(safeQuery).map((itemref) => {
     const idref = itemref(['$attr', 'idref']);
-    if (!manifest[idref]) alert.broken();
+    if (!manifest[idref]) alert.unstable();
     return manifest[idref];
   });
 

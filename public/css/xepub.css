@@ -32,4 +32,9 @@ body {
   transition: all .5s ease-in-out;
 }
 
-
+.brand-logo {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  width: 100%;
+}

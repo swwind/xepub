@@ -1,24 +1,35 @@
 'use strict';
 
-const os = require('os');
 const fs = require('fs');
 const opn = require('opn');
 const path = require('path');
 const http = require('http');
-const rimraf = require('rimraf');
 const AdmZip = require('adm-zip');
 const express = require('express');
 const socketio = require('socket.io');
 const alert = require('./backend/alert');
+const packages = require('./package.json');
 const options = require('./backend/options');
+const serveZip = require('./backend/serve-zip');
 const EpubParser = require('./backend/epub-parser');
 
 const here = (name) => path.join(__dirname, name);
 
 const option = options(process.argv.slice(2));
+
+if (option.help) {
+  console.log(fs.readFileSync(path.resolve(__dirname, 'backend/help.txt'), 'utf-8'));
+  process.exit(0);
+}
+
+if (option.version) {
+  alert.info('Xepub version v' + packages.version);
+  process.exit(0);
+}
+
 const epubname = option.source[0];
 if (!epubname || !fs.existsSync(epubname)) {
-  alert.error('File not found');
+  alert.error('File not found, try `xepub --help`');
   process.exit(1);
 }
 
@@ -31,43 +42,21 @@ if (zip.readAsText('mimetype').trim() !== 'application/epub+zip') {
 alert.info('Parsing file...');
 
 const epub = EpubParser(zip);
-const tmpdir = path.resolve(os.tmpdir(), 'xepub', Math.random().toString(36).slice(2));
 
-alert.info('Extracting files...');
+const app = express();
+app.use(express.static(here('node_modules/materialize-css/dist')));
+app.use(express.static(here('public')));
+app.use(serveZip(zip));
 
-zip.extractAllTo(tmpdir);
+const server = http.createServer(app);
+const io = socketio(server);
+io.on('connect', (socket) => {
+  socket.emit('initialize', epub);
+});
+server.listen(option.port);
+const url = `http://${option.ipv6 ? '[::1]' : '127.0.0.1'}:${option.port}`;
+alert.info(`All finished, listening on ${url}`);
 
-const exit = (code) => {
-  if (!code) {
-    alert.newline();
-    alert.info('Gracefully shutting down... Please wait...');
-  }
-  rimraf(tmpdir, () => {
-    process.exit(code);
-  });
-}
-
-try {
-
-  const app = express();
-  app.use(express.static(here('node_modules/materialize-css/dist')));
-  app.use(express.static(here('public')));
-  app.use(express.static(tmpdir));
-
-  const server = http.createServer(app);
-  const io = socketio(server);
-  io.on('connect', (socket) => {
-    socket.emit('initialize', epub);
-  });
-  server.listen(option.port);
-  const url = `http://${option.ipv6 ? '[::1]' : '127.0.0.1'}:${option.port}`;
-  alert.info(`All finished, listening on ${url}`);
-
-  if (option.open) {
-    opn(url);
-  }
-
-  process.on('SIGINT', () => exit(0));
-} catch (e) {
-  exit(1);
+if (option.open) {
+  opn(url);
 }

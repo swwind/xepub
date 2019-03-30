@@ -1,3 +1,7 @@
+/*
+Scrolling animations
+*/
+
 const getScrollTop = () => {
   return document.documentElement.scrollTop || document.body.scrollTop;
 }
@@ -38,4 +42,21 @@ export const flyToElement = (el) => {
   const target = getScrollTop() + elem.getBoundingClientRect().top;
 
   scrollTo(target - 100);
+}
+
+export const flyToElementImmediately = (el) => {
+
+  if (!el) {
+    setScrollTop(0);
+    return;
+  }
+
+  const elem = document.querySelector(el);
+  if (!elem) {
+    setScrollTop(0);
+    return;
+  }
+  const target = getScrollTop() + elem.getBoundingClientRect().top;
+
+  setScrollTop(target - 100);
 }

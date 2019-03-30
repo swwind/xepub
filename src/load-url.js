@@ -1,9 +1,15 @@
-'use strict';
+/*
+Load page
+
+feature:
+- removes all custom css
+- replace all relative path to absolute url
+*/
 
 import * as path from 'path';
 import { encode, update } from './lazyload';
 import * as URL from 'url';
-import { flyToElement } from './animate';
+import { flyToElement, flyToElementImmediately } from './animate';
 
 const elem = document.querySelector('.content');
 
@@ -28,6 +34,11 @@ const replaceTag = (elems, target) => {
 const removeCSS = (html) => {
   const div = document.createElement('div');
   div.innerHTML = html;
+
+  if (div.querySelector('body')) {
+    return removeCSS(div.querySelector('body').innerHTML);
+  }
+
   // remove all custom style
   removeAll(div.querySelectorAll('style'));
   removeAll(div.querySelectorAll('link[rel="stylesheet"]'));
@@ -41,11 +52,6 @@ const removeCSS = (html) => {
   }
   encode(div.querySelectorAll('img[src]'));
   return div.innerHTML;
-}
-
-const setScrollTop = (top) => {
-  document.body.scrollTop = top; // For Safari
-  document.documentElement.scrollTop = top; // For Chrome, Firefox, IE and Opera
 }
 
 const loadUrl = (url) => {
@@ -68,12 +74,10 @@ const loadUrl = (url) => {
       .then(removeCSS)
   ]).then(([_, html]) => {
     window.epub.nowpage = pathname;
-    setScrollTop(0);
     elem.innerHTML = html;
+    flyToElementImmediately(hash);
     update();
     elem.classList.add('open');
-
-    setTimeout(flyToElement, 500, hash);
   })
 }
 

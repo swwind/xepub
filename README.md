@@ -18,10 +18,12 @@ yarn global add xepub
 xepub [options] mybook.epub
 ```
 
-Avaliable options:
+Available options:
 
-name           | default | usage
--------------- | ------- | ------------------------
-`-p`, `--port` | 23333   | http port
-`-6`, `--ipv6` |         | use ipv6(fake)
-`-o`, `--open` |         | open browser automaticly
+name              | default | usage
+----------------- | ------- | ---------------------------
+`-p`, `--port`    | 23333   | http port
+`-6`, `--ipv6`    |         | use ipv6 (fake)
+`-o`, `--open`    |         | open browser automaticly
+`-h`, `--help`    |         | show help document and exit
+`-v`, `--version` |         | show xepub version and exit

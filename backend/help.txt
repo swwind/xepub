@@ -1,0 +1,24 @@
+xepub - a lightweight epub reader
+
+USAGE
+
+  $ xepub [options] [file]
+
+  Alavilable options:
+
+  -p, --port               http port (default 23333)
+  -6, --ipv6               use ipv6 (fake)
+  -o, --open               open browser automaticly
+  -h, --help               show help document and exit
+  -v, --version            show xepub version and exit
+
+EXAMPLE
+
+  $ xepub --version
+  $ xepub erohon.epub
+  $ xepub -o -6 erohon.epub
+  $ xepub -p 4000 erohon.epub
+
+CONTRIBUTOR
+
+  - swwind <swwind233@gmail.com>
