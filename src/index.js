@@ -12,6 +12,7 @@ const $$ = name => document.querySelectorAll(name);
 const sidenav = M.Sidenav.init($('.sidenav'));
 M.FloatingActionButton.init($('.fixed-action-btn'));
 M.Tooltip.init($$('.tooltipped'));
+const infoModal = M.Modal.init($('.modal'));
 
 $('#bookmark').addEventListener('click', (e) => {
   sidenav.open();
@@ -19,11 +20,17 @@ $('#bookmark').addEventListener('click', (e) => {
 $('#totop').addEventListener('click', (e) => {
   scrollTo(0);
 });
+$('#info').addEventListener('click', (e) => {
+  infoModal.open();
+});
 
 const setTitle = (title) => {
   $('.brand-logo').textContent = title;
   $('.brand-logo').setAttribute('title', title);
   $('title').textContent = title;
+}
+const upperFirst = (str) => {
+    return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
 socket.on('initialize', (epub) => {
@@ -31,12 +38,22 @@ socket.on('initialize', (epub) => {
 
   // create the menu
   createMenu(epub.navMap, $('#bookmark-sidenav'), sidenav);
-  // I don't need to active collapsible any more
-  // M.Collapsible.init($$('.collapsible'));
 
   loadUrl(epub.spine[0]);
 
   setTitle(epub.docTitle || epub.metadata.title || 'Xepub');
+
+  // fill infomations
+  for (const key of Object.keys(epub.metadata)) {
+    const value = epub.metadata[key];
+    if (!value) continue;
+    const td1 = document.createElement('h5');
+    td1.textContent = upperFirst(key);
+    $('.info-add').append(td1);
+    const td2 = document.createElement('p');
+    td2.textContent = value;
+    $('.info-add').append(td2);
+  }
 });
 
 socket.on('disconnect', (e) => {
