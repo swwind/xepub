@@ -1,9 +1,10 @@
 'use strict';
 
 import createMenu from './create-menu';
-import loadUrl from './load-url';
+import { loadUrl, nextPage, prevPage } from './loader';
 import { update } from './lazyload';
 import { scrollTo } from './animate';
+import * as Key from './key-events';
 
 const socket = io();
 const $ = name => document.querySelector(name);
@@ -57,7 +58,7 @@ socket.on('initialize', (epub) => {
 });
 
 socket.on('disconnect', (e) => {
-  M.toast({ html: 'Lost connection, you need to keep xepub running in background' });
+  M.toast({ html: 'Server closed' });
 });
 
 let connected = false;
@@ -68,6 +69,9 @@ socket.on('connect', () => {
   }
   connected = true;
 });
+
+Key.on('d', 'ArrowRight', nextPage);
+Key.on('a', 'ArrowLeft', prevPage);
 
 window.onscroll = update;
 window.onresize = update;

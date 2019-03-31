@@ -54,7 +54,7 @@ const removeCSS = (html) => {
   return div.innerHTML;
 }
 
-const loadUrl = (url) => {
+export const loadUrl = (url) => {
   console.log('switching to ' + url);
   const { pathname, hash } = URL.parse(url);
   if (window.epub.nowpage === pathname) {
@@ -81,4 +81,27 @@ const loadUrl = (url) => {
   })
 }
 
-export default loadUrl;
+export const prevPage = () => {
+  const now = window.epub.spine.indexOf(window.epub.nowpage);
+  if (now === -1) {
+    console.error('Not exist page');
+    return;
+  }
+  if (now > 0) {
+    loadUrl(window.epub.spine[now - 1]);
+  } else {
+    M.toast({ html: 'This is the first page!' });
+  }
+}
+export const nextPage = () => {
+  const now = window.epub.spine.indexOf(window.epub.nowpage);
+  if (now === -1) {
+    console.error('Not exist page');
+    return;
+  }
+  if (now < window.epub.spine.length - 1) {
+    loadUrl(window.epub.spine[now + 1]);
+  } else {
+    M.toast({ html: 'This is the last page!' });
+  }
+}

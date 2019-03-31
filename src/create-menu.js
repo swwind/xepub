@@ -2,7 +2,7 @@
 Create bookmark element
 */
 
-import loadUrl from './load-url';
+import { loadUrl } from './loader';
 
 const createMenu = (nav, elem, sidenav) => {
 
