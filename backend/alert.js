@@ -4,6 +4,7 @@ require('colors');
 
 const flags = {
   unstable: false,
+  debug: false,
 }
 
 const error = (message) => {
@@ -14,6 +15,11 @@ const warn = (message) => {
 }
 const info = (message) => {
   console.log('[INFO]'.white, message);
+}
+const debug = (message) => {
+  if (flags.debug) {
+    console.log('[DBUG]'.green, message);
+  }
 }
 const unstable = () => {
   if (!flags.unstable) {
@@ -32,7 +38,10 @@ const broken = () => {
 const newline = () => {
   console.log();
 }
+const debugMode = () => {
+  flags.debug = true;
+}
 
 module.exports = {
-  error, warn, info, unstable, broken, newline
+  error, warn, info, unstable, broken, newline, debug, debugMode
 }

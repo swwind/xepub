@@ -11,6 +11,7 @@ const options = (args) => {
     open: false,
     help: false,
     version: false,
+    debug: false,
     source: [],
   };
   for (let i = 0; i < args.length; ++ i) {
@@ -32,6 +33,10 @@ const options = (args) => {
     }
     if (args[i] === '-v' || args[i] === '--version') {
       res.version = true;
+      continue;
+    }
+    if (args[i] === '--debug') {
+      res.debug = true;
       continue;
     }
     res.source.push(args[i]);

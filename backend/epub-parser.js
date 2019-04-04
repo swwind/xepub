@@ -1,12 +1,12 @@
 'use strict';
 
-const path = require('path');
+const url = require('url');
 const sizeOf = require('image-size');
 const parser = require('fast-xml-parser');
 const alert = require('./alert');
 
 const resolvePath = (absolute, filename) => {
-  return path.join(path.dirname(absolute), filename.replace(/\\/g, '/'));
+  return url.resolve(absolute, filename.replace(/\\/g, '/'));
 }
 
 /**
@@ -51,6 +51,8 @@ module.exports = (zip) => {
       alert.warn('XML file `' + filename + '` is invalid, it may causes problems.');
       alert.warn('Reasons blow:');
       alert.warn(valid);
+    } else {
+      alert.debug('Safely read XML file ' + filename);
     }
 
     const xml = parser.parse(source, {
@@ -65,6 +67,7 @@ module.exports = (zip) => {
 
   const metainf = parseXMLfile('META-INF/container.xml');
   const rootfile = metainf(['container', 'rootfiles', 'rootfile', '$attr', 'full-path']);
+  if (!rootfile) alert.broken();
   const content = parseXMLfile(rootfile);
 
   const metadata = {
@@ -88,15 +91,20 @@ module.exports = (zip) => {
 
   }
 
+  alert.debug('Metadata is ok');
+
   const manifest = Object.create(null);
   const sizes = Object.create(null);
   content(['package', 'manifest', 'item'], 'Array').map(safeQuery).forEach((item) => {
     const url = resolvePath(rootfile, item(['$attr', 'href']));
     manifest[item(['$attr', 'id'])] = url;
     if (/\.(png|jpg|jpeg)$/gi.test(url)) {
+      alert.debug('Reading image size: ' + rootfile + ' -> ' + item(['$attr', 'href']));
       sizes[url] = sizeOf(zip.readFile(url));
     }
   });
+
+  alert.debug('Manifest is ok');
 
   const spine = content(['package', 'spine', 'itemref']).map(safeQuery).map((itemref) => {
     const idref = itemref(['$attr', 'idref']);
@@ -104,12 +112,18 @@ module.exports = (zip) => {
     return manifest[idref];
   });
 
+  alert.debug('Spine is ok');
+
   const tocfilename = manifest['ncx'];
   if (!tocfilename) alert.broken();
   const toc = parseXMLfile(tocfilename);
 
   const docTitle = toc(['ncx', 'docTitle', 'text'], null);
   const docAuthor = toc(['ncx', 'docAuthor', 'text'], null);
+
+  alert.debug('docTitle = ' + docTitle);
+  alert.debug('docAuthor = ' + docAuthor);
+
   const resolveNavPoint = (navPoint) => {
     const $ = safeQuery(navPoint);
     const label = $(['navLabel', 'text']);
@@ -118,6 +132,8 @@ module.exports = (zip) => {
     return { label, src, child };
   }
   const navMap = toc(['ncx', 'navMap', 'navPoint']).map(resolveNavPoint);
+
+  alert.debug('Navigate Map is ok');
 
   return {
     metadata,

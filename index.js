@@ -33,6 +33,10 @@ if (!epubname || !fs.existsSync(epubname)) {
   process.exit(1);
 }
 
+if (option.debug) {
+  alert.debugMode();
+}
+
 const zip = new AdmZip(epubname);
 if (zip.readAsText('mimetype').trim() !== 'application/epub+zip') {
   alert.error('Not epub file');
@@ -43,6 +47,8 @@ alert.info('Parsing file...');
 
 const epub = EpubParser(zip);
 
+alert.debug('Successfully parsed file');
+
 const app = express();
 app.use(express.static(here('node_modules/materialize-css/dist')));
 app.use(express.static(here('public')));
@@ -51,12 +57,17 @@ app.use(serveZip(zip));
 const server = http.createServer(app);
 const io = socketio(server);
 io.on('connect', (socket) => {
+  alert.debug('New client connected, ip: ' + socket.handshake.address.address);
   socket.emit('initialize', epub);
 });
 server.listen(option.port);
 const url = `http://${option.ipv6 ? '[::1]' : '127.0.0.1'}:${option.port}`;
-alert.info(`All finished, listening on ${url}`);
+alert.info(`Finished, listening on ${url}`);
 
 if (option.open) {
   opn(url);
 }
+
+process.on('SIGINT', () => {
+  process.exit(0);
+});

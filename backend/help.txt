@@ -11,6 +11,7 @@ USAGE
   -o, --open               open browser automaticly
   -h, --help               show help document and exit
   -v, --version            show xepub version and exit
+      --debug              show debug messages
 
 EXAMPLE
 
