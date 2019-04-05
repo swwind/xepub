@@ -12,8 +12,8 @@ const alert = require('./backend/alert');
 const packages = require('./package.json');
 const options = require('./backend/options');
 const serveZip = require('./backend/serve-zip');
-const createCert = require('./backend/create-cert');
 const EpubParser = require('./backend/epub-parser');
+const { createCert, createRootCA, certFolder } = require('./backend/create-cert');
 
 const here = path.join.bind(null, __dirname);
 
@@ -29,8 +29,8 @@ if (option.version) {
 }
 
 if (option.gencert) {
-  createCert.createRootCA();
-  createCert.createCert('localhost');
+  createRootCA();
+  createCert();
   process.exit(0);
 }
 
@@ -44,7 +44,7 @@ if (option.help !== false) {
   process.exit(option.help);
 }
 
-const hasCert = fs.existsSync(path.resolve(__dirname, 'cert'));
+const hasCert = fs.existsSync(certFolder);
 
 if (option.https === null) {
   option.https = hasCert;
@@ -62,8 +62,10 @@ if (!fs.existsSync(epubname)) {
 }
 
 const zip = new AdmZip(epubname);
-if (zip.readAsText('mimetype').trim() !== 'application/epub+zip') {
+const mimetype = zip.readAsText('mimetype').trim();
+if (mimetype !== 'application/epub+zip') {
   alert.error('Not epub file');
+  alert.debug('Mimetype: ' + mimetype);
   process.exit(1);
 }
 
@@ -79,8 +81,8 @@ app.use(express.static(here('public')));
 app.use(serveZip(zip));
 
 const server = !option.https ? http.createServer(app) : https.createServer({
-  cert: fs.readFileSync(path.resolve(__dirname, 'cert', 'xepub.crt')),
-  key: fs.readFileSync(path.resolve(__dirname, 'cert', 'xepub.key.pem')),
+  cert: fs.readFileSync(path.resolve(certFolder, 'xepub.crt')),
+  key: fs.readFileSync(path.resolve(certFolder, 'xepub.key.pem')),
 }, app);
 
 const io = socketio(server);

@@ -2,18 +2,19 @@
 //   https://github.com/wuchangming/https-mitm-proxy-handbook/blob/master/doc/Chapter3.md
 
 const fs = require('fs');
+const os = require('os');
 const path = require('path');
 const alert = require('./alert');
 const { pki, md } = require('node-forge');
 
+const certFolder = path.resolve(os.homedir(), '.config', 'xepub-cert');
+
 const createRootCA = () => {
+  const crtpath = path.resolve(certFolder, 'ca.crt');
+  const keypath = path.resolve(certFolder, 'ca.key.pem');
 
-  const folder = path.resolve(path.dirname(__dirname), 'cert');
-  const crtpath = path.resolve(folder, 'ca.crt');
-  const keypath = path.resolve(folder, 'ca.key.pem');
-
-  if (!fs.existsSync(folder)) {
-    fs.mkdirSync(folder);
+  if (!fs.existsSync(certFolder)) {
+    fs.mkdirSync(certFolder);
   } else {
     alert.warn('An old root CA already exists');
     alert.warn('Skipping...');
@@ -95,22 +96,22 @@ const createRootCA = () => {
     alert.info('On Linux, the best way to trust root certificate is importing it to your browser directly');
   }
   alert.info();
-  alert.info('- For Chrome, open Settings > Advanced > Manage Certificates >');
-  alert.info('  Authorities > Import > choose that .crt file > Check Three Trusts > OK');
+  alert.info('- For Chrome, open Settings > Advanced > Manage Certificates > Authorities >');
+  alert.info('  Import > choose that .crt file > Check Three Trusts > OK');
   alert.info();
-  alert.info('- For Firefox, open Preferences > Privacy & Security > Certificates >');
+  alert.info('- For Firefox, open Preferences(maybe Options) > Privacy & Security > Certificates >');
   alert.info('  View Certificates... > Authorities > Import > choose that .crt file >');
   alert.info('  Check Two Trusts > OK')
   alert.info();
 
 }
 
-const createCert = (domain) => {
+const createCert = () => {
 
   alert.info('Creating certificate');
 
-  const caCrtPath = path.resolve(path.dirname(__dirname), 'cert', 'ca.crt');
-  const caKeyPath = path.resolve(path.dirname(__dirname), 'cert', 'ca.key.pem');
+  const caCrtPath = path.resolve(certFolder, 'ca.crt');
+  const caKeyPath = path.resolve(certFolder, 'ca.key.pem');
   const caCertPem = fs.readFileSync(caCrtPath, 'utf8');
   const caKeyPem = fs.readFileSync(caKeyPath, 'utf8');
   const caCert = pki.certificateFromPem(caCertPem);
@@ -128,7 +129,7 @@ const createCert = (domain) => {
 
   const attrs = [{
     name: 'commonName',
-    value: domain
+    value: 'localhost'
   }, {
     name: 'countryName',
     value: 'CN'
@@ -155,18 +156,11 @@ const createCert = (domain) => {
     cA: false
   }, {
     name: 'keyUsage',
-    critical: true,
-    digitalSignature: true,
-    contentCommitment: true,
-    keyEncipherment: true,
-    dataEncipherment: true,
-    keyAgreement: true,
     keyCertSign: true,
-    cRLSign: true,
-    encipherOnly: true,
-    decipherOnly: true
-  }, {
-    name: 'subjectKeyIdentifier'
+    digitalSignature: true,
+    nonRepudiation: true,
+    keyEncipherment: true,
+    dataEncipherment: true
   }, {
     name: 'extKeyUsage',
     serverAuth: true,
@@ -175,22 +169,44 @@ const createCert = (domain) => {
     emailProtection: true,
     timeStamping: true
   }, {
-    name: 'authorityKeyIdentifier'
+    name: 'nsCertType',
+    client: true,
+    server: true,
+    email: true,
+    objsign: true,
+    sslCA: true,
+    emailCA: true,
+    objCA: true
+  }, {
+    name: 'subjectAltName',
+    altNames: [{
+      type: 2,
+      value: 'localhost'
+    }, {
+      type: 7,
+      ip: '127.0.0.1'
+    }, {
+      type: 7,
+      ip: '[::1]'
+    }]
+  }, {
+    name: 'subjectKeyIdentifier'
   }]);
   cert.sign(caKey, md.sha256.create());
 
-  const crtpath = path.resolve(path.dirname(__dirname), 'cert', 'xepub.crt');
-  const keypath = path.resolve(path.dirname(__dirname), 'cert', 'xepub.key.pem');
+  const crtpath = path.resolve(certFolder, 'xepub.crt');
+  const keypath = path.resolve(certFolder, 'xepub.key.pem');
   alert.debug('new crtpath = ' + crtpath);
   alert.debug('new keypath = ' + keypath);
   fs.writeFileSync(crtpath, pki.certificateToPem(cert));
   fs.writeFileSync(keypath, pki.privateKeyToPem(keys.privateKey));
 
-  alert.info('Certificate successfully issued to '.green + domain.yellow);
+  alert.info('Certificate successfully issued to ' + 'localhost, 127.0.0.1, [::1]'.yellow);
   alert.info('Xepub will defaultly use https from now on');
 }
 
 module.exports = {
   createRootCA,
   createCert,
+  certFolder,
 }
