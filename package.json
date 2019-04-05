@@ -9,6 +9,7 @@
     "image-size": "^0.7.2",
     "materialize-css": "^1.0.0-rc.2",
     "mime-types": "^2.1.22",
+    "node-forge": "^0.8.2",
     "opn": "^5.5.0",
     "rimraf": "^2.6.3",
     "socket.io": "^2.2.0"

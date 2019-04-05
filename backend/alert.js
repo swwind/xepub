@@ -7,16 +7,16 @@ const flags = {
   debug: false,
 }
 
-const error = (message) => {
+const error = (message = '') => {
   console.error('[ERRO]'.red, message);
 }
-const warn = (message) => {
+const warn = (message = '') => {
   console.warn('[WARN]'.yellow, message);
 }
-const info = (message) => {
+const info = (message = '') => {
   console.log('[INFO]'.white, message);
 }
-const debug = (message) => {
+const debug = (message = '') => {
   if (flags.debug) {
     console.log('[DBUG]'.green, message);
   }
@@ -35,13 +35,10 @@ const broken = () => {
     flags.broken = true;
   }
 }
-const newline = () => {
-  console.log();
-}
 const debugMode = () => {
   flags.debug = true;
 }
 
 module.exports = {
-  error, warn, info, unstable, broken, newline, debug, debugMode
+  error, warn, info, unstable, broken, debug, debugMode
 }

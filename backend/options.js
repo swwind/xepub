@@ -2,7 +2,6 @@
 
 /**
  * parse command line arguments
- * @param {*} args command line arguments
  */
 const options = (args) => {
   const res = {
@@ -12,6 +11,8 @@ const options = (args) => {
     help: false,
     version: false,
     debug: false,
+    https: null, // null -> default
+    gencert: false,
     source: [],
   };
   for (let i = 0; i < args.length; ++ i) {
@@ -28,11 +29,23 @@ const options = (args) => {
       continue;
     }
     if (args[i] === '-h' || args[i] === '--help') {
-      res.help = true;
+      res.help = 0;
       continue;
     }
     if (args[i] === '-v' || args[i] === '--version') {
       res.version = true;
+      continue;
+    }
+    if (args[i] === '--https') {
+      res.https = true;
+      continue;
+    }
+    if (args[i] === '--http') {
+      res.https = false;
+      continue;
+    }
+    if (args[i] === '--gencert') {
+      res.gencert = true;
       continue;
     }
     if (args[i] === '--debug') {

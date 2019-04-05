@@ -7,15 +7,17 @@ USAGE
   Alavilable options:
 
   -p, --port               http port (default 23333)
-  -6, --ipv6               use ipv6 (fake)
   -o, --open               open browser automaticly
   -h, --help               show help document and exit
   -v, --version            show xepub version and exit
       --debug              show debug messages
+      --gencert            generate a certificate so as to enable https and wss
+      --https              use https (requires a certificate)
+      --http               use http
 
 EXAMPLE
 
-  $ xepub --version
+  $ xepub --gencert
   $ xepub erohon.epub
   $ xepub -o -6 erohon.epub
   $ xepub -p 4000 erohon.epub
