@@ -1,6 +1,9 @@
 {
   "name": "xepub",
   "version": "1.0.0-alpha.4",
+  "repository": "https://github.com/swwind/xepub",
+  "author": "swwind <swwind233@gmail.com>",
+  "license": "MIT",
   "dependencies": {
     "adm-zip": "^0.4.13",
     "colors": "^1.3.3",
@@ -11,8 +14,14 @@
     "mime-types": "^2.1.22",
     "node-forge": "^0.8.2",
     "opn": "^5.5.0",
-    "rimraf": "^2.6.3",
     "socket.io": "^2.2.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.3.4",
+    "@babel/preset-env": "^7.3.4",
+    "babel-loader": "^8.0.5",
+    "webpack": "^4.29.6",
+    "webpack-cli": "^3.3.0"
   },
   "bin": {
     "xepub": "./bin/run"
@@ -20,21 +29,5 @@
   "scripts": {
     "dev": "webpack --watch",
     "build": "webpack"
-  },
-  "eslintConfig": {
-    "extends": "react-app"
-  },
-  "browserslist": [
-    ">0.2%",
-    "not dead",
-    "not ie <= 11",
-    "not op_mini all"
-  ],
-  "devDependencies": {
-    "@babel/core": "^7.3.4",
-    "@babel/preset-env": "^7.3.4",
-    "babel-loader": "^8.0.5",
-    "webpack": "^4.29.6",
-    "webpack-cli": "^3.3.0"
   }
 }
