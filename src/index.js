@@ -35,8 +35,8 @@ socket.on('initialize', (epub) => {
   createMenu(epub.navMap, $('#bookmark-sidenav'), sidenav);
 
   loadUrl(epub.spine[0]);
-  epub.docTitle = epub.docTitle || epub.metadata.title || 'Xepub';
-  epub.docAuthor = epub.docAuthor || epub.metadata.author || 'unknow author';
+  // epub.docTitle = epub.docTitle || epub.metadata.title || 'Xepub';
+  // epub.docAuthor = epub.docAuthor || epub.metadata.author || 'unknow author';
 
   setTitle(epub.docTitle);
 

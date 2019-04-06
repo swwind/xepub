@@ -1,12 +1,7 @@
 /*
-Load page
-
-feature:
-- removes all custom css
-- replace all relative path to absolute url
+Load epub page from URL
 */
 
-import * as path from 'path';
 import { encode, update } from './lazyload';
 import * as URL from 'url';
 import { flyToElement, flyToElementImmediately } from './animate';
@@ -20,7 +15,7 @@ const resolvePath = (dir) => (html) => {
   return html.replace(regex, (match) => {
     regex.lastIndex = 0;
     const res = regex.exec(match);
-    return `${res[1]}="${path.join(dir, res[2])}"`;
+    return `${res[1]}="${URL.resolve(dir, res[2])}"`;
   });
 }
 const maybeArray = (fn) => (...args) => {
@@ -79,6 +74,22 @@ const parseCSSFromLink = maybeArray((elem) => {
       document.head.appendChild(style);
     })
   elem.remove();
+});
+
+// bind <a/> events
+const bindEvents = maybeArray((elem) => {
+  const href = elem.getAttribute('href');
+  if (/^(?:[a-z]+:)?\/\//i.test(href)) {
+    // external link
+    // console.log('ignored ' + href);
+    return;
+  }
+
+  elem.addEventListener('click', (e) => {
+    loadUrl(href);
+    e.preventDefault();
+    return true;
+  })
 })
 
 const handleHTML = (url, html) => {
@@ -88,24 +99,26 @@ const handleHTML = (url, html) => {
 
   // remove all custom style
   parseCSSFromStyle(div.querySelectorAll('style'), url);
-  // link[rel="stylesheet"] put into lazy load
+  // link[rel="stylesheet"] put into auto load
   parseCSSFromLink(div.querySelectorAll('link[rel="stylesheet"]'));
 
   // remove title element
   const titleElem = div.querySelector('title');
   const title = titleElem && titleElem.textContent;
   titleElem && titleElem.remove();
+
   // smaller header
   for (let i = 3; i; -- i) {
     replaceTag(div.querySelectorAll('h' + i), 'h' + (i + 3));
   }
+  // lazyload all images
   encode(div.querySelectorAll('img[src]'));
 
   const body = div.querySelector('body');
   if (body) {
-    return [body.innerHTML, title];
+    return [ body.innerHTML, title ];
   } else {
-    return [div.innerHTML, title];
+    return [ div.innerHTML, title ];
   }
 }
 
@@ -128,14 +141,23 @@ export const loadUrl = (url) => {
     // fetch content
     fetch(pathname)
       .then(res => res.text())
-      .then(resolvePath(path.dirname(url)))
+      .then(resolvePath(url))
       .then(handleHTML.bind(null, url))
   ]).then(([_, [html, title]]) => {
     window.epub.nowpage = pathname;
     elem.innerHTML = html;
+
     setSubTitle(title || epub.docTitle);
+
+    // scroll to top or hash
     flyToElementImmediately(hash);
+
+    // update lazy load
     update();
+
+    // fix <a/> links
+    bindEvents(elem.querySelectorAll('a[href]'));
+
     elem.classList.add('open');
   })
 }
