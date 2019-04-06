@@ -5,10 +5,9 @@ import { loadUrl, nextPage, prevPage } from './loader';
 import { update } from './lazyload';
 import { scrollTo } from './animate';
 import * as Key from './key-events';
+import { $, $$, setTitle } from './utils';
 
 const socket = io();
-const $ = name => document.querySelector(name);
-const $$ = name => document.querySelectorAll(name);
 
 const sidenav = M.Sidenav.init($('.sidenav'));
 M.FloatingActionButton.init($('.fixed-action-btn'));
@@ -25,11 +24,6 @@ $('#info').addEventListener('click', (e) => {
   infoModal.open();
 });
 
-const setTitle = (title) => {
-  $('.brand-logo').textContent = title;
-  $('.brand-logo').setAttribute('title', title);
-  $('title').textContent = title;
-}
 const upperFirst = (str) => {
     return str.charAt(0).toUpperCase() + str.slice(1);
 }
@@ -41,8 +35,10 @@ socket.on('initialize', (epub) => {
   createMenu(epub.navMap, $('#bookmark-sidenav'), sidenav);
 
   loadUrl(epub.spine[0]);
+  epub.docTitle = epub.docTitle || epub.metadata.title || 'Xepub';
+  epub.docAuthor = epub.docAuthor || epub.metadata.author || 'unknow author';
 
-  setTitle(epub.docTitle || epub.metadata.title || 'Xepub');
+  setTitle(epub.docTitle);
 
   // fill infomations
   for (const key of Object.keys(epub.metadata)) {
@@ -65,7 +61,7 @@ let connected = false;
 socket.on('connect', () => {
   if (connected) {
     // flush window if reconnected
-    window.location = window.location;
+    location.reload();
   }
   connected = true;
 });
