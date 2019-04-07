@@ -145,7 +145,13 @@ export const loadUrl = (url) => {
       .then(handleHTML.bind(null, url))
   ]).then(([_, [html, title]]) => {
     window.epub.nowpage = pathname;
+
+    // enforce redraw div
+    // https://stackoverflow.com/questions/41425785/scrollbar-not-getting-modifed-when-scale-changes-in-chrome
+    elem.style.display = 'none';
     elem.innerHTML = html;
+    elem.offsetHeight;
+    elem.style.display = 'block';
 
     setSubTitle(title || epub.docTitle);
 
