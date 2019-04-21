@@ -15,7 +15,7 @@ const serveZip = require('./backend/serve-zip');
 const EpubParser = require('./backend/epub-parser');
 const { createCert, createRootCA, certFolder } = require('./backend/create-cert');
 
-const here = path.join.bind(null, __dirname);
+const here = path.resolve.bind(null, __dirname);
 
 const option = options(process.argv.slice(2));
 
@@ -76,7 +76,18 @@ const epub = EpubParser(zip);
 alert.debug('Successfully parsed file');
 
 const app = express();
-app.use(express.static(here('node_modules', 'materialize-css', 'dist')));
+const dist1 = here('node_modules', 'materialize-css', 'dist');
+const dist2 = here('..', 'node_modules', 'materialize-css', 'dist');
+if (fs.existsSync(dist1)) {
+  app.use(express.static(dist1));
+} else if (fs.existsSync(dist2)) {
+  app.use(express.static(dist2));
+} else {
+  alert.error('Materialize CSS not found');
+  alert.debug('I am here: ' + __dirname);
+  process.exit(1);
+}
+app.use(express.static());
 app.use(express.static(here('public')));
 app.use(serveZip(zip));
 

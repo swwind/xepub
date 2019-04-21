@@ -96,11 +96,17 @@ module.exports = (zip) => {
   const manifest = Object.create(null);
   const sizes = Object.create(null);
   content(['package', 'manifest', 'item'], 'Array').map(safeQuery).forEach((item) => {
-    const url = resolvePath(rootfile, item(['$attr', 'href']));
+    // chinese url...
+    const url = decodeURIComponent(resolvePath(rootfile, item(['$attr', 'href'])));
     manifest[item(['$attr', 'id'])] = url;
     if (/\.(png|jpg|jpeg)$/gi.test(url)) {
       alert.debug('Reading image size: ' + rootfile + ' -> ' + item(['$attr', 'href']));
-      sizes[url] = sizeOf(zip.readFile(url));
+      const buffer = zip.readFile(url);
+      if (!buffer) {
+        alert.warn('Image in manifest but not found: ' + url);
+      } else {
+        sizes[url] = sizeOf(buffer);
+      }
     }
   });
 

@@ -5,7 +5,8 @@ const mime = require('mime-types');
 
 module.exports = (zip) => (req, res, next) => {
 
-  const filename = req.url.slice(1);
+  // chinese url...
+  const filename = decodeURIComponent(req.url).slice(1);
   const file = zip.readFile(filename);
 
   // skip if file doesn't exist
