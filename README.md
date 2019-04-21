@@ -18,5 +18,13 @@ yarn global add xepub
 xepub [options] mybook.epub
 ```
 
+> **If you want to enable HTTPS in localhost:**
+> 
+> ```bash
+> xepub --gencert
+> ```
+> 
+> **Then add root CA to your system.**
+
 For more infomations, use `xepub --help`
 

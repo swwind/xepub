@@ -1,4 +1,5 @@
 
+export const socket = io();
 export const $ = name => document.querySelector(name);
 export const $$ = name => document.querySelectorAll(name);
 export const setTitle = (title) => {

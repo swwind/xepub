@@ -6,26 +6,19 @@ import { update } from './lazyload';
 import { scrollTo } from './animate';
 import * as Key from './key-events';
 import { $, $$, setTitle } from './utils';
-
-const socket = io();
+import { socket } from './utils';
 
 const sidenav = M.Sidenav.init($('.sidenav'));
 M.FloatingActionButton.init($('.fixed-action-btn'));
 M.Tooltip.init($$('.tooltipped'));
 const infoModal = M.Modal.init($('.modal'));
 
-$('#bookmark').addEventListener('click', (e) => {
-  sidenav.open();
-});
-$('#totop').addEventListener('click', (e) => {
-  scrollTo(0);
-});
-$('#info').addEventListener('click', (e) => {
-  infoModal.open();
-});
+$('#bookmark').addEventListener('click', () => sidenav.open());
+$('#totop').addEventListener('click', () => scrollTo(0));
+$('#info').addEventListener('click', () => infoModal.open());
 
 const upperFirst = (str) => {
-    return str.charAt(0).toUpperCase() + str.slice(1);
+  return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
 socket.on('initialize', (epub) => {

@@ -2,11 +2,13 @@
 
 const fs = require('fs');
 const opn = require('opn');
+const URL = require('url');
 const path = require('path');
 const http = require('http');
 const https = require('https');
 const AdmZip = require('adm-zip');
 const express = require('express');
+const csstree = require('css-tree');
 const socketio = require('socket.io');
 const alert = require('./backend/alert');
 const packages = require('./package.json');
@@ -69,7 +71,7 @@ if (mimetype !== 'application/epub+zip') {
   process.exit(1);
 }
 
-alert.info('Parsing file...');
+alert.debug('Parsing file...');
 
 const epub = EpubParser(zip);
 
@@ -103,6 +105,31 @@ const io = socketio(server);
 io.on('connect', (socket) => {
   alert.debug('New client connected, ip: ' + socket.handshake.address);
   socket.emit('initialize', epub);
+  // add '.fake-body' to every selector
+  socket.on('css', (url, css) => {
+    const ast = csstree.parse(css);
+    csstree.walk(ast, (node) => {
+      if (node.type === 'Selector') {
+        node.children.prependData({
+          type: 'WhiteSpace',
+          loc: null,
+          value: ' '
+        });
+        node.children.prependData({
+          type: 'ClassSelector',
+          name: 'fake-body'
+        });
+      }
+      if (node.type === 'Url') {
+        // from another place
+        if (!/^[a-zA-Z]+:\/\//gi.test(node.value.value)) {
+          node.value.value = URL.resolve(url, node.value.value);
+        }
+      }
+    });
+    const res = csstree.generate(ast);
+    socket.emit('css', res);
+  });
 });
 server.listen(option.port);
 const url = `${option.https ? 'https' : 'http'}://${option.ipv6 ? '[::1]' : 'localhost'}:${option.port}`;

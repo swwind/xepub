@@ -5,8 +5,7 @@ Load epub page from URL
 import { encode, update } from './lazyload';
 import * as URL from 'url';
 import { flyToElement, flyToElementImmediately } from './animate';
-import * as csstree from 'css-tree';
-import { setSubTitle, $$ } from './utils';
+import { setSubTitle, $$, socket } from './utils';
 
 const elem = document.querySelector('.content');
 
@@ -30,27 +29,15 @@ const maybeArray = (fn) => (...args) => {
 }
 
 // add .fake-body to every css selector
-const inlineCSS = (url, css) => {
-  const ast = csstree.parse(css);
-  csstree.walk(ast, (node) => {
-    if (node.type === 'Selector') {
-      node.children.prependData({
-        type: "WhiteSpace",
-        loc: null,
-        value: " "
-      });
-      node.children.prependData({
-        type: "ClassSelector",
-        name: "fake-body"
-      });
-    }
-    if (node.type === 'Url') {
-      node.value.value = URL.resolve(url, node.value.value);
-    }
-  });
-  const res = csstree.generate(ast);
-  return res;
+const addCSS = (url, css) => {
+  socket.emit('css', url, css);
 }
+socket.on('css', (css) => {
+  const style = document.createElement('style');
+  style.innerHTML = css;
+  style.setAttribute('data-book', '');
+  document.head.appendChild(style);
+});
 
 const removeElem = maybeArray((elem) => elem.remove());
 const replaceTag = maybeArray((elem, target) => {
@@ -59,20 +46,14 @@ const replaceTag = maybeArray((elem, target) => {
   elem.parentNode.replaceChild(div, elem);
 });
 const parseCSSFromStyle = maybeArray((elem, url) => {
-  const css = elem.innerHTML;
-  elem.innerHTML = inlineCSS(url, css);
+  addCSS(url, elem.innerHTML);
+  elem.remove();
 });
 const parseCSSFromLink = maybeArray((elem) => {
   const url = elem.getAttribute('href');
   fetch(url)
     .then((res) => res.text())
-    .then(inlineCSS.bind(null, url))
-    .then((css) => {
-      const style = document.createElement('style');
-      style.innerHTML = css;
-      style.setAttribute('data-book', '');
-      document.head.appendChild(style);
-    })
+    .then(addCSS.bind(null, url));
   elem.remove();
 });
 
