@@ -76,18 +76,21 @@ const epub = EpubParser(zip);
 alert.debug('Successfully parsed file');
 
 const app = express();
+// development
 const dist1 = here('node_modules', 'materialize-css', 'dist');
-const dist2 = here('..', 'node_modules', 'materialize-css', 'dist');
+// production
+const dist2 = here('..', 'materialize-css', 'dist');
 if (fs.existsSync(dist1)) {
   app.use(express.static(dist1));
 } else if (fs.existsSync(dist2)) {
   app.use(express.static(dist2));
 } else {
   alert.error('Materialize CSS not found');
-  alert.debug('I am here: ' + __dirname);
+  alert.debug('__dirname =   ' + __dirname);
+  alert.debug('development = ' + dist1);
+  alert.debug('production =  ' + dist2);
   process.exit(1);
 }
-app.use(express.static());
 app.use(express.static(here('public')));
 app.use(serveZip(zip));
 
