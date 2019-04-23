@@ -2,6 +2,8 @@
 
 Xepub is a ~~lightweight~~ cross-platform epub reader written in NodeJS, which need a modern browser like *Google Chrome* or *Firefox*.
 
+[Demo](https://hk.swwind.me:23333)
+
 It opens a http(or https) server so as to deliver contents to browser.
 
 ## Install
@@ -28,3 +30,9 @@ xepub [options] mybook.epub
 
 For more infomations, use `xepub --help`
 
+## Development
+
+```bash
+yarn link
+yarn dev
+```
