@@ -60,7 +60,7 @@ const parseCSSFromLink = maybeArray((elem) => {
 // bind <a/> events
 const bindEvents = maybeArray((elem) => {
   const href = elem.getAttribute('href');
-  if (/^(?:[a-z]+:)?\/\//i.test(href)) {
+  if (/^(?:[a-z]+:)?\/\//i.test(href) || elem.hasAttribute('xepub-target-blank')) {
     // external link
     // console.log('ignored ' + href);
     return;
@@ -129,6 +129,7 @@ export const loadUrl = (url) => {
 
     // enforce redraw div
     // https://stackoverflow.com/questions/41425785/scrollbar-not-getting-modifed-when-scale-changes-in-chrome
+    // seems not working...
     elem.style.display = 'none';
     elem.innerHTML = html;
     elem.offsetHeight;

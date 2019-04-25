@@ -9,7 +9,7 @@ export const encode = (elem) => {
     return;
   }
 
-  const src = elem.getAttribute('src');
+  const src = decodeURIComponent(elem.getAttribute('src'));
   const size = window.epub.sizes[src];
   if (size) {
     elem.setAttribute('data-src', src);

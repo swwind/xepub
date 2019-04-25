@@ -4,6 +4,7 @@ require('colors');
 
 const flags = {
   unstable: false,
+  broken: false,
   debug: false,
 }
 

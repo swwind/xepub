@@ -2,6 +2,7 @@
 
 const fs = require('fs');
 const opn = require('opn');
+const pug = require('pug');
 const URL = require('url');
 const path = require('path');
 const http = require('http');
@@ -15,6 +16,7 @@ const packages = require('./package.json');
 const options = require('./backend/options');
 const serveZip = require('./backend/serve-zip');
 const EpubParser = require('./backend/epub-parser');
+const FolderParser = require('./backend/folder-parser');
 const { createCert, createRootCA, certFolder } = require('./backend/create-cert');
 
 const here = path.resolve.bind(null, __dirname);
@@ -59,28 +61,56 @@ if (option.https && !hasCert) {
 }
 
 if (!fs.existsSync(epubname)) {
-  alert.error('File not found, try `xepub --help`');
+  alert.error('File or folder not found, try `xepub --help`');
   process.exit(1);
 }
-
-const zip = new AdmZip(epubname);
-const mimetype = zip.readAsText('mimetype').trim();
-if (mimetype !== 'application/epub+zip') {
-  alert.error('Not epub file');
-  alert.debug('Mimetype: ' + mimetype);
-  process.exit(1);
-}
-
-alert.debug('Parsing file...');
-
-const epub = EpubParser(zip);
-
-alert.debug('Successfully parsed file');
 
 const app = express();
-// development
+
+const lstat = fs.lstatSync(epubname);
+let epub = null;
+
+if (lstat.isDirectory()) {
+
+  // open folder
+  // since v1.0.0-alpha.9
+
+  alert.info('Scanning folder...');
+  const dirname = path.resolve(process.cwd(), epubname);
+  epub = FolderParser(dirname);
+  alert.debug('Successfully scanned folder');
+
+  const index = pug.compile(fs.readFileSync(path.resolve(__dirname, 'backend', 'folder-index.pug'), 'utf8'));
+
+  app.use('/folder/', (req, res, next) => {
+    if (req.originalUrl === '/folder/') {
+      res.header('Content-Type', 'text/html');
+      res.end(index({ files: epub.files }));
+    } else {
+      next();
+    }
+  })
+  app.use('/folder', express.static(dirname));
+
+} else if (lstat.isFile()) {
+
+  // open epub file
+  alert.info('Parsing EPUB file...');
+  const zip = new AdmZip(epubname);
+  const mimetype = zip.readAsText('mimetype').trim();
+  if (mimetype !== 'application/epub+zip') {
+    alert.error('Not epub file');
+    alert.debug('Mimetype: ' + mimetype);
+    process.exit(1);
+  }
+  epub = EpubParser(zip);
+  alert.debug('Successfully parsed file');
+  app.use(serveZip(zip));
+}
+
+// development env
 const dist1 = here('node_modules', 'materialize-css', 'dist');
-// production
+// production  env
 const dist2 = here('..', 'materialize-css', 'dist');
 if (fs.existsSync(dist1)) {
   app.use(express.static(dist1));
@@ -88,13 +118,13 @@ if (fs.existsSync(dist1)) {
   app.use(express.static(dist2));
 } else {
   alert.error('Materialize CSS not found');
-  alert.debug('__dirname =   ' + __dirname);
+  alert.debug('__dirname   = ' + __dirname);
   alert.debug('development = ' + dist1);
-  alert.debug('production =  ' + dist2);
+  alert.debug('production  = ' + dist2);
   process.exit(1);
 }
+// serve public folder
 app.use(express.static(here('public')));
-app.use(serveZip(zip));
 
 const server = !option.https ? http.createServer(app) : https.createServer({
   cert: fs.readFileSync(path.resolve(certFolder, 'xepub.crt')),

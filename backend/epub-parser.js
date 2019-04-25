@@ -6,7 +6,9 @@ const parser = require('fast-xml-parser');
 const alert = require('./alert');
 
 const resolvePath = (absolute, filename) => {
-  return url.resolve(absolute, filename.replace(/\\/g, '/'));
+  return url.resolve(absolute,
+    // fuck those epub creators
+    filename.replace(/\\/g, '/'));
 }
 
 /**
@@ -95,17 +97,21 @@ module.exports = (zip) => {
 
   const manifest = Object.create(null);
   const sizes = Object.create(null);
-  content(['package', 'manifest', 'item'], 'Array').map(safeQuery).forEach((item) => {
-    // chinese url...
+  content(['package', 'manifest', 'item']).map(safeQuery).forEach((item) => {
     const url = decodeURIComponent(resolvePath(rootfile, item(['$attr', 'href'])));
     manifest[item(['$attr', 'id'])] = url;
-    if (/\.(png|jpg|jpeg)$/gi.test(url)) {
+    if (/\.(png|jpe?g|gif)$/i.test(url)) {
       alert.debug('Reading image size: ' + rootfile + ' -> ' + item(['$attr', 'href']));
       const buffer = zip.readFile(url);
       if (!buffer) {
         alert.warn('Image in manifest but not found: ' + url);
       } else {
-        sizes[url] = sizeOf(buffer);
+        try {
+          sizes[url] = sizeOf(buffer);
+        } catch (e) {
+          alert.error('Failed to read size of image: ' + url);
+          alert.error(e);
+        }
       }
     }
   });
