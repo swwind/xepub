@@ -22,8 +22,7 @@ jobs:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
     - run: sudo apt-get install unzip -y
-    - uses: denolib/deno-action@0.19.0
-    # Runs a set of commands using the runners shell
+    - run: curl -fsSL https://deno.land/x/install/install.sh | sh
     - run: |
         deno --version
         deno fmt
