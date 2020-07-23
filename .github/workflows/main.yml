@@ -23,7 +23,7 @@ jobs:
     - uses: actions/checkout@v2
     - run: |
         sudo apt-get update
-        sudo apt-get install unzip webkit2gtk -y
+        sudo apt-get install unzip libwebkit2gtk-4.0-37 -y
     - run: curl -fsSL https://deno.land/x/install/install.sh | sh
     - run: |
         export DENO_INSTALL="/home/runner/.deno"
