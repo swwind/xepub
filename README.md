@@ -1,5 +1,7 @@
 # Xepub
 
+**This branch has been archived**
+
 Xepub is a ~~lightweight~~ cross-platform epub reader written in NodeJS, which need a modern browser like *Google Chrome* or *Firefox*.
 
 It can also open a comic directory as a comic reader.
