@@ -1,5 +1,7 @@
 # Xepub
 
+![](https://github.com/swwind/xepub/workflows/ci/badge.svg?branch=master&event=push)
+
 Xepub is a lightweight cross-platform epub reader written in Deno. **Still WIP.**
 
 Thanks to these open-source projects:
@@ -11,7 +13,7 @@ Thanks to these open-source projects:
 
 ## Install
 
-You need to install `deno` first, and make sure `unzip` can be use.
+You need to install `deno`, `unzip` and `webkit2gtk` first.
 
 ```bash
 deno install -A ./xepub.ts
