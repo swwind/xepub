@@ -25,7 +25,7 @@ const debug = (message = '') => {
 const unstable = () => {
   if (!flags.unstable) {
     warn('This book has some problems while parsing...');
-    warn('I can not ensure whether xepub can deal it proper or not.');
+    warn('I can not ensure whether xepub can deal it properly or not.');
     flags.unstable = true;
   }
 }
