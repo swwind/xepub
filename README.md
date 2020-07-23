@@ -1,6 +1,6 @@
 # Xepub
 
-![](https://github.com/swwind/xepub/workflows/ci/badge.svg?branch=master&event=push)
+![](https://github.com/swwind/xepub/workflows/CI/badge.svg?branch=master&event=push)
 
 Xepub is a lightweight cross-platform epub reader written in Deno. **Still WIP.**
 
