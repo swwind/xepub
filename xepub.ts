@@ -33,7 +33,7 @@ for (const book of parseArgs._) {
   // create http server
   const worker = await serveBook(3000, zip.dir, epub);
 
-  info('Opening window...');
+  info("Opening window...");
 
   await openWindow(
     "Xepub",
@@ -41,7 +41,7 @@ for (const book of parseArgs._) {
     async () => {
       worker.terminate();
       await zip.clear();
-      info('Safely terminated');
+      info("Safely terminated");
     },
   );
 }
