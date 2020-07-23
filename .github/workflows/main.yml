@@ -26,8 +26,7 @@ jobs:
     - run: |
         export DENO_INSTALL="/home/runner/.deno"
         export PATH="$DENO_INSTALL/bin:$PATH"
-    - run: deno --version
-    - run: |
+        deno --version
         deno fmt
         git diff --exit-code
-    - run: deno test -A --unstable
+        deno test -A --unstable
