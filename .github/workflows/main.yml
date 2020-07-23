@@ -21,7 +21,7 @@ jobs:
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
-    - run: sudo apt-get install unzip -y
+    - run: sudo apt-get install unzip libwebkit2gtk -y
     - run: curl -fsSL https://deno.land/x/install/install.sh | sh
     - run: |
         export DENO_INSTALL="/home/runner/.deno"
