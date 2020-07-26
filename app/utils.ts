@@ -1,6 +1,6 @@
 export class None<T> {
   unwrap(errorMessage?: string): T {
-    throw new Error(errorMessage || "unwrap None");
+    throw new Error(errorMessage ?? "unwrap None");
   }
   unwrapOr(t: T) {
     return t;
@@ -34,14 +34,14 @@ export class Some<T> {
 
 export type Option<T> = Some<T> | None<T>;
 
-export class OptionMap<K, V> {
-  private map: Map<K, V> = new Map();
-  get(key: K): Option<V> {
-    const v = this.map.get(key);
+export class OptionMap<V> {
+  private map: { [key: string]: V | undefined } = {};
+  get(key: string): Option<V> {
+    const v = this.map[key];
     if (undefined === v) return new None();
     else return new Some(v);
   }
-  set(key: K, value: V) {
-    this.map.set(key, value);
+  set(key: string, value: V) {
+    this.map[key] = value;
   }
 }

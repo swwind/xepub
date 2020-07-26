@@ -1,7 +1,7 @@
 import { path } from "../deps.ts";
 import * as alert from "./alert.ts";
 import { Zip } from "./zip.ts";
-import { OptionMap, Option } from "./utils.ts";
+import { OptionMap } from "./utils.ts";
 import { XMLTag } from "./xml-parser.ts";
 
 export interface NavPoint {
@@ -30,23 +30,19 @@ export interface Epub {
     coverage?: string;
     rights?: string;
   };
-  manifest: OptionMap<string, string>;
+  manifest: OptionMap<string>;
   spine: string[];
   docTitle: string;
   docAuthor: string;
   navMap: NavMap;
 }
 
-/**
- * get the absolute path from relative path
- */
-const resolvePath = (absolute: string, filename: string) => {
+const joinPath = (absolute: string, filename: string) => {
   if (!absolute || !filename) {
     alert.unstable();
   }
   return path.join(
     path.dirname(absolute),
-    // fuck those epub creators
     filename.replace(/\\/g, "/"),
   );
 };
@@ -91,14 +87,14 @@ export const parseEpub = async (zip: Zip): Promise<Epub> => {
   };
   alert.debug("metadata is ok");
 
-  const manifest = new OptionMap<string, string>();
+  const manifest = new OptionMap<string>();
 
   const items = content.$$("package", "manifest", "item").unwrap(
     "manifest not found",
   );
   for (const item of items) {
     const url = decodeURIComponent(
-      resolvePath(rootfile, item.attributes.href),
+      joinPath(rootfile, item.attributes.href),
     );
     manifest.set(item.attributes.id, url);
   }
@@ -138,7 +134,7 @@ export const parseEpub = async (zip: Zip): Promise<Epub> => {
         result.label = elem.children[0]?.content;
       }
       if (elem.name === "content") {
-        result.src = resolvePath(tocfilename, elem.attributes.src);
+        result.src = joinPath(tocfilename, elem.attributes.src);
       }
       if (elem.name === "navPoint") {
         result.children.push(handleNavPoint(elem));
