@@ -1,8 +1,10 @@
-
-import { serve, acceptWebSocket,
+import {
+  serve,
+  acceptWebSocket,
   isWebSocketCloseEvent,
-  WebSocket } from '../deps.ts';
-import { info } from './alert.ts';
+  WebSocket,
+} from "../deps.ts";
+import { info } from "./alert.ts";
 
 async function handleWs(onclose: Function, sock: WebSocket) {
   info("ws connected!");
@@ -22,6 +24,6 @@ export const listenWs = async (port: number, onclose: Function) => {
       bufReader: req.r,
       bufWriter: req.w,
       headers: req.headers,
-    }).then(handleWs.bind(null, onclose))
+    }).then(handleWs.bind(null, onclose));
   }
-}
+};

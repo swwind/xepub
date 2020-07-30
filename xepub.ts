@@ -5,7 +5,7 @@ import { debug, info } from "./app/alert.ts";
 import helpText from "./app/help.ts";
 import { serveBook, openWindow } from "./app/worker/worker.ts";
 import { openExternalLink } from "./app/open.ts";
-import VERSION from './version.ts';
+import VERSION from "./version.ts";
 import { listenWs } from "./app/ws.ts";
 
 const parseArgs = parse(Deno.args, {
@@ -48,12 +48,12 @@ const safeQuit = async () => {
   await zip.clear();
   info("Safely terminated");
   Deno.exit(0);
-}
+};
 
 if (parseArgs.browser) {
-  info('Opening http://localhost:3000');
+  info("Opening http://localhost:3000");
   listenWs(8080, safeQuit);
-  openExternalLink('http://localhost:3000');
+  openExternalLink("http://localhost:3000");
 } else {
   info("Opening window...");
   await openWindow(
