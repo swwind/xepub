@@ -2,7 +2,9 @@
 
 ![](https://github.com/swwind/xepub/workflows/CI/badge.svg?branch=master&event=push)
 
-**Still WIP.**
+**~~Still WIP.~~**
+
+**\[Deprecated\] It is painful to maintain such application with deno. Deno community needs more powerful tools.**
 
 Xepub is a lightweight cross-platform epub reader written in Deno.
 Read epub book in your favorite browser(or in webview).
