@@ -3,26 +3,30 @@ Load epub page from URL
 */
 
 import { encode, update } from './lazyload';
-import * as URL from 'url';
+import { resolve, parse } from 'url';
 import { flyToElement, flyToElementImmediately } from './animate';
-import { setSubTitle, $$, socket } from './utils';
+import { setSubTitle, $, $$, socket } from './utils';
 
-const elem = document.querySelector('.content');
-
-const resolvePath = (dir) => (html) => {
+/**
+ * Resolve relative path
+ * @param {string} path current file path
+ * @returns {(html: string) => string}
+ */
+const resolvePath = (path) => (html) => {
   const regex = /(href|src)="((?!https?:\/\/)[\s\S]+?)"/gi;
-  return html.replace(regex, (match) => {
-    regex.lastIndex = 0;
-    const res = regex.exec(match);
-    return `${res[1]}="${URL.resolve(dir, res[2])}"`;
+  return html.replace(regex, (_, p1, p2) => {
+    return `${p1}="${resolve(path, p2)}"`;
   });
 }
-const maybeArray = (fn) => (...args) => {
-  const arr = args.shift();
+
+/**
+ * It's too hard to explain what is this
+ */
+const maybeArray = (fn) => (arr, ...args) => {
   if (typeof arr.length === 'number') {
-    Array.from(arr).forEach((a) => {
+    for (const a of arr) {
       fn(a, ...args);
-    });
+    }
   } else {
     fn(arr, ...args);
   }
@@ -53,7 +57,7 @@ const parseCSSFromLink = maybeArray((elem) => {
   const url = elem.getAttribute('href');
   fetch(url)
     .then((res) => res.text())
-    .then(addCSS.bind(null, url));
+    .then((css) => addCSS(url, css));
   elem.remove();
 });
 
@@ -70,9 +74,14 @@ const bindEvents = maybeArray((elem) => {
     loadUrl(href);
     e.preventDefault();
     return true;
-  })
-})
+  });
+});
 
+/**
+ * Preload a new page
+ * @param {string} url current page path
+ * @param {string} html page content
+ */
 const handleHTML = (url, html) => {
 
   const div = document.createElement('div');
@@ -97,43 +106,47 @@ const handleHTML = (url, html) => {
 
   const body = div.querySelector('body');
   if (body) {
-    return [ body.innerHTML, title ];
+    body.outerHTML = body.outerHTML.replace(/<body/gi, '<div').replace(/<\/body>/gi, '<div>');
+    return [ body, title ];
   } else {
-    return [ div.innerHTML, title ];
+    return [ div, title ];
   }
 }
 
 export const loadUrl = (url) => {
-  console.log(url);
+  console.log(`Navigating to ${url}`);
 
-  const { pathname, hash } = URL.parse(url);
+  const { pathname, hash } = parse(url);
   if (window.epub.nowpage === pathname) {
     flyToElement(hash);
     return;
   }
+  const content = $('.content');
   Promise.all([
     // animation
     new Promise((resolve) => {
-      elem.classList.remove('open');
-      setTimeout(resolve, 1000);
+      content.classList.remove('open');
+      setTimeout(resolve, 500);
       // remove all inline style
-      setTimeout(removeElem, 600, $$('[data-book]'));
+      setTimeout(removeElem, 500, $$('[data-book]'));
     }),
     // fetch content
     fetch(pathname)
       .then(res => res.text())
       .then(resolvePath(url))
-      .then(handleHTML.bind(null, url))
-  ]).then(([_, [html, title]]) => {
+      .then((elem) => handleHTML(url, elem))
+  ]).then(([_, [elem, title]]) => {
     window.epub.nowpage = pathname;
 
     // enforce redraw div
     // https://stackoverflow.com/questions/41425785/scrollbar-not-getting-modifed-when-scale-changes-in-chrome
     // seems not working...
-    elem.style.display = 'none';
-    elem.innerHTML = html;
-    elem.offsetHeight;
-    elem.style.display = 'block';
+
+    // elem.style.display = 'none';
+    elem.classList.add('fake-body');
+    content.replaceChild(elem, content.children[0]);
+    // elem.offsetHeight;
+    // elem.style.display = 'block';
 
     setSubTitle(title || epub.docTitle);
 
@@ -144,9 +157,9 @@ export const loadUrl = (url) => {
     update();
 
     // fix <a/> links
-    bindEvents(elem.querySelectorAll('a[href]'));
+    bindEvents(content.querySelectorAll('a[href]'));
 
-    elem.classList.add('open');
+    content.classList.add('open');
   })
 }
 

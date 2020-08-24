@@ -152,8 +152,12 @@ io.on('connect', (socket) => {
       }
       if (node.type === 'Url') {
         // from another place
-        if (!/^[a-zA-Z]+:\/\//gi.test(node.value.value)) {
-          node.value.value = URL.resolve(url, node.value.value);
+        const value = node.value.value.startsWith('"') && node.value.value.endsWith('"')
+                   || node.value.value.startsWith("'") && node.value.value.endsWith("'")
+                    ? node.value.value.slice(1, -1)
+                    : node.value.value;
+        if (!/^[a-zA-Z]+:\/\//gi.test(value)) {
+          node.value.value = URL.resolve(url, value);
         }
       }
     });

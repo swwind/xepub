@@ -1,7 +1,9 @@
-/*
-Lazy load all images in manifest
-*/
+import { $$ } from "./utils";
 
+/**
+ * prepare for lazyload
+ * @param {HTMLElement | HTMLElement[]} elem 
+ */
 export const encode = (elem) => {
 
   if (elem.length !== undefined) {
@@ -12,6 +14,10 @@ export const encode = (elem) => {
   const src = decodeURIComponent(elem.getAttribute('src'));
   const size = window.epub.sizes[src];
   if (size) {
+    if (size.width <= 50 && size.height <= 50) {
+      // small image
+      return;
+    }
     elem.setAttribute('data-src', src);
     elem.removeAttribute('src');
     if (elem.hasAttribute('alt')) {
@@ -22,12 +28,15 @@ export const encode = (elem) => {
     elem.style.paddingBottom = (size.height / size.width * 100) + '%';
     elem.style.backgroundColor = '#dcdcdc';
   } else {
-    console.warn('image not in manifest: ' + src);
+    console.warn(`image not in manifest: ${src}`);
   }
 }
 
+/**
+ * Update lazyload images
+ */
 export const update = () => {
-  const imgs = Array.from(document.querySelectorAll('img[data-src]'));
+  const imgs = $$('img[data-src]');
 
   imgs.forEach((img) => {
 
@@ -45,6 +54,7 @@ export const update = () => {
       // remove fixed width and height
       img.onload = () => {
         img.removeAttribute('style');
+        M.Materialbox.init(img);
       }
     }
   })

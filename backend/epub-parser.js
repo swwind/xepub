@@ -93,6 +93,12 @@ module.exports = (zip) => {
 
   }
 
+  if (metadata.date && Array.isArray(metadata.date)) {
+    metadata.date = metadata.date.map((elem) => {
+      return `${elem.$attr['opf:event']}: ${elem['#text']}`;
+    }).join('\n');
+  }
+
   alert.debug('Metadata is ok');
 
   const manifest = Object.create(null);

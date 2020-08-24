@@ -16,7 +16,7 @@ USAGE
       --debug              show debug messages
       --gencert            generate a certificate so as to enable https and wss
       --https              use https (require a certificate, see `--gencert`)
-      --http               use http
+      --http               use http (default)
 
 EXAMPLE
 

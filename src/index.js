@@ -62,6 +62,5 @@ socket.on('connect', () => {
 Key.on('d', 'ArrowRight', nextPage);
 Key.on('a', 'ArrowLeft', prevPage);
 
-window.onscroll = update;
-window.onresize = update;
-
+window.addEventListener('scroll', update);
+window.addEventListener('resize', update);
