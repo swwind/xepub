@@ -1,0 +1,39 @@
+body > .container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  
+  > .header {
+    height: 50px;
+    line-height: 50px;
+    background-color: royalblue;
+    color: white;
+    font-size: 1.5rem;
+  }
+  
+  > .content {
+    flex: 1;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    transform: translateY(25px);
+    opacity: 0;
+    transition: transform .3s, opacity .3s;
+
+    &.open {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  > .header, > .content {
+    padding: 0 10%;
+
+    @media only screen and (min-width: 1200px) {
+      padding: 0 calc((100% - 1000px) / 2);
+    }
+
+    @media only screen and (max-width: 400px) {
+      padding: 0 12px;
+    }
+  }
+}

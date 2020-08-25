@@ -1,0 +1,56 @@
+body > .modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  display: none;
+  transition: opacity .2s;
+
+  &.open {
+    opacity: 1;
+  }
+
+  .background {
+    height: 100vh;
+    width: 100vw;
+    background-color: rgba(0, 0, 0, .5);
+    transition: opacity .2s;
+    display: grid;
+    place-items: center;
+
+    .container {
+      max-height: 80vh;
+      max-width: 50%;
+      min-width: 25%;
+      background-color: white;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+
+      .header {
+        margin: 20px;
+        font-size: 1.2rem;
+        font-weight: bold;
+      }
+
+      .content {
+        overflow: auto;
+        padding: 0 20px;
+        white-space: pre-line;
+      }
+
+      .footer {
+        margin: 20px;
+        text-align: right;
+
+        .button {
+          border-radius: 2px;
+          padding: 5px 20px;
+          background: royalblue;
+          color: white;
+          cursor: pointer;
+        }
+      }
+    }
+  }
+}

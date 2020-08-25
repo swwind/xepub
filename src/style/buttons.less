@@ -1,0 +1,65 @@
+body > .buttons {
+  position: fixed;
+  bottom: 20px;
+  right: 30px;
+  text-align: center;
+  color: white;
+  width: 90px;
+  height: 300px;
+  user-select: none;
+
+  .large-button {
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: block;
+    background: crimson;
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, .14), 0 3px 1px -2px rgba(0, 0, 0, .12), 0 1px 5px 0 rgba(0, 0, 0, .2);
+    cursor: pointer;
+
+    i {
+      line-height: 50px;
+    }
+  }
+
+  .button-list {
+    position: absolute;
+    bottom: 90px;
+    right: 25px;
+    margin: 0;
+    padding: 0;
+
+    li {
+      list-style: none;
+      height: 40px;
+      width: 40px;
+      border-radius: 50%;
+      margin-top: 10px;
+      cursor: pointer;
+      box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, .12), 0 1px 5px 0 rgba(0, 0, 0, .2);
+      visibility: hidden;
+      transform: translateY(-20px);
+      opacity: 0;
+
+      &:nth-child(1) {
+        background-color: red;
+      }
+      &:nth-child(2) {
+        background-color: green;
+      }
+      &:nth-child(3) {
+        background-color: blue;
+      }
+      &:nth-child(4) {
+        background-color: yellow;
+      }
+
+      i {
+        line-height: 40px;
+      }
+    }
+  }
+}

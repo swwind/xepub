@@ -1,6 +1,6 @@
 {
   "name": "xepub",
-  "version": "1.0.0-alpha.9",
+  "version": "1.0.0-alpha.10",
   "repository": "https://github.com/swwind/xepub",
   "author": "swwind <swwind233@gmail.com>",
   "license": "MIT",
@@ -11,20 +11,16 @@
     "express": "^4.16.4",
     "fast-xml-parser": "^3.12.16",
     "image-size": "^0.7.2",
-    "materialize-css": "^1.0.0-rc.2",
-    "memory-fs": "^0.4.1",
     "mime-types": "^2.1.22",
     "natural-orderby": "^2.0.1",
-    "node-forge": "^0.8.2",
     "opn": "^5.5.0",
     "pug": "^2.0.3",
-    "serve-handler": "^6.0.0",
     "socket.io": "^2.2.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.3.4",
-    "@babel/preset-env": "^7.3.4",
-    "babel-loader": "^8.0.5",
+    "css-loader": "^4.2.2",
+    "less-loader": "^6.2.0",
+    "style-loader": "^1.2.1",
     "webpack": "^4.29.6",
     "webpack-cli": "^3.3.0"
   },

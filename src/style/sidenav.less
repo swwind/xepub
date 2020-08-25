@@ -1,0 +1,54 @@
+body > .sidenav {
+  position: fixed;
+  top: 0;
+  left: 0;
+
+  .background {
+    height: 100vh;
+    width: 100vw;
+    background-color: rgba(0, 0, 0, .5);
+    opacity: 0;
+    display: none;
+    transition: opacity .2s;
+  }
+
+  .nav {
+    margin: 0;
+    padding: 0;
+    position: fixed;
+    top: 0;
+    left: -300px;
+    height: 100vh;
+    width: 300px;
+    background: white;
+    transition: left .2s;
+
+    li {
+      padding: 10px 20px;
+      cursor: pointer;
+      transition: background-color .2s;
+
+      &:hover {
+        background-color: rgba(0, 0, 0, .1);
+      }
+
+      &.header {
+        padding-left: 30px;
+        color: rgba(0, 0, 0, .5);
+        background: transparent;
+        cursor: default;
+      }
+    }
+  }
+
+  &.open {
+
+    .background {
+      opacity: 1;
+    }
+
+    .nav {
+      left: 0;
+    }
+  }
+}

@@ -20,8 +20,8 @@ export const $$ = name => Array.from(document.querySelectorAll(name));
  * @param {string} title 
  */
 export const setTitle = (title) => {
-  $('.brand-logo').textContent = title;
-  $('.brand-logo').setAttribute('title', title);
+  $('.logo').textContent = title;
+  $('.logo').setAttribute('title', title);
   $('title').textContent = title;
 }
 
@@ -30,6 +30,6 @@ export const setTitle = (title) => {
  * @param {string} title 
  */
 export const setSubTitle = (title) => {
-  $('.brand-logo').textContent = title;
-  $('.brand-logo').setAttribute('title', title);
+  $('.logo').textContent = title;
+  $('.logo').setAttribute('title', title);
 }
