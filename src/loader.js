@@ -4,7 +4,7 @@ Load epub page from URL
 
 import { encode } from './lazyload';
 import { resolve, parse } from 'url';
-import { flyToElement, flyToElementImmediately } from './animate';
+import { flyToElement, flyToElementImmediately } from './scrolling';
 import { setSubTitle, $, $$, socket } from './utils';
 import { toast } from './toast';
 

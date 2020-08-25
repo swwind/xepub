@@ -2,8 +2,7 @@ export const init = () => {
   const elems = document.querySelectorAll('[data-tooltip]');
   Array.from(elems).forEach((elem) => {
     let tooltip;
-    elem.addEventListener('mouseenter', (e) => {
-      console.log(elem);
+    elem.addEventListener('mouseenter', () => {
       const rect = elem.getBoundingClientRect();
       const top = rect.top + elem.clientHeight / 2 - 15;
       const right = window.innerWidth - rect.right + elem.clientWidth + 15;

@@ -1,4 +1,5 @@
 import { $$ } from "./utils";
+import { mount } from "./imageview";
 
 /**
  * prepare for lazyload
@@ -31,6 +32,8 @@ export const encode = (elem) => {
       } else {
         elem.removeAttribute('style');
       }
+
+      mount(elem);
     }
   } else {
     console.warn(`image not in manifest: ${src}`);

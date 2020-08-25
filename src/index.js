@@ -4,19 +4,21 @@ import './style/xepub.less';
 
 import createMenu from './create-menu';
 import { loadUrl, nextPage, prevPage } from './loader';
-import { scrollTo } from './animate';
+import { scrollTo } from './scrolling';
 import * as Key from './key-events';
-import { $, $$, setTitle } from './utils';
+import { $, setTitle } from './utils';
 import { socket } from './utils';
 import { init } from './sidenav';
 import * as Modal from './modal';
 import { toast } from './toast';
 import * as Tooltip from './tooltip';
+import * as Buttons from './buttons';
 
 const sidenav = init($('.sidenav'));
 const infoModal = Modal.init($('#infomations-modal'));
 
 Tooltip.init();
+Buttons.init();
 
 $('#bookmark').addEventListener('click', () => sidenav.show());
 $('#totop').addEventListener('click', () => scrollTo(0));
@@ -67,15 +69,3 @@ socket.on('connect', () => {
 
 Key.on('d', 'ArrowRight', nextPage);
 Key.on('a', 'ArrowLeft', prevPage);
-
-$('#menu').addEventListener('click', () => {
-  $('#submenu').classList.add('show');
-});
-$('.buttons').addEventListener('mouseleave', () => {
-  $('#submenu').classList.remove('show');
-});
-
-// TODO: this is not elegant
-setTimeout(() => {
-  $('#submenu').removeAttribute('style');
-}, 200);
