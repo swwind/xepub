@@ -37,5 +37,9 @@ export const encode = (elem) => {
     }
   } else {
     console.warn(`image not in manifest: ${src}`);
+
+    elem.onload = () => {
+      mount(elem);
+    }
   }
 }
