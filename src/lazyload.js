@@ -50,12 +50,12 @@ export const update = () => {
         img.setAttribute('alt', img.getAttribute('data-alt'));
         img.removeAttribute('data-alt');
       }
+      img.removeAttribute('style');
 
       // remove fixed width and height
       img.onload = () => {
-        img.removeAttribute('style');
         M.Materialbox.init(img);
       }
     }
-  })
+  });
 }

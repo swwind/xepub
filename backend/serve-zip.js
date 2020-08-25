@@ -17,6 +17,7 @@ module.exports = (zip) => (req, res, next) => {
 
   const contentType = mime.contentType(path.extname(filename));
   res.header('Content-Type', contentType);
+  res.header('Content-Length', file.length);
 
   res.status(200).end(file);
 }

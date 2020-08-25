@@ -15,7 +15,7 @@ module.exports = (dirname) => {
   }
 
   const files = orderBy(fs.readdirSync(dirname))
-    .filter((filename) => /\.(?:png|jpe?g|gif)$/.test(filename));
+    .filter((filename) => /\.(?:png|jpe?g|gif)$/i.test(filename));
 
   if (!files.length) {
     alert.error('No image file found in this folder');

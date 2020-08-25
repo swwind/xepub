@@ -10,13 +10,10 @@ USAGE
 
   -p, --port               http port (default 23333)
   -o, --open               open browser automaticly
-  -6, --ipv6               use ipv6 address when using `--open`
+  -e, --electron           use electron instead of browser
   -h, --help               show help document and exit
   -v, --version            show xepub version and exit
       --debug              show debug messages
-      --gencert            generate a certificate so as to enable https and wss
-      --https              use https (require a certificate, see `--gencert`)
-      --http               use http (default)
 
 EXAMPLE
 

@@ -6,18 +6,17 @@ const pug = require('pug');
 const URL = require('url');
 const path = require('path');
 const http = require('http');
-const https = require('https');
 const AdmZip = require('adm-zip');
 const express = require('express');
 const csstree = require('css-tree');
 const socketio = require('socket.io');
 const alert = require('./backend/alert');
 const packages = require('./package.json');
+const { spawn } = require('child_process');
 const options = require('./backend/options');
 const serveZip = require('./backend/serve-zip');
-const EpubParser = require('./backend/epub-parser');
-const FolderParser = require('./backend/folder-parser');
-const { createCert, createRootCA, certFolder } = require('./backend/create-cert');
+const parseEpub = require('./backend/epub-parser');
+const parseFolder = require('./backend/folder-parser');
 
 const here = path.resolve.bind(null, __dirname);
 
@@ -28,40 +27,24 @@ if (option.debug) {
 }
 
 if (option.version) {
-  alert.info('Xepub version v' + packages.version);
+  alert.info('Xepub v' + packages.version);
+  alert.info('Node  ' + process.version);
   process.exit(0);
 }
 
-if (option.gencert) {
-  createRootCA();
-  createCert();
-  process.exit(0);
-}
-
-const epubname = option.source[0];
+const epubname = option._[0];
 if (!epubname) {
-  option.help = 1;
-}
-
-if (option.help !== false) {
-  console.log(fs.readFileSync(path.resolve(__dirname, 'backend', 'help.txt'), 'utf-8'));
-  process.exit(option.help);
-}
-
-const hasCert = fs.existsSync(certFolder);
-
-if (option.https === null) {
-  option.https = hasCert;
-}
-if (option.https && !hasCert) {
-  alert.error('To enable https, you must generate a certificate first.');
-  alert.error('Use following command:');
-  alert.error('$ xepub --gencert');
+  alert.error('File name missing');
   process.exit(1);
 }
 
+if (option.help) {
+  console.log(fs.readFileSync(here('backend', 'help.txt'), 'utf-8'));
+  process.exit(0);
+}
+
 if (!fs.existsSync(epubname)) {
-  alert.error('File or folder not found, try `xepub --help`');
+  alert.error('File or folder not found');
   process.exit(1);
 }
 
@@ -77,10 +60,10 @@ if (lstat.isDirectory()) {
 
   alert.info('Scanning folder...');
   const dirname = path.resolve(process.cwd(), epubname);
-  epub = FolderParser(dirname);
+  epub = parseFolder(dirname);
   alert.debug('Successfully scanned folder');
 
-  const index = pug.compile(fs.readFileSync(path.resolve(__dirname, 'backend', 'folder-index.pug'), 'utf8'));
+  const index = pug.compile(fs.readFileSync(here('backend', 'folder-index.pug'), 'utf8'));
 
   app.use('/folder/', (req, res, next) => {
     if (req.originalUrl === '/folder/') {
@@ -103,7 +86,7 @@ if (lstat.isDirectory()) {
     alert.debug('Mimetype: ' + mimetype);
     process.exit(1);
   }
-  epub = EpubParser(zip);
+  epub = parseEpub(zip);
   alert.debug('Successfully parsed file');
   app.use(serveZip(zip));
 }
@@ -126,10 +109,7 @@ if (fs.existsSync(dist1)) {
 // serve public folder
 app.use(express.static(here('public')));
 
-const server = !option.https ? http.createServer(app) : https.createServer({
-  cert: fs.readFileSync(path.resolve(certFolder, 'xepub.crt')),
-  key: fs.readFileSync(path.resolve(certFolder, 'xepub.key.pem')),
-}, app);
+const server = http.createServer(app);
 
 const io = socketio(server);
 io.on('connect', (socket) => {
@@ -166,10 +146,26 @@ io.on('connect', (socket) => {
   });
 });
 server.listen(option.port);
-const url = `${option.https ? 'https' : 'http'}://${option.ipv6 ? '[::1]' : 'localhost'}:${option.port}`;
+const url = `http://localhost:${option.port}`;
 alert.info(`Finished, listening on ${url}`);
 
-if (option.open) {
+if (option.electron) {
+  const which = spawn('which', ['electron']);
+  which.on('close', (code) => {
+    if (code) {
+      // not found
+      alert.error('Electron not found in $PATH');
+      alert.error('Please remove --electron flag');
+    } else {
+      alert.info('Opening in electron...');
+      const electron = spawn('electron', [ url ]);
+      electron.on('close', () => {
+        alert.info('Electron closed.');
+        process.exit(0);
+      });
+    }
+  })
+} else if (option.open) {
   opn(url);
 }
 

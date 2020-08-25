@@ -18,6 +18,10 @@
 body {
   overflow-x: hidden;
   overflow-y: scroll;
+
+  font-family: Roboto, 'Noto Sans', 'Segoe UI', 'Noto Sans CJK SC',
+    'Source Han Sans CN', 'WenQuanYi Micro Hei', 'WenQuanYi Zen Hei',
+    'Droid Sans Fallback', 'PingFang SC', 'Microsoft Yahei', sans-serif;
 }
 
 .content.open {
@@ -31,10 +35,6 @@ body {
   margin-top: 120px;
   visibility: hidden;
   transition: all .5s ease-in-out;
-}
-
-.fake-body {
-  all: initial;
 }
 
 .brand-logo {
