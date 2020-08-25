@@ -12,6 +12,7 @@
 # production
 /build
 /yarn.lock
+/public/js/xepub.min.js
 
 # misc
 .DS_Store
