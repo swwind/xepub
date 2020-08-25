@@ -1,7 +1,6 @@
 style.
   .desc { color: #aaa; margin-bottom: 20px; }
-  a { display: block; }
 each image in files
-  a(href='folder/' + image, xepub-target-blank, target="_blank")
+  div
     img(src='folder/' + image, alt=image)
     .desc= image

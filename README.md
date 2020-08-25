@@ -21,6 +21,21 @@ npm install
 npm link
 ```
 
+Install as desktop application(with electron installed):
+
+```
+% echo "
+[Desktop Entry]
+Name=Xepub
+Comment=An epub reader
+Exec=$(where xepub) -e %f
+Terminal=false
+Type=Application
+Categories=Epub;Reader;
+MimeType=application/epub+zip;
+" | sudo tee /usr/share/applications/xepub.desktop
+```
+
 ## Usage
 
 ```bash
@@ -42,5 +57,5 @@ yarn dev
 
 ## TODOs
 
-- (bug) Materialize CSS infects book style.
 - (feature) Remember last read position.
+- (feature) Settings

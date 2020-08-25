@@ -15,10 +15,13 @@ export const init = () => {
   let shown = false;
   
   $('#menu').addEventListener('click', () => {
+    if (shown) {
+      return;
+    }
     shown = true;
+    submenu.style.display = 'block';
     submenu.childNodes.forEach((button, index) => {
       if (button instanceof HTMLLIElement) {
-        button.style.visibility = 'visible';
         fadeIn(index * 20, button);
       }
     });
@@ -32,11 +35,7 @@ export const init = () => {
         }
       }
     });
-    for (const node of submenu.childNodes) {
-      if (node instanceof HTMLLIElement) {
-        node.style.visibility = 'hidden';
-      }
-    }
+    submenu.style.display = 'none';
     shown = false;
   });
   

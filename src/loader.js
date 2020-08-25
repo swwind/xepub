@@ -65,7 +65,7 @@ const parseCSSFromLink = maybeArray((elem) => {
 // bind <a/> events
 const bindEvents = maybeArray((elem) => {
   const href = elem.getAttribute('href');
-  if (/^(?:[a-z]+:)?\/\//i.test(href) || elem.hasAttribute('xepub-target-blank')) {
+  if (/^(?:[a-z]+:)?\/\//i.test(href)) {
     // external link
     // console.log('ignored ' + href);
     return;
