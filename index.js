@@ -32,15 +32,15 @@ if (option.version) {
   process.exit(0);
 }
 
+if (option.help) {
+  console.log(fs.readFileSync(here('backend', 'help.txt'), 'utf-8'));
+  process.exit(0);
+}
+
 const epubname = option._[0];
 if (!epubname) {
   alert.error('File name missing');
   process.exit(1);
-}
-
-if (option.help) {
-  console.log(fs.readFileSync(here('backend', 'help.txt'), 'utf-8'));
-  process.exit(0);
 }
 
 if (!fs.existsSync(epubname)) {

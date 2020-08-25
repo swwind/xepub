@@ -4,9 +4,9 @@ Also a comic reader, just put all images in one folder.
 
 USAGE
 
-  $ xepub [options] [file|folder]
+  $ xepub [options] <file|folder>
 
-  Alavilable options:
+  Available options:
 
   -p, --port               http port (default 23333)
   -o, --open               open browser automaticly
@@ -17,10 +17,9 @@ USAGE
 
 EXAMPLE
 
-  $ xepub --gencert
   $ xepub erohon.epub
-  $ xepub -p 4000 erohon.epub
-  $ xepub -o -6 dirname
+  $ xepub -e erohon.epub
+  $ xepub erohon/
 
 CONTRIBUTOR
 
