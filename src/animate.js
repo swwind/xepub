@@ -1,10 +1,11 @@
+const elem = document.querySelector('.content');
 
 /**
  * get scroll top
  * @returns {number}
  */
 const getScrollTop = () => {
-  return document.documentElement.scrollTop || document.body.scrollTop;
+  return elem.scrollTop;
 }
 
 /**
@@ -12,8 +13,7 @@ const getScrollTop = () => {
  * @param {number} top 
  */
 export const setScrollTop = (top) => {
-  document.body.scrollTop = top; // For Safari
-  document.documentElement.scrollTop = top; // For Chrome, Firefox, IE and Opera
+  elem.scrollTop = top; // For Safari
 }
 
 /**

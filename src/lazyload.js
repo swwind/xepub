@@ -11,51 +11,28 @@ export const encode = (elem) => {
     return;
   }
 
+  
   const src = decodeURIComponent(elem.getAttribute('src'));
   const size = window.epub.sizes[src];
   if (size) {
     if (size.width <= 50 && size.height <= 50) {
       // small image
+      // consider like emojis
       return;
     }
-    elem.setAttribute('data-src', src);
-    elem.removeAttribute('src');
-    if (elem.hasAttribute('alt')) {
-      elem.setAttribute('data-alt', elem.getAttribute('alt'));
-      elem.removeAttribute('alt');
-    }
+    elem.setAttribute('loading', 'lazy');
+    const oldstyle = elem.getAttribute('style');
     elem.style.width = size.width + 'px';
     elem.style.paddingBottom = (size.height / size.width * 100) + '%';
     elem.style.backgroundColor = '#dcdcdc';
+    elem.onload = () => {
+      if (oldstyle) {
+        elem.setAttribute('style', oldstyle);
+      } else {
+        elem.removeAttribute('style');
+      }
+    }
   } else {
     console.warn(`image not in manifest: ${src}`);
   }
-}
-
-/**
- * Update lazyload images
- */
-export const update = () => {
-  const imgs = $$('img[data-src]');
-
-  imgs.forEach((img) => {
-
-    const { top, bottom } = img.getBoundingClientRect();
-    if (top < window.innerHeight + 500 && bottom > - 500) {
-
-      img.setAttribute('src', img.getAttribute('data-src'));
-      img.removeAttribute('data-src');
-
-      if (img.hasAttribute('data-alt')) {
-        img.setAttribute('alt', img.getAttribute('data-alt'));
-        img.removeAttribute('data-alt');
-      }
-      img.removeAttribute('style');
-
-      // remove fixed width and height
-      img.onload = () => {
-        M.Materialbox.init(img);
-      }
-    }
-  });
 }

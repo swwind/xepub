@@ -1,0 +1,26 @@
+body > .toast {
+  position: fixed;
+  top: 70px;
+  right: 50px;
+  text-align: right;
+  background: rgba(0, 0, 0, .8);
+  border-radius: 2px;
+  color: white;
+  padding: 0 30px;
+  height: 40px;
+  line-height: 40px;
+  visibility: hidden;
+  opacity: 0;
+
+  &.show {
+    visibility: visible;
+    opacity: 1;
+    transition: opacity .2s linear;
+  }
+
+  &.hide {
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 0s .2s, opacity .2s linear;
+  }
+}

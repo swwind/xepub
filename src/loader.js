@@ -2,10 +2,11 @@
 Load epub page from URL
 */
 
-import { encode, update } from './lazyload';
+import { encode } from './lazyload';
 import { resolve, parse } from 'url';
 import { flyToElement, flyToElementImmediately } from './animate';
 import { setSubTitle, $, $$, socket } from './utils';
+import { toast } from './toast';
 
 /**
  * Resolve relative path
@@ -126,9 +127,10 @@ export const loadUrl = (url) => {
     // animation
     new Promise((resolve) => {
       content.classList.remove('open');
-      setTimeout(resolve, 500);
+      // wait for animation
+      setTimeout(resolve, 300);
       // remove all inline style
-      setTimeout(removeElem, 500, $$('[data-book]'));
+      setTimeout(removeElem, 300, $$('[data-book]'));
     }),
     // fetch content
     fetch(pathname)
@@ -153,9 +155,6 @@ export const loadUrl = (url) => {
     // scroll to top or hash
     flyToElementImmediately(hash);
 
-    // update lazy load
-    update();
-
     // fix <a/> links
     bindEvents(content.querySelectorAll('a[href]'));
 
@@ -172,7 +171,7 @@ export const prevPage = () => {
   if (now > 0) {
     loadUrl(window.epub.spine[now - 1]);
   } else {
-    M.toast({ html: 'This is the first page!' });
+    toast('This is the first page!');
   }
 }
 export const nextPage = () => {
@@ -184,6 +183,6 @@ export const nextPage = () => {
   if (now < window.epub.spine.length - 1) {
     loadUrl(window.epub.spine[now + 1]);
   } else {
-    M.toast({ html: 'This is the last page!' });
+    toast('This is the last page!');
   }
 }

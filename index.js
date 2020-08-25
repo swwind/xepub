@@ -91,21 +91,6 @@ if (lstat.isDirectory()) {
   app.use(serveZip(zip));
 }
 
-// development env
-const dist1 = here('node_modules', 'materialize-css', 'dist');
-// production  env
-const dist2 = here('..', 'materialize-css', 'dist');
-if (fs.existsSync(dist1)) {
-  app.use(express.static(dist1));
-} else if (fs.existsSync(dist2)) {
-  app.use(express.static(dist2));
-} else {
-  alert.error('Materialize CSS not found');
-  alert.debug('__dirname   = ' + __dirname);
-  alert.debug('development = ' + dist1);
-  alert.debug('production  = ' + dist2);
-  process.exit(1);
-}
 // serve public folder
 app.use(express.static(here('public')));
 
