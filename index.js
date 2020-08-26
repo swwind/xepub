@@ -130,8 +130,11 @@ io.on('connect', (socket) => {
     socket.emit('css', res);
   });
 });
+if (option.port === -1) {
+  option.port = option.electron ? 0 : 23333;
+}
 server.listen(option.port);
-const url = `http://localhost:${option.port}`;
+const url = `http://localhost:${server.address().port}/`;
 alert.info(`Finished, listening on ${url}`);
 
 if (option.electron) {

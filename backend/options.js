@@ -15,7 +15,7 @@ const flags = {
  */
 const options = (args) => {
   const res = {
-    port: 23333,
+    port: -1, // -1: default
     open: false,
     electron: false,
     help: false,

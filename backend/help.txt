@@ -8,7 +8,7 @@ USAGE
 
   Available options:
 
-  -p, --port               http port (default 23333)
+  -p, --port               http port (default 23333, random if electron)
   -o, --open               open browser automaticly
   -e, --electron           use electron instead of browser
   -h, --help               show help document and exit
