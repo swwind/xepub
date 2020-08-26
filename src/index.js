@@ -38,7 +38,7 @@ socket.on('initialize', (epub) => {
   epub.docTitle = epub.docTitle || epub.metadata.title || 'Xepub';
   epub.docAuthor = epub.docAuthor || epub.metadata.author || 'unknow author';
 
-  setTitle(epub.docTitle);
+  setTitle(`${epub.docTitle} - Xepub`);
 
   // fill infomations
   const info = $('#informations');

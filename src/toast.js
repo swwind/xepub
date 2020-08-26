@@ -15,5 +15,3 @@ export const toast = (text) => {
     elem.classList.remove('show');
   }, 5000);
 }
-
-window.toast = toast;

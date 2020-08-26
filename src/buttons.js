@@ -1,12 +1,12 @@
 const { $ } = require("./utils");
-const { walk } = require("./animate");
+const { walk, timings } = require("./animate");
 
 const fadeIn = (delay, button) => {
   setTimeout(() => {
     walk((x) => {
       button.style.transform = `translateY(${24 - x * 24}px)`;
       button.style.opacity = x;
-    });
+    }, 200, timings.linear);
   }, delay);
 }
 const submenu = $('#submenu');
