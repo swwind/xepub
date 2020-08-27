@@ -24,7 +24,8 @@ export const init = () => {
         div.style.opacity = x;
       });
     });
-    elem.addEventListener('mouseleave', (e) => {
+
+    const closeEvent = (e) => {
       while (tooltip.length) {
         const div = tooltip.shift();
         const right = parseFloat(div.style.right);
@@ -33,6 +34,9 @@ export const init = () => {
           div.style.opacity = 1 - x;
         }).then(() => div.remove());
       }
-    });
+    }
+
+    elem.addEventListener('mouseleave', closeEvent);
+    elem.addEventListener('click', closeEvent);
   });
 }

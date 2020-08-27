@@ -42,18 +42,3 @@ export const walk = (step, duration = 200, timing = timings['ease-in-out']) => {
     requestAnimationFrame(fn);
   });
 }
-
-export const animate = async (target, dest, duration = 200, timing = timings['ease-in-out']) => {
-  const from = { };
-  for (const key in dest) {
-    if (typeof dest[key] === 'number') {
-      from[key] = parseFloat(target.style[key]);
-    }
-  }
-  await walk((x) => {
-    for (const key in from) {
-      const now = (dest[key] - from[key]) * x + from[key];
-      target.style[key] = now + 'px';
-    }
-  }, duration, timing);
-}

@@ -20,12 +20,15 @@ body > .modal {
 
     .container {
       max-height: 80vh;
-      max-width: 50%;
-      min-width: 25%;
+      width: 800px;
       background-color: white;
       padding: 0;
       display: flex;
       flex-direction: column;
+
+      @media only screen and (max-width: 824px) {
+        width: 90%;
+      }
 
       .header {
         margin: 20px;

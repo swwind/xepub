@@ -1,4 +1,4 @@
-import { walk, timings } from "./animate";
+import { walk } from "./animate";
 
 const elem = document.querySelector('.content');
 

@@ -1,18 +1,50 @@
-import { animate, walk, timings } from "./animate";
+import { walk, timings } from "./animate";
+import { $ } from "./utils";
 
 class Transform {
-  constructor(width, height, top, left) {
+  constructor(width, height, top, left, rotate) {
     this.top = top;
     this.left = left;
     this.width = width;
     this.height = height;
+    this.rotate = rotate;
+
+    this.animating = false;
   }
 
-  bindImage(img) {
+  applyTo(img) {
     img.style.top = this.top + 'px';
     img.style.left = this.left + 'px';
     img.style.width = this.width + 'px';
     img.style.height = this.height + 'px';
+    img.style.transform = `rotate(${-this.rotate}deg)`;
+  }
+
+  async animate(img, dest) {
+    if (this.animating) {
+      return;
+    }
+    this.applyTo(img);
+    this.animating = true;
+
+    
+    await walk((x) => {
+      new Transform(
+        (dest.width  - this.width)  * x + this.width,
+        (dest.height - this.height) * x + this.height,
+        (dest.top    - this.top)    * x + this.top,
+        (dest.left   - this.left)   * x + this.left,
+        (dest.rotate - this.rotate) * x + this.rotate
+      ).applyTo(img);
+    });
+
+    this.top = dest.top;
+    this.left = dest.left;
+    this.width = dest.width;
+    this.height = dest.height;
+    this.rotate = dest.rotate;
+
+    this.animating = false;
   }
 
   fit(maxWidth, maxHeight) {
@@ -22,41 +54,67 @@ class Transform {
     if (twh > wh) {
       const nw = maxWidth - 50;
       const nh = nw / twh;
-      return new Transform(nw, nh, (maxHeight - nh) / 2, 25);
+      return new Transform(nw, nh, (maxHeight - nh) / 2, 25, this.rotate);
     } else {
       const nh = maxHeight - 50;
       const nw = nh * twh;
-      return new Transform(nw, nh, 25, (maxWidth - nw) / 2);
+      return new Transform(nw, nh, 25, (maxWidth - nw) / 2, this.rotate);
     }
+  }
+
+  rotate90(maxWidth, maxHeight) {
+    const org = new Transform(this.height, this.width, 0, 0, this.rotate + 90)
+    const res = this.rotate % 180 > 0 ? org.fit(maxHeight, maxWidth) : org.fit(maxWidth, maxHeight);
+    if (this.rotate % 180 === 0) {
+      res.left -= (res.height - res.width) / 2;
+      res.top  += (res.height - res.width) / 2;
+    } else {
+      const tmp = res.left;
+      res.left = res.top;
+      res.top = tmp;
+    }
+    
+    const tmp = res.height;
+    res.height = res.width;
+    res.width = tmp;
+    return res;
+  }
+}
+
+const div = $('.imageview');
+const nimg = $('#imageview-img');
+const rotate = $('#rotate-btn');
+
+const mountTo = (img) => () => {
+  const rect = img.getBoundingClientRect();
+  const origin = new Transform(img.clientWidth, img.clientHeight, rect.top, rect.left, 0);
+  const nowState = new Transform(img.clientWidth, img.clientHeight, rect.top, rect.left, 0);
+
+  nimg.src = img.src;
+  origin.applyTo(nimg);
+
+  div.onclick = async () => {
+    nowState.rotate = ((nowState.rotate + 180) % 360) - 180;
+    await Promise.all([
+      nowState.animate(nimg, origin),
+      walk((x) => div.style.backgroundColor = `rgba(0, 0, 0, ${(1 - x) * .9})`, 200, timings.linear),
+    ]);
+    div.style.display = 'none';
+  };
+  
+  nimg.onload = () => {
+    div.style.display = 'block';
+    nowState.animate(nimg, origin.fit(window.innerWidth, window.innerHeight));
+    walk((x) => div.style.backgroundColor = `rgba(0, 0, 0, ${x * .9})`, 200, timings.linear);
+  }
+
+  rotate.onclick = (e) => {
+    e.stopPropagation();
+    nowState.animate(nimg, nowState.rotate90(window.innerWidth, window.innerHeight));
   }
 }
 
 export const mount = (/** @type {HTMLImageElement} */ img) => {
   img.style.cursor = 'pointer';
-
-  img.addEventListener('click', (e) => {
-    const div = document.createElement('div');
-    div.classList.add('imageview');
-
-    const rect = img.getBoundingClientRect();
-    const origin = new Transform(img.clientWidth, img.clientHeight, rect.top, rect.left);
-
-    const nimg = document.createElement('img');
-    div.appendChild(nimg);
-    nimg.src = img.src;
-    origin.bindImage(nimg);
-
-    div.addEventListener('click', async () => {
-      await Promise.all([
-        animate(nimg, origin),
-        walk((x) => div.style.backgroundColor = `rgba(0, 0, 0, ${(1 - x) * .9})`, 200, timings.linear),
-      ]);
-      div.remove();
-    });
-    const scaled = origin.fit(window.innerWidth, window.innerHeight);
-    document.body.appendChild(div);
-    walk((x) => div.style.backgroundColor = `rgba(0, 0, 0, ${x * .9})`, 200, timings.linear);
-
-    nimg.onload = () => animate(nimg, scaled);
-  });
+  img.addEventListener('click', mountTo(img));
 }

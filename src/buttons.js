@@ -30,7 +30,10 @@ export const init = () => {
     buttons.style.height = '300px';
   });
 
-  buttons.addEventListener('mouseleave', async () => {
+  const closeBtnEvent = async () => {
+    if (!shown) {
+      return;
+    }
     await walk((x) => {
       for (const node of submenu.childNodes) {
         if (node instanceof HTMLLIElement) {
@@ -41,6 +44,12 @@ export const init = () => {
     submenu.style.display = 'none';
     buttons.style.height = '90px';
     shown = false;
+  }
+
+  buttons.addEventListener('mouseleave', closeBtnEvent);
+  submenu.childNodes.forEach((button, index) => {
+    if (button instanceof HTMLLIElement) {
+      button.addEventListener('click', closeBtnEvent);
+    }
   });
-  
 }
