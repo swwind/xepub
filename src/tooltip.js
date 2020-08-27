@@ -22,7 +22,7 @@ export const init = () => {
       walk((x) => {
         div.style.right = (right - 15 + 15 * x) + 'px';
         div.style.opacity = x;
-      }, 200);
+      });
     });
     elem.addEventListener('mouseleave', (e) => {
       while (tooltip.length) {
@@ -31,7 +31,7 @@ export const init = () => {
         walk((x) => {
           div.style.right = (right + 15 * x) + 'px';
           div.style.opacity = 1 - x;
-        }, 200);
+        }).then(() => div.remove());
       }
     });
   });

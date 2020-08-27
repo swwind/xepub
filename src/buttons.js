@@ -10,11 +10,13 @@ const fadeIn = (delay, button) => {
   }, delay);
 }
 const submenu = $('#submenu');
+const menu = $('#menu');
+const buttons = $('.buttons');
 
 export const init = () => {
   let shown = false;
   
-  $('#menu').addEventListener('click', () => {
+  menu.addEventListener('click', () => {
     if (shown) {
       return;
     }
@@ -25,9 +27,10 @@ export const init = () => {
         fadeIn(index * 20, button);
       }
     });
+    buttons.style.height = '300px';
   });
 
-  $('.buttons').addEventListener('mouseleave', async () => {
+  buttons.addEventListener('mouseleave', async () => {
     await walk((x) => {
       for (const node of submenu.childNodes) {
         if (node instanceof HTMLLIElement) {
@@ -36,6 +39,7 @@ export const init = () => {
       }
     });
     submenu.style.display = 'none';
+    buttons.style.height = '90px';
     shown = false;
   });
   
