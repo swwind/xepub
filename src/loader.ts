@@ -29,7 +29,6 @@ socket.on('css', (css: string) => {
   style.innerHTML = css;
   style.setAttribute('data-book', '');
   document.head.appendChild(style);
-  console.log(style);
 });
 
 

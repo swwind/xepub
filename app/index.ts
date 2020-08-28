@@ -1,6 +1,6 @@
 import { promises as fsp, existsSync } from 'fs';
-import opn from 'opn';
-import pug from 'pug';
+import * as opn from 'opn';
+import * as pug from 'pug';
 import * as path from 'path';
 import * as http from 'http';
 import * as express from 'express';
@@ -61,7 +61,7 @@ const main = async (option: XepubArguments) => {
     epub = parseResult.epub;
     alert.debug('Successfully scanned folder');
 
-    const index = pug.compile(await fsp.readFile(here('folder-index.pug'), 'utf8'));
+    const index = pug.compile(await fsp.readFile(here('folder.pug'), 'utf8'));
 
     app.use('/folder/', (req, res, next) => {
       if (req.originalUrl === '/folder/') {
@@ -78,7 +78,7 @@ const main = async (option: XepubArguments) => {
     // open epub file
     alert.info('Parsing EPUB file...');
     await zip.initialize(epubname);
-    const mimetype = (await zip.readAsText('mimetype')).unwrapOr('');
+    const mimetype = (await zip.readAsText('mimetype')).unwrapOr('').trim();
     if (mimetype !== 'application/epub+zip') {
       alert.error('Not epub file');
       alert.debug('Mimetype: ' + mimetype);
@@ -93,6 +93,7 @@ const main = async (option: XepubArguments) => {
     alert.error('??');
     alert.error('???');
     alert.error(`What is ${epubname}?`);
+    process.exit(1);
   }
 
   // serve public folder

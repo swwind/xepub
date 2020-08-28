@@ -12,8 +12,8 @@ export const toast = (text: string) => {
   if (lasttimeout) {
     clearTimeout(lasttimeout);
   }
-  lasttimeout = Number(setTimeout(() => {
+  lasttimeout = window.setTimeout(() => {
     elem.classList.add('hide');
     elem.classList.remove('show');
-  }, 5000));
+  }, 5000);
 }

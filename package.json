@@ -40,8 +40,9 @@
   },
   "scripts": {
     "dev": "webpack --watch --mode=development",
+    "build": "yarn clean && yarn build:src && yarn build:app",
     "build:src": "webpack --mode=production",
     "build:app": "tsc --build ./app/tsconfig.json",
-    "clear": "rm -rf ./app/*.js ./app/*.d.ts ./public/js/xepub.min.js"
+    "clean": "rm -rf ./app/*.js ./app/*.d.ts ./public/js/xepub.min.js"
   }
 }
