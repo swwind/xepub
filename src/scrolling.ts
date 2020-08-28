@@ -4,7 +4,6 @@ const elem = document.querySelector('.content');
 
 /**
  * get scroll top
- * @returns {number}
  */
 const getScrollTop = () => {
   return elem.scrollTop;
@@ -12,29 +11,25 @@ const getScrollTop = () => {
 
 /**
  * set scroll top
- * @param {number} top 
  */
-export const setScrollTop = (top) => {
+export const setScrollTop = (top: number) => {
   elem.scrollTop = top; // For Safari
 }
 
 /**
  * Scroll to the specific position
- * @param {number} pos position
- * @param {number} time million second
  */
-export const scrollTo = (pos, time = 500) => {
+export const scrollTo = (pos: number, duration: number = 500) => {
   const lastpos = getScrollTop();
   return walk((x) => {
     setScrollTop((pos - lastpos) * x + lastpos);
-  }, time);
+  }, duration);
 }
 
 /**
  * fly to element
- * @param {string} el selector
  */
-export const flyToElement = (el) => {
+export const flyToElement = async (el: string) => {
   // fake invoke
   if (!el) return;
 
@@ -48,15 +43,15 @@ export const flyToElement = (el) => {
   const target = getScrollTop() + elem.getBoundingClientRect().top;
   elem.classList.remove('xepub-highlight');
 
-  scrollTo(target - 100, 500)
-    .then(() => elem.classList.add('xepub-highlight'));
+  scrollTo(target - 100, 500);
+
+  elem.classList.add('xepub-highlight');
 }
 
 /**
  * fly to an element or top without animations
- * @param {string} el selector
  */
-export const flyToElementImmediately = (el) => {
+export const flyToElementImmediately = (el?: string) => {
 
   if (!el) {
     setScrollTop(0);

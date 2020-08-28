@@ -1,6 +1,6 @@
 'use strict';
 
-require('colors');
+import 'colors';
 
 const flags = {
   unstable: false,
@@ -8,38 +8,34 @@ const flags = {
   debug: false,
 }
 
-const error = (message = '') => {
+export const error = (message = '') => {
   console.error('[ERRO]'.red, message);
 }
-const warn = (message = '') => {
+export const warn = (message = '') => {
   console.warn('[WARN]'.yellow, message);
 }
-const info = (message = '') => {
+export const info = (message = '') => {
   console.log('[INFO]'.white, message);
 }
-const debug = (message = '') => {
+export const debug = (message = '') => {
   if (flags.debug) {
     console.log('[DBUG]'.green, message);
   }
 }
-const unstable = () => {
+export const unstable = () => {
   if (!flags.unstable) {
     warn('This book has some problems while parsing...');
     warn('I can not ensure whether xepub can deal it properly or not.');
     flags.unstable = true;
   }
 }
-const broken = () => {
+export const broken = () => {
   if (!flags.broken) {
     error('This book is almost broken!!!');
     error('Xepub may crash.');
     flags.broken = true;
   }
 }
-const debugMode = () => {
+export const debugMode = () => {
   flags.debug = true;
-}
-
-module.exports = {
-  error, warn, info, unstable, broken, debug, debugMode
 }

@@ -3,18 +3,19 @@
 import './style/xepub.less';
 
 import createMenu from './create-menu';
-import { loadUrl, nextPage, prevPage } from './loader';
+import * as Loader from './loader';
 import { scrollTo } from './scrolling';
 import * as Key from './key-events';
 import { $, setTitle } from './utils';
 import { socket } from './utils';
-import { init } from './sidenav';
+import * as SideNav from './sidenav';
 import * as Modal from './modal';
 import { toast } from './toast';
 import * as Tooltip from './tooltip';
 import * as Buttons from './buttons';
+import { EpubInfo } from '../app/types';
 
-const sidenav = init($('.sidenav'));
+const sidenav = SideNav.init($('.sidenav'));
 const infoModal = Modal.init($('#infomations-modal'));
 
 Tooltip.init();
@@ -24,19 +25,19 @@ $('#bookmark').addEventListener('click', () => sidenav.show());
 $('#totop').addEventListener('click', () => scrollTo(0));
 $('#info').addEventListener('click', () => infoModal.show());
 
-const upperFirst = (str) => {
+const upperFirst = (str: string) => {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-socket.on('initialize', (epub) => {
-  window.epub = epub;
+socket.on('initialize', (epub: EpubInfo) => {
+  Loader.init(epub);
 
   // create the menu
   createMenu(epub.navMap, $('.sidenav .nav'), sidenav);
 
-  loadUrl(epub.spine[0]);
+  Loader.loadUrl(epub.spine[0]);
   epub.docTitle = epub.docTitle || epub.metadata.title || 'Xepub';
-  epub.docAuthor = epub.docAuthor || epub.metadata.author || 'unknow author';
+  epub.docAuthor = epub.docAuthor || epub.metadata.creator || 'unknow author';
 
   setTitle(`${epub.docTitle} - Xepub`);
 
@@ -67,5 +68,5 @@ socket.on('connect', () => {
   connected = true;
 });
 
-Key.on('d', 'ArrowRight', nextPage);
-Key.on('a', 'ArrowLeft', prevPage);
+Key.on('d', 'ArrowRight', Loader.nextPage);
+Key.on('a', 'ArrowLeft', Loader.prevPage);

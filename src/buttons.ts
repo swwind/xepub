@@ -1,12 +1,13 @@
-const { $ } = require("./utils");
-const { walk, timings } = require("./animate");
+import { $ } from './utils';
+import { walk } from "./animate";
+import { linear } from './timings';
 
-const fadeIn = (delay, button) => {
+const fadeInDelay = (delay: number, button: HTMLElement) => {
   setTimeout(() => {
     walk((x) => {
       button.style.transform = `translateY(${24 - x * 24}px)`;
-      button.style.opacity = x;
-    }, 200, timings.linear);
+      button.style.opacity = String(x);
+    }, 200, linear);
   }, delay);
 }
 const submenu = $('#submenu');
@@ -24,7 +25,7 @@ export const init = () => {
     submenu.style.display = 'block';
     submenu.childNodes.forEach((button, index) => {
       if (button instanceof HTMLLIElement) {
-        fadeIn(index * 20, button);
+        fadeInDelay(index * 20, button);
       }
     });
     buttons.style.height = '300px';
@@ -35,9 +36,9 @@ export const init = () => {
       return;
     }
     await walk((x) => {
-      for (const node of submenu.childNodes) {
+      for (const node of Array.from(submenu.childNodes)) {
         if (node instanceof HTMLLIElement) {
-          node.style.opacity = 1 - x;
+          node.style.opacity = String(1 - x);
         }
       }
     });
@@ -47,7 +48,7 @@ export const init = () => {
   }
 
   buttons.addEventListener('mouseleave', closeBtnEvent);
-  submenu.childNodes.forEach((button, index) => {
+  submenu.childNodes.forEach((button) => {
     if (button instanceof HTMLLIElement) {
       button.addEventListener('click', closeBtnEvent);
     }

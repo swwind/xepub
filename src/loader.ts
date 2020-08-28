@@ -2,68 +2,57 @@
 Load epub page from URL
 */
 
-import { encode } from './lazyload';
+import { lazyload } from './lazyload';
 import { resolve, parse } from 'url';
 import { flyToElement, flyToElementImmediately } from './scrolling';
 import { setSubTitle, $, $$, socket } from './utils';
 import { toast } from './toast';
+import { EpubInfo } from '../app/types';
 
 /**
  * Resolve relative path
- * @param {string} path current file path
- * @returns {(html: string) => string}
  */
-const resolvePath = (path) => (html) => {
+const resolvePath = (path: string) => (html: string) => {
   const regex = /(href|src)="((?!https?:\/\/)[\s\S]+?)"/gi;
   return html.replace(regex, (_, p1, p2) => {
     return `${p1}="${resolve(path, p2)}"`;
   });
 }
 
-/**
- * It's too hard to explain what is this
- */
-const maybeArray = (fn) => (arr, ...args) => {
-  if (typeof arr.length === 'number') {
-    for (const a of arr) {
-      fn(a, ...args);
-    }
-  } else {
-    fn(arr, ...args);
-  }
-}
-
 // add .fake-body to every css selector
-const addCSS = (url, css) => {
-  socket.emit('css', url, css);
+// send to backend to process
+const addCSS = (url: string, css: string) => {
+  socket.remote('css', url, css);
 }
-socket.on('css', (css) => {
+socket.on('css', (css: string) => {
   const style = document.createElement('style');
   style.innerHTML = css;
   style.setAttribute('data-book', '');
   document.head.appendChild(style);
+  console.log(style);
 });
 
-const removeElem = maybeArray((elem) => elem.remove());
-const replaceTag = maybeArray((elem, target) => {
+
+const removeElem = (elem: Element) => elem.remove();
+const replaceTag = (elem: Element, target: string) => {
   const div = document.createElement(target);
   div.textContent = elem.textContent;
   elem.parentNode.replaceChild(div, elem);
-});
-const parseCSSFromStyle = maybeArray((elem, url) => {
+};
+const parseCSSFromStyle = (elem: Element, url: string) => {
   addCSS(url, elem.innerHTML);
   elem.remove();
-});
-const parseCSSFromLink = maybeArray((elem) => {
+};
+const parseCSSFromLink = (elem: Element) => {
   const url = elem.getAttribute('href');
   fetch(url)
     .then((res) => res.text())
     .then((css) => addCSS(url, css));
   elem.remove();
-});
+};
 
 // bind <a/> events
-const bindEvents = maybeArray((elem) => {
+const bindEvents = (elem: Element) => {
   const href = elem.getAttribute('href');
   if (/^(?:[a-z]+:)?\/\//i.test(href)) {
     // external link
@@ -76,22 +65,23 @@ const bindEvents = maybeArray((elem) => {
     e.preventDefault();
     return true;
   });
-});
+}
 
 /**
  * Preload a new page
- * @param {string} url current page path
- * @param {string} html page content
  */
-const handleHTML = (url, html) => {
+const handleHTML = (url: string, html: string) => {
 
   const div = document.createElement('div');
   div.innerHTML = html;
 
   // remove all custom style
-  parseCSSFromStyle(div.querySelectorAll('style'), url);
+  div.querySelectorAll('style').forEach((elem) => {
+    parseCSSFromStyle(elem, url);
+  });
   // link[rel="stylesheet"] put into auto load
-  parseCSSFromLink(div.querySelectorAll('link[rel="stylesheet"]'));
+  div.querySelectorAll('link[rel="stylesheet"]')
+    .forEach(parseCSSFromLink);
 
   // remove title element
   const titleElem = div.querySelector('title');
@@ -100,55 +90,68 @@ const handleHTML = (url, html) => {
 
   // smaller header
   for (let i = 3; i; -- i) {
-    replaceTag(div.querySelectorAll('h' + i), 'h' + (i + 3));
+    div.querySelectorAll('h' + i).forEach((elem) => {
+      replaceTag(elem, 'h' + (i + 3))
+    });
   }
   // lazyload all images
-  encode(div.querySelectorAll('img[src]'));
+  div.querySelectorAll('img[src]').forEach((elem: HTMLImageElement) => {
+    lazyload(elem, epub.sizes);
+  });
 
   const body = div.querySelector('body');
   if (body) {
-    body.outerHTML = body.outerHTML.replace(/<body/gi, '<div').replace(/<\/body>/gi, '<div>');
-    return [ body, title ];
+    const ddiv = document.createElement('div');
+    ddiv.outerHTML = body.outerHTML.replace(/<body/gi, '<div').replace(/<\/body>/gi, '<div>');
+    return {
+      body: ddiv,
+      title
+    }
   } else {
-    return [ div, title ];
+    return {
+      body: div,
+      title
+    }
   }
 }
 
-export const loadUrl = (url) => {
+let nowpage: string = null;
+let epub: EpubInfo = null;
+
+export const init = (_epub: EpubInfo) => {
+  epub = _epub;
+}
+
+export const loadUrl = (url: string) => {
   console.log(`Navigating to ${url}`);
 
   const { pathname, hash } = parse(url);
-  if (window.epub.nowpage === pathname) {
+  if (nowpage === pathname) {
     flyToElement(hash);
     return;
   }
   const content = $('.content');
   Promise.all([
     // animation
-    new Promise((resolve) => {
+    new Promise<void>((resolve) => {
       content.classList.remove('open');
-      // wait for animation
-      setTimeout(resolve, 300);
+      const elems = $$('[data-book]');
       // remove all inline style
-      setTimeout(removeElem, 300, $$('[data-book]'));
+      setTimeout(() => {
+        elems.forEach(removeElem);
+        resolve();
+      }, 300);
     }),
     // fetch content
     fetch(pathname)
       .then(res => res.text())
       .then(resolvePath(url))
       .then((elem) => handleHTML(url, elem))
-  ]).then(([_, [elem, title]]) => {
-    window.epub.nowpage = pathname;
+  ]).then(([_, { body, title }]) => {
+    nowpage = pathname;
 
-    // enforce redraw div
-    // https://stackoverflow.com/questions/41425785/scrollbar-not-getting-modifed-when-scale-changes-in-chrome
-    // seems not working...
-
-    // elem.style.display = 'none';
-    elem.classList.add('fake-body');
-    content.replaceChild(elem, content.children[0]);
-    // elem.offsetHeight;
-    // elem.style.display = 'block';
+    body.classList.add('fake-body');
+    content.replaceChild(body, content.children[0]);
 
     setSubTitle(title || epub.docTitle);
 
@@ -156,32 +159,33 @@ export const loadUrl = (url) => {
     flyToElementImmediately(hash);
 
     // fix <a/> links
-    bindEvents(content.querySelectorAll('a[href]'));
+    content.querySelectorAll('a[href]').forEach(bindEvents);
 
     content.classList.add('open');
-  })
+  });
 }
 
 export const prevPage = () => {
-  const now = window.epub.spine.indexOf(window.epub.nowpage);
+  const now = epub.spine.indexOf(nowpage);
   if (now === -1) {
     console.error('Not exist page');
+    toast('Page not exist');
     return;
   }
   if (now > 0) {
-    loadUrl(window.epub.spine[now - 1]);
+    loadUrl(epub.spine[now - 1]);
   } else {
     toast('This is the first page!');
   }
 }
 export const nextPage = () => {
-  const now = window.epub.spine.indexOf(window.epub.nowpage);
+  const now = epub.spine.indexOf(nowpage);
   if (now === -1) {
     console.error('Not exist page');
     return;
   }
-  if (now < window.epub.spine.length - 1) {
-    loadUrl(window.epub.spine[now + 1]);
+  if (now < epub.spine.length - 1) {
+    loadUrl(epub.spine[now + 1]);
   } else {
     toast('This is the last page!');
   }

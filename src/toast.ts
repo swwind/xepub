@@ -1,7 +1,9 @@
-const elem = document.querySelector('.toast');
+import { $ } from "./utils";
 
-let lasttimeout;
-export const toast = (text) => {
+const elem = $('.toast') as HTMLDivElement;
+
+let lasttimeout: number;
+export const toast = (text: string) => {
   if (!elem.classList.contains('show')) {
     elem.classList.remove('hide');
     elem.classList.add('show');
@@ -10,8 +12,8 @@ export const toast = (text) => {
   if (lasttimeout) {
     clearTimeout(lasttimeout);
   }
-  lasttimeout = setTimeout(() => {
+  lasttimeout = Number(setTimeout(() => {
     elem.classList.add('hide');
     elem.classList.remove('show');
-  }, 5000);
+  }, 5000));
 }

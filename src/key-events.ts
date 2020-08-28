@@ -1,5 +1,5 @@
 
-const f = (b, t) => b ? t : '';
+const f = (b: boolean, t: string) => b ? t : '';
 
 /**
  * Mount a couple of keys to a callback
@@ -13,5 +13,5 @@ export const on = (...keyname) => {
     if (keyname.indexOf(key) > -1) {
       callback();
     }
-  })
+  });
 }

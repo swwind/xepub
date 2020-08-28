@@ -1,6 +1,11 @@
-export const init = (elem) => {
-  const ok = elem.querySelector('.ok.button');
-  ok.addEventListener('click', (e) => {
+export interface Modal {
+  show(): void;
+  hide(): void;
+}
+
+export const init = (elem: HTMLElement): Modal => {
+  const ok = elem.querySelector('.ok.button') as HTMLDivElement;
+  ok.addEventListener('click', () => {
     hide();
   });
 

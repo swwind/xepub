@@ -1,6 +1,6 @@
 'use strict';
 
-const { error } = require("./alert");
+import { error } from './alert';
 
 const flags = {
   'p': 'port',
@@ -10,10 +10,18 @@ const flags = {
   'v': 'version',
 }
 
-/**
- * parse command line arguments
- */
-const options = (args) => {
+export interface XepubArguments {
+  port: number;
+  open: boolean;
+  electron: boolean;
+  help: boolean;
+  version: boolean;
+  debug: boolean;
+  _: string[],
+}
+
+export default (args: string[]): XepubArguments => {
+
   const res = {
     port: -1, // -1: default
     open: false,
@@ -47,5 +55,3 @@ const options = (args) => {
 
   return res;
 }
-
-module.exports = options;

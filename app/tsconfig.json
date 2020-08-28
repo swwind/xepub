@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "target": "ESNEXT",
+    "module": "CommonJS",
+    "declaration": true,
+    "resolveJsonModule": true
+  },
+  "include": ["./*.ts"],
+  "exclude": ["node_modules/"]
+}

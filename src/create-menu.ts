@@ -1,12 +1,10 @@
-/*
-Create bookmark element
-*/
-
 import { loadUrl } from './loader';
+import { NavPoint } from '../app/types';
+import { SideNav } from './sidenav';
 
-const createMenu = (nav, elem, sidenav) => {
+const createMenu = (nav: NavPoint[], elem: HTMLElement, sidenav: SideNav) => {
 
-  const createElement = (label, src) => {
+  const createElement = (label: string, src: string) => {
     const li = document.createElement('li');
     li.addEventListener('click', () => {
       loadUrl(src);

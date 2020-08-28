@@ -1,20 +1,13 @@
-import { $$ } from "./utils";
 import { mount } from "./imageview";
+import { Size, KeyMap } from "../app/types";
 
 /**
  * prepare for lazyload
- * @param {HTMLElement | HTMLElement[]} elem 
  */
-export const encode = (elem) => {
+export const lazyload = (elem: HTMLImageElement, sizes: KeyMap<Size>) => {
 
-  if (elem.length !== undefined) {
-    Array.from(elem).forEach(encode);
-    return;
-  }
-
-  
   const src = decodeURIComponent(elem.getAttribute('src'));
-  const size = window.epub.sizes[src];
+  const size = sizes[src];
   if (size) {
     if (size.width <= 50 && size.height <= 50) {
       // small image
@@ -22,7 +15,7 @@ export const encode = (elem) => {
       return;
     }
 
-    let parent = elem;
+    let parent: HTMLElement = elem;
     while (parent = parent.parentElement) {
       if (parent.nodeName.toLowerCase() === 'a') {
         // link

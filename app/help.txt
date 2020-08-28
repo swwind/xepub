@@ -10,7 +10,7 @@ USAGE
 
   -p, --port               http port (default 23333, random if electron)
   -o, --open               open browser automaticly
-  -e, --electron           use electron instead of browser
+  -e, --electron           open electron automaticly
   -h, --help               show help document and exit
   -v, --version            show xepub version and exit
       --debug              show debug messages

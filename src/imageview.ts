@@ -1,8 +1,16 @@
-import { walk, timings } from "./animate";
+import { walk } from "./animate";
 import { $ } from "./utils";
+import { linear } from "./timings";
 
 class Transform {
-  constructor(width, height, top, left, rotate) {
+  top: number;
+  left: number;
+  width: number;
+  height: number;
+  rotate: number;
+  animating: boolean;
+
+  constructor(width: number, height: number, top: number, left: number, rotate: number) {
     this.top = top;
     this.left = left;
     this.width = width;
@@ -12,7 +20,7 @@ class Transform {
     this.animating = false;
   }
 
-  applyTo(img) {
+  applyTo(img: HTMLImageElement) {
     img.style.top = this.top + 'px';
     img.style.left = this.left + 'px';
     img.style.width = this.width + 'px';
@@ -20,14 +28,13 @@ class Transform {
     img.style.transform = `rotate(${-this.rotate}deg)`;
   }
 
-  async animate(img, dest) {
+  async animate(img: HTMLImageElement, dest: Transform) {
     if (this.animating) {
       return;
     }
     this.applyTo(img);
     this.animating = true;
 
-    
     await walk((x) => {
       new Transform(
         (dest.width  - this.width)  * x + this.width,
@@ -47,7 +54,7 @@ class Transform {
     this.animating = false;
   }
 
-  fit(maxWidth, maxHeight) {
+  fit(maxWidth: number, maxHeight: number) {
     const wh = maxWidth / maxHeight;
     const twh = this.width / this.height;
     
@@ -62,7 +69,7 @@ class Transform {
     }
   }
 
-  rotate90(maxWidth, maxHeight) {
+  rotate90(maxWidth: number, maxHeight: number) {
     const org = new Transform(this.height, this.width, 0, 0, this.rotate + 90)
     const res = this.rotate % 180 > 0 ? org.fit(maxHeight, maxWidth) : org.fit(maxWidth, maxHeight);
     if (this.rotate % 180 === 0) {
@@ -81,11 +88,11 @@ class Transform {
   }
 }
 
-const div = $('.imageview');
-const nimg = $('#imageview-img');
-const rotate = $('#rotate-btn');
+const div = $('.imageview') as HTMLDivElement;
+const nimg = $('#imageview-img') as HTMLImageElement;
+const rotate = $('#rotate-btn') as HTMLDivElement;
 
-const mountTo = (img) => () => {
+const mountTo = (img: HTMLImageElement) => () => {
   const rect = img.getBoundingClientRect();
   const origin = new Transform(img.clientWidth, img.clientHeight, rect.top, rect.left, 0);
   const nowState = new Transform(img.clientWidth, img.clientHeight, rect.top, rect.left, 0);
@@ -97,7 +104,7 @@ const mountTo = (img) => () => {
     nowState.rotate = ((nowState.rotate + 180) % 360) - 180;
     await Promise.all([
       nowState.animate(nimg, origin),
-      walk((x) => div.style.backgroundColor = `rgba(0, 0, 0, ${(1 - x) * .9})`, 200, timings.linear),
+      walk((x) => div.style.backgroundColor = `rgba(0, 0, 0, ${(1 - x) * .9})`, 200, linear),
     ]);
     div.style.display = 'none';
   };
@@ -105,7 +112,7 @@ const mountTo = (img) => () => {
   nimg.onload = () => {
     div.style.display = 'block';
     nowState.animate(nimg, origin.fit(window.innerWidth, window.innerHeight));
-    walk((x) => div.style.backgroundColor = `rgba(0, 0, 0, ${x * .9})`, 200, timings.linear);
+    walk((x) => div.style.backgroundColor = `rgba(0, 0, 0, ${x * .9})`, 200, linear);
   }
 
   rotate.onclick = (e) => {
@@ -114,7 +121,7 @@ const mountTo = (img) => () => {
   }
 }
 
-export const mount = (/** @type {HTMLImageElement} */ img) => {
+export const mount = (img: HTMLImageElement) => {
   img.style.cursor = 'pointer';
   img.addEventListener('click', mountTo(img));
 }
