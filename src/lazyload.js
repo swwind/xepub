@@ -21,6 +21,15 @@ export const encode = (elem) => {
       // consider like emojis
       return;
     }
+
+    let parent = elem;
+    while (parent = parent.parentElement) {
+      if (parent.nodeName.toLowerCase() === 'a') {
+        // link
+        return;
+      }
+    }
+
     elem.setAttribute('loading', 'lazy');
     const oldstyle = elem.getAttribute('style');
     elem.style.width = size.width + 'px';

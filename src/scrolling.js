@@ -45,7 +45,7 @@ export const flyToElement = (el) => {
     console.warn('Cannot find element: ' + el);
     return;
   }
-  const target = elem.getBoundingClientRect().top;
+  const target = getScrollTop() + elem.getBoundingClientRect().top;
   elem.classList.remove('xepub-highlight');
 
   scrollTo(target - 100, 500)
@@ -68,7 +68,7 @@ export const flyToElementImmediately = (el) => {
     setScrollTop(0);
     return;
   }
-  const target = elem.getBoundingClientRect().top;
+  const target = getScrollTop() + elem.getBoundingClientRect().top;
 
   setScrollTop(target - 100);
 }
