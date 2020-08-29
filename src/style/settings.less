@@ -1,0 +1,71 @@
+body > .modal#settings-modal .content {
+  .line {
+    height: 40px;
+    width: 100%;
+    display: flex;
+    padding: 0 20px;
+    box-sizing: border-box;
+    margin: 0;
+    line-height: 40px;
+
+    .name {
+      flex: 1;
+    }
+
+    &.checkbox {
+      cursor: pointer;
+      transition: background-color .2s;
+
+      &:hover {
+        background-color: rgba(0, 0, 0, .1);
+      }
+
+      input[type="checkbox"] {
+
+        all: unset;
+
+        @width: 35px;
+        @height: 15px;
+        
+        width: @width;
+        height: @height;
+        border-radius: @height / 2;
+        background-color: #cccccc;
+        position: relative;
+        
+        margin: auto 0;
+        cursor: pointer;
+        transition: background-color .2s;
+        
+        &::after {
+          content: "";
+          width: 20px;
+          height: 20px;
+          position: absolute;
+          top: -2.5px;
+          left: -2.5px;
+          background-color: #aaaaaa;
+          border-radius: 50%;
+          box-shadow: 0 2px 1px -1px rgba(0,0,0,.2), 0 1px 1px 0 rgba(0,0,0,.14), 0 1px 3px 0 rgba(0,0,0,.12);
+          
+          transition: left .2s, background-color .2s;
+        }
+        
+        &:checked {
+          background-color: #b0003a;
+
+          &::after {
+            background-color: #e91e63;
+            left: @width - 17.5px;
+          }
+        }
+      }
+    }
+
+    &.text {
+      padding: 0;
+      color: #666666;
+      cursor: default;
+    }
+  }
+}

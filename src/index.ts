@@ -13,10 +13,12 @@ import * as Modal from './modal';
 import { toast } from './toast';
 import * as Tooltip from './tooltip';
 import * as Buttons from './buttons';
+import * as Setting from './setting';
 import { EpubInfo } from '../app/types';
 
 const sidenav = SideNav.init($('.sidenav'));
 const infoModal = Modal.init($('#infomations-modal'));
+const settingModal = Modal.init($('#settings-modal'));
 
 Tooltip.init();
 Buttons.init();
@@ -24,6 +26,7 @@ Buttons.init();
 $('#bookmark').addEventListener('click', () => sidenav.show());
 $('#totop').addEventListener('click', () => scrollTo(0));
 $('#info').addEventListener('click', () => infoModal.show());
+$('#settings').addEventListener('click', () => settingModal.show());
 
 const upperFirst = (str: string) => {
   return str.charAt(0).toUpperCase() + str.slice(1);
@@ -70,3 +73,5 @@ socket.on('connect', () => {
 
 Key.on('d', 'ArrowRight', Loader.nextPage);
 Key.on('a', 'ArrowLeft', Loader.prevPage);
+
+Setting.init();

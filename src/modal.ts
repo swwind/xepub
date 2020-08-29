@@ -9,6 +9,14 @@ export const init = (elem: HTMLElement): Modal => {
     hide();
   });
 
+  elem.addEventListener('click', () => {
+    hide();
+  });
+  const container = elem.querySelector('.container');
+  container.addEventListener('click', (e) => {
+    e.stopPropagation();
+  });
+
   const show = () => {
     elem.style.display = 'block';
     setTimeout(() => {

@@ -34,12 +34,17 @@ body > .modal {
         margin: 20px;
         font-size: 1.2rem;
         font-weight: bold;
+        cursor: default;
+        user-select: none;
       }
 
       .content {
         overflow: auto;
         padding: 0 20px;
-        white-space: pre-line;
+
+        &#informations {
+          white-space: pre-line;
+        }
       }
 
       .footer {

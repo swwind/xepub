@@ -15,6 +15,7 @@ module.exports = {
         use: 'ts-loader',
       }, {
         test: /\.less$/,
+        exclude: /\.lazy\.less$/,
         use: [
           'style-loader',
           {
@@ -23,7 +24,19 @@ module.exports = {
           },
           'less-loader'
         ]
-      }
+      }, {
+        test: /\.lazy\.less$/,
+        use: [
+          {
+            loader: 'style-loader',
+            options: { injectType: 'lazyStyleTag' }
+          }, {
+            loader: 'css-loader',
+            options: { url: false }
+          },
+          'less-loader',
+        ],
+      },
     ]
   },
   resolve: {
