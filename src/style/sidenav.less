@@ -23,6 +23,7 @@ body > .sidenav {
     width: 300px;
     background: white;
     transition: left .2s;
+    overflow-y: auto;
 
     li {
       padding: 10px 20px;
@@ -39,6 +40,15 @@ body > .sidenav {
         background: transparent;
         cursor: default;
       }
+
+      .set-level(@x) when (@x >= 0) {
+        .set-level((@x - 1));
+        &.level-@{x} {
+          padding-left: (@x + 1) * 20px;
+        }
+      }
+      
+      .set-level(8);
     }
   }
 

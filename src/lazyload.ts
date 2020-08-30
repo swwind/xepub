@@ -24,17 +24,9 @@ export const lazyload = (elem: HTMLImageElement, sizes: KeyMap<Size>) => {
     }
 
     elem.setAttribute('loading', 'lazy');
-    const oldstyle = elem.getAttribute('style');
-    elem.style.width = size.width + 'px';
-    elem.style.paddingBottom = (size.height / size.width * 100) + '%';
-    elem.style.backgroundColor = '#dcdcdc';
+    elem.width = size.width;
+    elem.height = size.height;
     elem.onload = () => {
-      if (oldstyle) {
-        elem.setAttribute('style', oldstyle);
-      } else {
-        elem.removeAttribute('style');
-      }
-
       mount(elem);
     }
   } else {

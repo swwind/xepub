@@ -33,11 +33,6 @@ socket.on('css', (css: string) => {
 
 
 const removeElem = (elem: Element) => elem.remove();
-const replaceTag = (elem: Element, target: string) => {
-  const div = document.createElement(target);
-  div.textContent = elem.textContent;
-  elem.parentNode.replaceChild(div, elem);
-};
 const parseCSSFromStyle = (elem: Element, url: string) => {
   addCSS(url, elem.innerHTML);
   elem.remove();
@@ -87,12 +82,6 @@ const handleHTML = (url: string, html: string) => {
   const title = titleElem && titleElem.textContent;
   titleElem && titleElem.remove();
 
-  // smaller header
-  for (let i = 3; i; -- i) {
-    div.querySelectorAll('h' + i).forEach((elem) => {
-      replaceTag(elem, 'h' + (i + 3))
-    });
-  }
   // lazyload all images
   div.querySelectorAll('img[src]').forEach((elem: HTMLImageElement) => {
     lazyload(elem, epub.sizes);

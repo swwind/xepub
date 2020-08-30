@@ -6,14 +6,9 @@ import { Node } from 'xml-parser';
 import * as alert from './alert';
 import Zip from './zip';
 import { EpubInfo, NavPoint, Size } from './types';
-import { OptionMap, None, Option } from './utils';
+import { OptionMap, None } from './utils';
 
-/**
- * @param {string} absolute 
- * @param {string} filename 
- * @returns {string}
- */
-const resolvePath = (absolute, filename) => {
+const resolvePath = (absolute: string, filename: string) => {
   return url.resolve(absolute,
     // fuck those epub creators
     filename.replace(/\\/g, '/'));

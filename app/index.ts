@@ -61,16 +61,7 @@ const main = async (option: XepubArguments) => {
     epub = parseResult.epub;
     alert.debug('Successfully scanned folder');
 
-    const index = pug.compile(await fsp.readFile(here('folder.pug'), 'utf8'));
-
-    app.use('/folder/', (req, res, next) => {
-      if (req.originalUrl === '/folder/') {
-        res.header('Content-Type', 'text/html');
-        res.end(index({ files: parseResult.files }));
-      } else {
-        next();
-      }
-    })
+    app.use(parseResult.middleware);
     app.use('/folder', express.static(dirname));
 
   } else if (lstat.isFile()) {

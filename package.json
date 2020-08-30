@@ -40,6 +40,7 @@
   },
   "scripts": {
     "dev": "webpack --watch --mode=development",
+    "dev:app": "tsc --build ./app/tsconfig.json --watch",
     "build": "yarn clean && yarn build:src && yarn build:app",
     "build:src": "webpack --mode=production",
     "build:app": "tsc --build ./app/tsconfig.json",

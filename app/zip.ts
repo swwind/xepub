@@ -12,10 +12,9 @@ export default class Zip {
   async initialize(zippath: string) {
     return new Promise(async (resolve) => {
       this.dir = await fsp.mkdtemp(path.join(os.tmpdir(), 'xepub-'));
-      createReadStream(zippath).pipe(unzip.Extract({ path: this.dir }).on('close', () => {
-        resolve();
-      }));
-    })
+      createReadStream(zippath).pipe(unzip.Extract({ path: this.dir })
+        .on('close', resolve));
+    });
   }
 
   async readAsBuffer(filepath: string): Promise<Option<Buffer>> {
