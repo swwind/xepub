@@ -36,7 +36,7 @@ socket.on('initialize', (epub: EpubInfo) => {
   Loader.init(epub);
 
   // create the menu
-  createMenu(epub.navMap, $('.sidenav .nav'), sidenav);
+  createMenu(epub.navMap, $('.sidenav .nav'));
 
   Loader.loadUrl(epub.spine[0]);
   epub.docTitle = epub.docTitle || epub.metadata.title || 'Xepub';
