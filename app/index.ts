@@ -3,7 +3,6 @@ import * as path from 'path';
 import * as http from 'http';
 import * as express from 'express';
 import * as alert from './alert';
-import * as packages from '../package.json';
 import { spawn } from 'child_process';
 import options, { XepubArguments } from './options';
 import parseEpub from './parse-epub';
@@ -14,6 +13,8 @@ import { bindSocket } from './socket';
 import { AddressInfo } from 'net';
 import Store from './store';
 import { openExternalLink } from './open';
+import helpText from './help';
+import { getVersion } from './utils';
 
 const here = (...file: string[]) => path.resolve(__dirname, ...file);
 
@@ -23,13 +24,13 @@ const main = async (option: XepubArguments) => {
   }
 
   if (option.version) {
-    alert.info('Xepub v' + packages.version);
+    alert.info('Xepub v' + await getVersion());
     alert.info('Node  ' + process.version);
     process.exit(0);
   }
 
   if (option.help) {
-    console.log(await fsp.readFile(here('help.txt'), 'utf-8'));
+    console.log(helpText);
     process.exit(0);
   }
 

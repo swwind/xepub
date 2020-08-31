@@ -1,4 +1,6 @@
 import { KeyMap } from "./types";
+import { promises as fsp } from "fs";
+import * as path from 'path';
 
 export abstract class Option<T> {
   abstract unwrap(errorMessage?: string): T;
@@ -34,4 +36,10 @@ export class OptionMap<V> {
   toObject() {
     return this.map;
   }
+}
+
+export const getVersion = async () => {
+  const data = await fsp.readFile(path.join(__dirname, '..', 'package.json'), 'utf8');
+  const pkg = JSON.parse(data);
+  return pkg.version as string;
 }

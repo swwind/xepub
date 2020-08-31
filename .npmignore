@@ -3,5 +3,4 @@
 /.gitignore
 /webpack.config.js
 /yarn.lock
-/app/*.ts
-!/app/*.d.ts
+/app

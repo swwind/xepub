@@ -14,8 +14,7 @@
 /yarn.lock
 /public/js/xepub.min.js
 
-/app/*.js
-/app/*.d.ts
+/lib
 
 # misc
 .DS_Store

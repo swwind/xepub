@@ -1,4 +1,4 @@
-xepub - a lightweight epub reader
+export default `xepub - a lightweight epub reader
 
 Also a comic reader, just put all images in one folder.
 
@@ -24,3 +24,5 @@ EXAMPLE
 CONTRIBUTOR
 
   - swwind <swwind233@gmail.com>
+
+`;

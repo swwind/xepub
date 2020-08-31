@@ -3,7 +3,8 @@
     "target": "ESNEXT",
     "module": "CommonJS",
     "declaration": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "outDir": "../lib"
   },
   "include": ["./*.ts"],
   "exclude": ["node_modules/"]
