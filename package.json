@@ -41,6 +41,6 @@
     "build": "yarn clean && yarn build:src && yarn build:app",
     "build:src": "webpack --mode=production",
     "build:app": "tsc --build ./app/tsconfig.json",
-    "clean": "rm -rf ./app/*.js ./app/*.d.ts ./public/js/xepub.min.js"
+    "clean": "rm -rf ./lib ./public/js/xepub.min.js"
   }
 }

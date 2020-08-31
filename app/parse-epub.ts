@@ -97,10 +97,8 @@ export default async (zip: Zip): Promise<EpubInfo> => {
   const tocfilename = manifest.get("ncx").unwrap("tocfile missing");
   const toc = (await zip.readAsXML(tocfilename)).unwrap("tocfile invalid");
 
-  const docTitle = toc.$("ncx", "docTitle", "text")
-    .append(getContent).unwrapOr("");
-  const docAuthor = toc.$("ncx", "docAuthor", "text")
-    .append(getContent).unwrapOr("");
+  const docTitle = toc.$("ncx", "docTitle", "text").append(getContent).unwrapOr("");
+  const docAuthor = toc.$("ncx", "docAuthor", "text").append(getContent).unwrapOr("");
 
   alert.debug(`docTitle = ${docTitle}`);
   alert.debug(`docAuthor = ${docAuthor}`);

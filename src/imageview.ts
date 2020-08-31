@@ -9,7 +9,7 @@ class Transform {
   width: number;
   height: number;
   rotate: number;
-  animating: boolean;
+  animating: boolean = false;
 
   constructor(width: number, height: number, top: number, left: number, rotate: number) {
     this.top = top;
@@ -17,8 +17,6 @@ class Transform {
     this.width = width;
     this.height = height;
     this.rotate = rotate;
-
-    this.animating = false;
   }
 
   applyTo(img: HTMLImageElement) {
@@ -60,7 +58,7 @@ class Transform {
     this.rotate = dest.rotate;
   }
 
-  fit(maxWidth: number, maxHeight: number) {
+  _fit(maxWidth: number, maxHeight: number) {
     const wh = maxWidth / maxHeight;
     const twh = this.width / this.height;
     
@@ -75,22 +73,24 @@ class Transform {
     }
   }
 
-  rotate90(maxWidth: number, maxHeight: number) {
-    const org = new Transform(this.height, this.width, 0, 0, this.rotate + 90)
-    const res = this.rotate % 180 > 0 ? org.fit(maxHeight, maxWidth) : org.fit(maxWidth, maxHeight);
-    if (this.rotate % 180 === 0) {
-      res.left -= (res.height - res.width) / 2;
-      res.top  += (res.height - res.width) / 2;
+  fit(maxWidth: number, maxHeight: number) {
+    if (this.rotate % 180 === 90) {
+      const fits = this._fit(maxHeight, maxWidth);
+      return new Transform(
+        fits.width,
+        fits.height,
+        fits.left - (fits.height - fits.width) / 2,
+        fits.top + (fits.height - fits.width) / 2,
+        this.rotate,
+      );
     } else {
-      const tmp = res.left;
-      res.left = res.top;
-      res.top = tmp;
+      return this._fit(maxWidth, maxHeight);
     }
-    
-    const tmp = res.height;
-    res.height = res.width;
-    res.width = tmp;
-    return res;
+  }
+
+  rotate90(maxWidth: number, maxHeight: number) {
+    const org = new Transform(this.width, this.height, 0, 0, this.rotate + 90);
+    return org.fit(maxWidth, maxHeight);
   }
 }
 
@@ -118,6 +118,7 @@ const mountTo = (img: HTMLImageElement) => () => {
     ]);
     div.style.display = 'none';
     window.removeEventListener('resize', resize);
+    Key.enable();
   };
   
   nimg.onload = () => {
