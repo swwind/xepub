@@ -1,6 +1,7 @@
 import { walk } from "./animate";
 import { $ } from "./utils";
 import { linear } from "./timings";
+import * as Key from './key-events';
 
 class Transform {
   top: number;
@@ -28,30 +29,35 @@ class Transform {
     img.style.transform = `rotate(${-this.rotate}deg)`;
   }
 
-  async animate(img: HTMLImageElement, dest: Transform) {
+  async animate(img: HTMLImageElement, dest: Transform, duration: number = 200) {
     if (this.animating) {
       return;
     }
     this.applyTo(img);
-    this.animating = true;
 
-    await walk((x) => {
-      new Transform(
-        (dest.width  - this.width)  * x + this.width,
-        (dest.height - this.height) * x + this.height,
-        (dest.top    - this.top)    * x + this.top,
-        (dest.left   - this.left)   * x + this.left,
-        (dest.rotate - this.rotate) * x + this.rotate
-      ).applyTo(img);
-    });
+    if (duration) {
+      this.animating = true;
+      
+      await walk((x) => {
+        new Transform(
+          (dest.width  - this.width)  * x + this.width,
+          (dest.height - this.height) * x + this.height,
+          (dest.top    - this.top)    * x + this.top,
+          (dest.left   - this.left)   * x + this.left,
+          (dest.rotate - this.rotate) * x + this.rotate
+        ).applyTo(img);
+      }, duration);
+
+      this.animating = false;
+    } else {
+      dest.applyTo(img);
+    }
 
     this.top = dest.top;
     this.left = dest.left;
     this.width = dest.width;
     this.height = dest.height;
     this.rotate = dest.rotate;
-
-    this.animating = false;
   }
 
   fit(maxWidth: number, maxHeight: number) {
@@ -92,26 +98,31 @@ const div = $('.imageview') as HTMLDivElement;
 const nimg = $('#imageview-img') as HTMLImageElement;
 const rotate = $('#rotate-btn') as HTMLDivElement;
 
-const mountTo = (img: HTMLImageElement) => () => {
+const getPosition = (img: HTMLImageElement) => {
   const rect = img.getBoundingClientRect();
-  const origin = new Transform(img.clientWidth, img.clientHeight, rect.top, rect.left, 0);
-  const nowState = new Transform(img.clientWidth, img.clientHeight, rect.top, rect.left, 0);
+  return new Transform(img.clientWidth, img.clientHeight, rect.top, rect.left, 0);
+}
 
+const mountTo = (img: HTMLImageElement) => () => {
+  Key.disable();
   nimg.src = img.src;
-  origin.applyTo(nimg);
+
+  const nowState = getPosition(img);
+  nowState.applyTo(nimg);
 
   div.onclick = async () => {
     nowState.rotate = ((nowState.rotate + 180) % 360) - 180;
     await Promise.all([
-      nowState.animate(nimg, origin),
+      nowState.animate(nimg, getPosition(img)),
       walk((x) => div.style.backgroundColor = `rgba(0, 0, 0, ${(1 - x) * .9})`, 200, linear),
     ]);
     div.style.display = 'none';
+    window.removeEventListener('resize', resize);
   };
   
   nimg.onload = () => {
     div.style.display = 'block';
-    nowState.animate(nimg, origin.fit(window.innerWidth, window.innerHeight));
+    nowState.animate(nimg, nowState.fit(window.innerWidth, window.innerHeight));
     walk((x) => div.style.backgroundColor = `rgba(0, 0, 0, ${x * .9})`, 200, linear);
   }
 
@@ -119,9 +130,16 @@ const mountTo = (img: HTMLImageElement) => () => {
     e.stopPropagation();
     nowState.animate(nimg, nowState.rotate90(window.innerWidth, window.innerHeight));
   }
+
+  const resize = () => {
+    nowState.animate(nimg, nowState.fit(window.innerWidth, window.innerHeight), 0);
+  }
+
+  window.addEventListener('resize', resize);
 }
 
 export const mount = (img: HTMLImageElement) => {
   img.style.cursor = 'pointer';
   img.addEventListener('click', mountTo(img));
 }
+
