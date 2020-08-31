@@ -2,15 +2,12 @@ body > .modal {
   position: fixed;
   top: 0;
   left: 0;
-  opacity: 0;
   display: none;
-  transition: opacity .2s, transform .2s;
 
   .background {
     height: 100vh;
     width: 100vw;
-    background-color: rgba(0, 0, 0, .5);
-    transition: opacity .2s;
+    background-color: transparent;
     display: grid;
     place-items: center;
 
@@ -22,7 +19,7 @@ body > .modal {
       display: flex;
       flex-direction: column;
       transform: scale(.8);
-      transition: transform .2s, background-color .5s;
+      transition: background-color .5s;
 
       @media only screen and (max-width: 824px) {
         width: 90%;
@@ -58,14 +55,6 @@ body > .modal {
           cursor: pointer;
         }
       }
-    }
-  }
-
-  &.open {
-    opacity: 1;
-
-    .container {
-      transform: scale(1);
     }
   }
 }

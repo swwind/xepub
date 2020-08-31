@@ -1,3 +1,4 @@
+import { walk } from "./animate";
 
 export interface SideNav {
   show(): void;
@@ -5,24 +6,28 @@ export interface SideNav {
 }
 
 export const init = (elem: HTMLElement): SideNav => {
-  const background: HTMLDivElement = elem.querySelector('.background');
+  const bg: HTMLDivElement = elem.querySelector('.background');
+  const nv: HTMLDivElement = elem.querySelector('.nav');
 
   elem.addEventListener('click', (e) => {
     hide();
   });
 
   const show = () => {
-    background.style.display = 'block';
-    setTimeout(() => {
-      elem.classList.add('open');
+    elem.style.display = 'block';
+    walk((x) => {
+      bg.style.backgroundColor = `rgba(0, 0, 0, ${x * .5})`;
+      nv.style.left = `${300 * x - 300}px`;
     });
   }
 
   const hide = () => {
-    elem.classList.remove('open');
-    setTimeout(() => {
-      background.style.display = 'none';
-    }, 200);
+    walk((x) => {
+      bg.style.backgroundColor = `rgba(0, 0, 0, ${.5 - x * .5})`;
+      nv.style.left = `${- 300 * x}px`;
+    }).then(() => {
+      elem.style.display = 'none';
+    });
   }
 
   return {

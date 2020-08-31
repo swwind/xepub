@@ -3,14 +3,12 @@ body > .sidenav {
   top: 0;
   left: 0;
   user-select: none;
+  display: none;
 
   .background {
     height: 100vh;
     width: 100vw;
-    background-color: rgba(0, 0, 0, .5);
-    opacity: 0;
-    display: none;
-    transition: opacity .2s;
+    background-color: transparent;
   }
 
   .nav {
@@ -22,7 +20,7 @@ body > .sidenav {
     height: 100vh;
     width: 300px;
     background-color: var(--back-color);
-    transition: left .2s, background-color .5s;
+    transition: background-color .5s;
     overflow-y: auto;
 
     li {
@@ -49,17 +47,6 @@ body > .sidenav {
       }
       
       .set-level(8);
-    }
-  }
-
-  &.open {
-
-    .background {
-      opacity: 1;
-    }
-
-    .nav {
-      left: 0;
     }
   }
 }
