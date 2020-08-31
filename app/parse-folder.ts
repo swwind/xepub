@@ -8,8 +8,7 @@ import { imageSize } from 'image-size';
 import { orderBy } from 'natural-orderby';
 import { EpubInfo, NavPoint, Metadata } from './types';
 import { RequestHandler } from 'express';
-
-import * as crypto from 'crypto';
+import { createIdentify } from './utils';
 
 export interface ParseResult {
   epub: EpubInfo;
@@ -39,12 +38,10 @@ const createIndex = (title: string, author: string, subdirs: string[], images: s
 }
 
 export default async (dirname: string): Promise<ParseResult> => {
-  const hash = crypto.createHash('md5').update(dirname).digest('hex');
-
   const metadata: Metadata = {
     title: path.basename(dirname) + '/',
     language: 'en',
-    identifier: 'xepub:urn:' + hash,
+    identifier: createIdentify(dirname),
     description: 'This is a folder served by xepub',
   }
 

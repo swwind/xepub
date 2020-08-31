@@ -93,9 +93,10 @@ const main = async (option: XepubArguments) => {
 
   // settings
   const settings = new Store('config');
+  const record = new Store('record');
 
   const server = http.createServer(app);
-  bindSocket(server, epub, settings);
+  bindSocket(server, epub, settings, record);
 
   if (option.port === -1) {
     option.port = option.electron ? 0 : 23333;

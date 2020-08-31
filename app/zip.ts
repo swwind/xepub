@@ -8,8 +8,10 @@ import * as express from 'express';
 
 export default class Zip {
   dir: string = null;
+  filepath: string;
 
   async initialize(zippath: string) {
+    this.filepath = zippath;
     return new Promise(async (resolve) => {
       this.dir = await fsp.mkdtemp(path.join(os.tmpdir(), 'xepub-'));
       createReadStream(zippath).pipe(unzip.Extract({ path: this.dir })

@@ -1,6 +1,7 @@
 import { KeyMap } from "./types";
 import { promises as fsp } from "fs";
 import * as path from 'path';
+import * as crypto from 'crypto';
 
 export abstract class Option<T> {
   abstract unwrap(errorMessage?: string): T;
@@ -42,4 +43,12 @@ export const getVersion = async () => {
   const data = await fsp.readFile(path.join(__dirname, '..', 'package.json'), 'utf8');
   const pkg = JSON.parse(data);
   return pkg.version as string;
+}
+
+export const md5sum = (str: string) => {
+  return crypto.createHash('md5').update(str).digest('hex');
+}
+
+export const createIdentify = (str: string) => {
+  return `xepub:urn:${md5sum(str)}`;
 }

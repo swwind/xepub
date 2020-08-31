@@ -15,9 +15,6 @@ export class Socket extends EventEmitter {
     this.ws.addEventListener('close', (e) => {
       this.emit('close', e);
     });
-    this.ws.addEventListener('error', (e) => {
-      this.emit('close', e);
-    });
     this.ws.addEventListener('message', (e) => {
       const data = JSON.parse(e.data);
       this.emit(data.event, ...data.args);
@@ -32,8 +29,10 @@ export class Socket extends EventEmitter {
   }
 
   remote(event: string, ...args: any[]) {
-    this.ws.send(JSON.stringify({
-      event, args
-    }));
+    if (this.ws.readyState === WebSocket.OPEN) {
+      this.ws.send(JSON.stringify({
+        event, args
+      }));
+    }
   }
 }

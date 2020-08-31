@@ -6,7 +6,7 @@ import { Node } from 'xml-parser';
 import * as alert from './alert';
 import Zip from './zip';
 import { EpubInfo, NavPoint, Size } from './types';
-import { OptionMap, None } from './utils';
+import { OptionMap, None, createIdentify } from './utils';
 
 const resolvePath = (absolute: string, filename: string) => {
   return url.resolve(absolute,
@@ -61,6 +61,10 @@ export default async (zip: Zip): Promise<EpubInfo> => {
     coverage: getMetadata("coverage"),
     rights: getMetadata("rights"),
   };
+  if (!metadata.identifier) {
+    alert.warn('identifier not found');
+    metadata.identifier = createIdentify(zip.filepath);
+  }
   alert.debug("metadata is ok");
 
   const manifest = new OptionMap<string>();

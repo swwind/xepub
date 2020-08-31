@@ -31,16 +31,19 @@ export class Socket extends EventEmitter {
   }
 }
 
-export const bindSocket = (server: HTTPServer, epub: EpubInfo, settings: Store) => {
+export const bindSocket = (server: HTTPServer, epub: EpubInfo, settings: Store, record: Store) => {
   const wss = new WebSocket.Server({ server });
 
   wss.on('connection', (ws, req) => {
     const socket = new Socket(ws);
     debug(`New connection from ${req.socket.remoteAddress}`);
 
-    socket.remote('initialize', epub, settings.get());
+    socket.remote('initialize', epub, settings.get(), record.get());
     socket.on('config-change', (name: string, value: string) => {
       settings.set(name, value);
+    });
+    socket.on('record-update', (identify: string, page: string, percent: number) => {
+      record.set(identify, { page, percent });
     });
     socket.on('css', (url, css) => {
       const ast = csstree.parse(css);

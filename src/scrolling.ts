@@ -67,3 +67,11 @@ export const flyToElementImmediately = (el?: string) => {
 
   setScrollTop(target - 100);
 }
+
+export const flyToPercentImmediately = (percent: number) => {
+  setScrollTop(elem.clientHeight * percent);
+}
+
+export const getPercent = () => {
+  return getScrollTop() / elem.clientHeight;
+}

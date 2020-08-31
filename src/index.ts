@@ -14,6 +14,7 @@ import { toast } from './toast';
 import * as Tooltip from './tooltip';
 import * as Buttons from './buttons';
 import * as Setting from './setting';
+import * as LastRead from './lastread';
 import { EpubInfo } from '../app/types';
 
 const sidenav = SideNav.init($('.sidenav'));
@@ -38,7 +39,7 @@ socket.on('initialize', (epub: EpubInfo) => {
   // create the menu
   createMenu(epub.navMap, $('.sidenav .nav'));
 
-  Loader.loadUrl(epub.spine[0]);
+  // Loader.loadUrl(epub.spine[0]);
   epub.docTitle = epub.docTitle || epub.metadata.title || 'Xepub';
   epub.docAuthor = epub.docAuthor || epub.metadata.creator || 'unknow author';
 
@@ -61,20 +62,18 @@ socket.on('initialize', (epub: EpubInfo) => {
 socket.on('disconnect', () => {
   toast('Server closed');
 });
-
-let connected = false;
-socket.on('connect', () => {
-  if (connected) {
-    // flush window if reconnected
-    location.reload();
-  }
-  connected = true;
+socket.on('close', () => {
+  toast('Server closed');
+  setTimeout(() => {
+    socket.connect();
+  }, 1000);
 });
 
 Key.on('d', 'ArrowRight', Loader.nextPage);
 Key.on('a', 'ArrowLeft', Loader.prevPage);
 
 Setting.init();
+LastRead.init();
 
 // add transition to body
 setTimeout(() => {

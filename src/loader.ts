@@ -4,7 +4,7 @@ Load epub page from URL
 
 import { lazyload } from './lazyload';
 import { resolve, parse } from 'url';
-import { flyToElement, flyToElementImmediately } from './scrolling';
+import { flyToElement, flyToElementImmediately, flyToPercentImmediately } from './scrolling';
 import { setSubTitle, $, $$, socket } from './utils';
 import { toast } from './toast';
 import { EpubInfo } from '../app/types';
@@ -110,7 +110,11 @@ export const init = (_epub: EpubInfo) => {
   epub = _epub;
 }
 
-export const loadUrl = (url: string) => {
+export const getNowPage = () => {
+  return nowpage;
+}
+
+export const loadUrl = (url: string, percent: number = 0) => {
   console.log(`Navigating to ${url}`);
 
   const { pathname, hash } = parse(url);
@@ -144,7 +148,11 @@ export const loadUrl = (url: string) => {
     setSubTitle(title || epub.docTitle);
 
     // scroll to top or hash
-    flyToElementImmediately(hash);
+    if (hash) {
+      flyToElementImmediately(hash);
+    } else {
+      flyToPercentImmediately(percent);
+    }
 
     // fix <a/> links
     content.querySelectorAll('a[href]').forEach(bindEvents);

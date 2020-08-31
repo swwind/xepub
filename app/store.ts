@@ -8,7 +8,7 @@ const dirname = path.join(os.homedir(), '.config', 'xepub');
 
 export default class Store {
   filename: string;
-  store: KeyMap<string | boolean>;
+  store: KeyMap<any>;
   constructor(name: string) {
     this.filename = path.join(dirname, `${name}.json`);
     if (!existsSync(dirname)) {
@@ -28,7 +28,7 @@ export default class Store {
     return this.store;
   }
 
-  set(name: string, value: string | boolean) {
+  set(name: string, value: any) {
     this.store[name] = value;
     writeFile(this.filename, JSON.stringify(this.store), (err) => {
       if (err) {
