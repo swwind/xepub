@@ -28,3 +28,26 @@ export const setSubTitle = (title: string) => {
 }
 
 export const socket = new Socket(`ws://${location.host}`);
+
+export interface LessStyle {
+  use(): void;
+  unuse(): void;
+}
+
+export const fuckStyleLoader = (style: LessStyle): LessStyle => {
+  let nowState = false;
+  return {
+    use() {
+      if (!nowState) {
+        nowState = true;
+        style.use();
+      }
+    },
+    unuse() {
+      if (nowState) {
+        nowState = false;
+        style.unuse();
+      }
+    }
+  }
+}

@@ -2,11 +2,16 @@ import { EventEmitter } from "events";
 
 export class Socket extends EventEmitter {
   ws: WebSocket;
+  url: string;
   connected: boolean = false;
 
   constructor(url: string) {
     super();
-    this.ws = new WebSocket(url);
+    this.url = url;
+  }
+
+  connect() {
+    this.ws = new WebSocket(this.url);
     this.ws.addEventListener('close', (e) => {
       this.emit('close', e);
     });

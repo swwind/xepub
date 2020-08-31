@@ -5,6 +5,7 @@ import { EpubInfo } from './types';
 import * as csstree from 'css-tree';
 import { resolve } from 'url';
 import { debug } from './alert';
+import Store from './store';
 
 export class Socket extends EventEmitter {
   ws: WebSocket;
@@ -30,14 +31,17 @@ export class Socket extends EventEmitter {
   }
 }
 
-export const bindSocket = (server: HTTPServer, epub: EpubInfo) => {
+export const bindSocket = (server: HTTPServer, epub: EpubInfo, settings: Store) => {
   const wss = new WebSocket.Server({ server });
 
   wss.on('connection', (ws, req) => {
     const socket = new Socket(ws);
     debug(`New connection from ${req.socket.remoteAddress}`);
 
-    socket.remote('initialize', epub);
+    socket.remote('initialize', epub, settings.get());
+    socket.on('config-change', (name: string, value: string) => {
+      settings.set(name, value);
+    });
     socket.on('css', (url, css) => {
       const ast = csstree.parse(css);
       csstree.walk(ast, (node) => {

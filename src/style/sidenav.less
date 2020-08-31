@@ -21,8 +21,8 @@ body > .sidenav {
     left: -300px;
     height: 100vh;
     width: 300px;
-    background: white;
-    transition: left .2s;
+    background-color: var(--back-color);
+    transition: left .2s, background-color .5s;
     overflow-y: auto;
 
     li {
@@ -36,7 +36,7 @@ body > .sidenav {
 
       &.header {
         padding-left: 30px;
-        color: rgba(0, 0, 0, .5);
+        color: #888888;
         background: transparent;
         cursor: default;
       }

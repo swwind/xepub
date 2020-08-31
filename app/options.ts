@@ -44,7 +44,7 @@ export default (args: string[]): XepubArguments => {
           res[flag] = Number(args[++ i]);
           break;
         default:
-          error(`Unkown option: ${arg}`);
+          error(`Unknown option: ${arg}`);
           error('Try `xepub --help` for more information.');
           process.exit(1);
       }

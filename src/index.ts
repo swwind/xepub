@@ -75,3 +75,10 @@ Key.on('d', 'ArrowRight', Loader.nextPage);
 Key.on('a', 'ArrowLeft', Loader.prevPage);
 
 Setting.init();
+
+// add transition to body
+setTimeout(() => {
+  document.body.classList.add('loaded');
+});
+
+socket.connect();

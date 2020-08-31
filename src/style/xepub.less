@@ -10,12 +10,23 @@
 @import './imageview.less';
 @import './settings.less';
 
+:root {
+  --back-color: white;
+  --fore-color: black;
+}
+
 body {
   padding: 0;
   margin: 0;
   overflow: hidden;
+  background-color: var(--back-color);
+  color: var(--fore-color);
 
   font-family: Roboto, 'Noto Sans', 'Segoe UI', 'Noto Sans CJK SC',
     'Source Han Sans CN', 'WenQuanYi Micro Hei', 'WenQuanYi Zen Hei',
     'Droid Sans Fallback', 'PingFang SC', 'Microsoft Yahei', sans-serif;
+
+  &.loaded {
+    transition: background-color .5s, color .5s;
+  }
 }

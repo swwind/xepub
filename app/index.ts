@@ -1,6 +1,4 @@
 import { promises as fsp, existsSync } from 'fs';
-import * as opn from 'opn';
-import * as pug from 'pug';
 import * as path from 'path';
 import * as http from 'http';
 import * as express from 'express';
@@ -14,6 +12,8 @@ import Zip from './zip';
 import { EpubInfo } from './types';
 import { bindSocket } from './socket';
 import { AddressInfo } from 'net';
+import Store from './store';
+import { openExternalLink } from './open';
 
 const here = (...file: string[]) => path.resolve(__dirname, ...file);
 
@@ -90,8 +90,11 @@ const main = async (option: XepubArguments) => {
   // serve public folder
   app.use(express.static(here('..', 'public')));
 
+  // settings
+  const settings = new Store('config');
+
   const server = http.createServer(app);
-  bindSocket(server, epub);
+  bindSocket(server, epub, settings);
 
   if (option.port === -1) {
     option.port = option.electron ? 0 : 23333;
@@ -123,7 +126,7 @@ const main = async (option: XepubArguments) => {
       }
     })
   } else if (option.open) {
-    opn(url);
+    openExternalLink(url);
   }
 
   process.on('SIGINT', async () => {
