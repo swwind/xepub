@@ -4,17 +4,19 @@ import { promises as fsp, createReadStream } from 'fs';
 import * as path from "path";
 import * as os from 'os';
 import * as unzip from "unzipper";
-import * as express from 'express';
 
 export default class Zip {
   dir: string = null;
   filepath: string;
 
-  async initialize(zippath: string) {
-    this.filepath = zippath;
+  constructor(filepath: string) {
+    this.filepath = filepath;
+  }
+
+  async initialize() {
     return new Promise(async (resolve) => {
       this.dir = await fsp.mkdtemp(path.join(os.tmpdir(), 'xepub-'));
-      createReadStream(zippath).pipe(unzip.Extract({ path: this.dir })
+      createReadStream(this.filepath).pipe(unzip.Extract({ path: this.dir })
         .on('close', resolve));
     });
   }
@@ -45,9 +47,5 @@ export default class Zip {
     if (this.dir) {
       await fsp.rmdir(this.dir, { recursive: true });
     }
-  }
-
-  middleware() {
-    return express.static(this.dir);
   }
 }

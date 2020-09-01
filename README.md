@@ -1,6 +1,6 @@
 # Xepub
 
-Xepub is a ~~lightweight~~ cross-platform epub reader written in NodeJS, which need a modern browser like *Google Chrome* or *Firefox* or *Electron*.
+Xepub is a ~~lightweight~~ cross-platform(major linux) epub reader written in NodeJS, which need a modern browser like *Chrome*, *Firefox* or *Electron*.
 
 It can also open a comic directory as a comic reader.
 
@@ -12,23 +12,20 @@ Get the stable release:
 npm install -g xepub
 ```
 
-Get the newest version:
+Get the unstable version:
 
 ```bash
-git clone https://github.com/swwind/xepub
-cd xepub
-npm install
-npm link
+npm install -g xepub@alpha
 ```
 
-Install as desktop application(with electron installed):
+Install as desktop application: (You need to install electron first)
 
 ```
 % echo "
 [Desktop Entry]
 Name=Xepub
 Comment=An epub reader
-Exec=$(where xepub) -e %f
+Exec=$(which xepub) -e %f
 Terminal=false
 Type=Application
 Categories=Epub;Reader;
@@ -46,6 +43,32 @@ xepub erohon/      # open a folder
 
 Use `xepub --help` for more infomation.
 
+P.S. As a comic reader:
+
+    .
+    |
+    +- erohon/
+       |
+       +- ep1/
+       |  |
+       |  +- 1.png
+       |  +- 2.png
+       |
+       +- ep2/
+       |  |
+       |  +- 1.png
+       |  +- 2.png
+       |
+       +- ep3/
+          |
+          +- 1.png
+          +- 2.png
+
+```bash
+xepub erohon/      # read all episodes
+xepub erohon/ep1/  # read ep1 only
+```
+
 ## Development
 
 ```bash
@@ -56,6 +79,3 @@ yarn dev
 ```
 
 ## TODOs
-
-- (feature) Remember last read position.
-- (feature) Settings

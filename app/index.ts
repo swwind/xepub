@@ -49,12 +49,10 @@ const main = async (option: XepubArguments) => {
 
   const lstat = await fsp.lstat(epubname);
   let epub: EpubInfo = null;
-  const zip = new Zip();
+  const zip = new Zip(epubname);
 
   if (lstat.isDirectory()) {
-
     // open folder
-    // since v1.0.0-alpha.9
 
     alert.info('Scanning folder...');
     const dirname = path.resolve(process.cwd(), epubname);
@@ -66,10 +64,10 @@ const main = async (option: XepubArguments) => {
     app.use('/folder', express.static(dirname));
 
   } else if (lstat.isFile()) {
-
     // open epub file
+
     alert.info('Parsing EPUB file...');
-    await zip.initialize(epubname);
+    await zip.initialize();
     const mimetype = (await zip.readAsText('mimetype')).unwrapOr('').trim();
     if (mimetype !== 'application/epub+zip') {
       alert.error('Not epub file');
@@ -78,12 +76,10 @@ const main = async (option: XepubArguments) => {
     }
     epub = await parseEpub(zip);
     alert.debug('Successfully parsed file');
-    app.use(zip.middleware());
+    app.use(express.static(zip.dir));
   } else {
 
-    alert.error('?');
-    alert.error('??');
-    alert.error('???');
+    alert.error('( ºΔº )');
     alert.error(`What is ${epubname}?`);
     process.exit(1);
   }
