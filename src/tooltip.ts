@@ -1,4 +1,4 @@
-import { walk } from "./animate";
+import { animate } from "./animate";
 
 export const init = () => {
   const elems = document.querySelectorAll('[data-tooltip]');
@@ -19,7 +19,7 @@ export const init = () => {
 
       tooltip.push(div);
 
-      walk((x) => {
+      animate((x) => {
         div.style.right = (right - 15 + 15 * x) + 'px';
         div.style.opacity = String(x);
       });
@@ -29,7 +29,7 @@ export const init = () => {
       while (tooltip.length) {
         const div = tooltip.shift();
         const right = parseFloat(div.style.right);
-        walk((x) => {
+        animate((x) => {
           div.style.right = (right + 15 * x) + 'px';
           div.style.opacity = String(1 - x);
         }).then(() => div.remove());

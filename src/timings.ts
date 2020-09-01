@@ -14,9 +14,7 @@ const resolveCubicEquation = (a: number, b: number, c: number, d: number): numbe
   return cubicRoot(- q / 2 + delta) + cubicRoot(- q / 2 - delta) - A / 3;
 }
 
-export interface Timing {
-  (x: number): number;
-}
+export type Timing = (x: number) => number;
 
 export const linear: Timing = (x) => x;
 export const easeInOut: Timing = (x) => {

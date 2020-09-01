@@ -1,4 +1,4 @@
-import { walk } from "./animate";
+import { animate } from "./animate";
 
 export interface SideNav {
   show(): void;
@@ -15,14 +15,14 @@ export const init = (elem: HTMLElement): SideNav => {
 
   const show = () => {
     elem.style.display = 'block';
-    walk((x) => {
+    animate((x) => {
       bg.style.backgroundColor = `rgba(0, 0, 0, ${x * .5})`;
       nv.style.left = `${300 * x - 300}px`;
     });
   }
 
   const hide = () => {
-    walk((x) => {
+    animate((x) => {
       bg.style.backgroundColor = `rgba(0, 0, 0, ${.5 - x * .5})`;
       nv.style.left = `${- 300 * x}px`;
     }).then(() => {

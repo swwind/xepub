@@ -1,10 +1,10 @@
 import { $ } from './utils';
-import { walk } from "./animate";
+import { animate } from "./animate";
 import { linear } from './timings';
 
 const fadeInDelay = (delay: number, button: HTMLElement) => {
   setTimeout(() => {
-    walk((x) => {
+    animate((x) => {
       button.style.transform = `translateY(${24 - x * 24}px)`;
       button.style.opacity = String(x);
     }, 200, linear);
@@ -35,7 +35,7 @@ export const init = () => {
     if (!shown) {
       return;
     }
-    await walk((x) => {
+    await animate((x) => {
       for (const node of Array.from(submenu.childNodes)) {
         if (node instanceof HTMLLIElement) {
           node.style.opacity = String(1 - x);

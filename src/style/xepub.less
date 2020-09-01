@@ -13,6 +13,7 @@
 :root {
   --back-color: white;
   --fore-color: black;
+  --scrollbar-color: #cccccc;
 }
 
 body {
@@ -29,4 +30,19 @@ body {
   &.loaded {
     transition: background-color .5s, color .5s;
   }
+}
+
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+::-webkit-scrollbar-button {
+  width: 0px;
+  height: 0px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-color);
+  border: none;
+  transition: all ease 0.1s;
+  cursor: pointer;
 }

@@ -1,4 +1,4 @@
-import { walk } from "./animate";
+import { animate } from "./animate";
 
 const elem = document.querySelector('.content');
 
@@ -21,7 +21,7 @@ export const setScrollTop = (top: number) => {
  */
 export const scrollTo = (pos: number, duration: number = 500) => {
   const lastpos = getScrollTop();
-  return walk((x) => {
+  return animate((x) => {
     setScrollTop((pos - lastpos) * x + lastpos);
   }, duration);
 }

@@ -1,10 +1,8 @@
 import { easeInOut, Timing } from "./timings";
 
-export interface StepFunction {
-  (x: number): void;
-}
+export type StepFunction = (x: number) => void;
 
-export const walk = (step: StepFunction, duration: number = 200, timing: Timing = easeInOut) => {
+export const animate = (step: StepFunction, duration: number = 200, timing: Timing = easeInOut) => {
   return new Promise<void>((resolve) => {    
     const start = Date.now();
     const fn = () => {

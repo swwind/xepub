@@ -35,17 +35,17 @@ export interface LessStyle {
 }
 
 export const fuckStyleLoader = (style: LessStyle): LessStyle => {
-  let nowState = false;
+  let used = false;
   return {
     use() {
-      if (!nowState) {
-        nowState = true;
+      if (!used) {
+        used = true;
         style.use();
       }
     },
     unuse() {
-      if (nowState) {
-        nowState = false;
+      if (used) {
+        used = false;
         style.unuse();
       }
     }

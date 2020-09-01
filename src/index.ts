@@ -59,9 +59,6 @@ socket.on('initialize', (epub: EpubInfo) => {
   }
 });
 
-socket.on('disconnect', () => {
-  toast('Server closed');
-});
 socket.on('close', () => {
   toast('Server closed');
   setTimeout(() => {

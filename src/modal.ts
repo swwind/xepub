@@ -1,5 +1,4 @@
-import { walk } from "./animate";
-import { linear } from "./timings";
+import { animate } from "./animate";
 
 export interface Modal {
   show(): void;
@@ -24,7 +23,7 @@ export const init = (elem: HTMLElement): Modal => {
 
   const show = () => {
     elem.style.display = 'block';
-    walk((x) => {
+    animate((x) => {
       bg.style.backgroundColor = `rgba(0, 0, 0, ${x * .5})`;
       ct.style.transform = `scale(${.8 + .2 * x})`;
       ct.style.opacity = String(x);
@@ -32,7 +31,7 @@ export const init = (elem: HTMLElement): Modal => {
   }
 
   const hide = () => {
-    walk((x) => {
+    animate((x) => {
       bg.style.backgroundColor = `rgba(0, 0, 0, ${.5 - x * .5})`;
       ct.style.transform = `scale(${1 - .2 * x})`;
       ct.style.opacity = String(1 - x);

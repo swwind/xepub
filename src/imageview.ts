@@ -1,4 +1,4 @@
-import { walk } from "./animate";
+import { animate } from "./animate";
 import { $ } from "./utils";
 import { linear } from "./timings";
 import * as Key from './key-events';
@@ -36,7 +36,7 @@ class Transform {
     if (duration) {
       this.animating = true;
       
-      await walk((x) => {
+      await animate((x) => {
         new Transform(
           (dest.width  - this.width)  * x + this.width,
           (dest.height - this.height) * x + this.height,
@@ -114,7 +114,7 @@ const mountTo = (img: HTMLImageElement) => () => {
     nowState.rotate = ((nowState.rotate + 180) % 360) - 180;
     await Promise.all([
       nowState.animate(nimg, getPosition(img)),
-      walk((x) => div.style.backgroundColor = `rgba(0, 0, 0, ${(1 - x) * .9})`, 200, linear),
+      animate((x) => div.style.backgroundColor = `rgba(0, 0, 0, ${(1 - x) * .9})`, 200, linear),
     ]);
     div.style.display = 'none';
     window.removeEventListener('resize', resize);
@@ -124,7 +124,7 @@ const mountTo = (img: HTMLImageElement) => () => {
   nimg.onload = () => {
     div.style.display = 'block';
     nowState.animate(nimg, nowState.fit(window.innerWidth, window.innerHeight));
-    walk((x) => div.style.backgroundColor = `rgba(0, 0, 0, ${x * .9})`, 200, linear);
+    animate((x) => div.style.backgroundColor = `rgba(0, 0, 0, ${x * .9})`, 200, linear);
   }
 
   rotate.onclick = (e) => {
