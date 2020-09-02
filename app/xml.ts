@@ -1,6 +1,5 @@
 import { None, Some, Option } from "./utils";
-import * as parse from "xml-parser";
-import { Document, Node } from 'xml-parser';
+import XMLParser, { Document, Node } from "./xml-parser";
 
 export interface XMLQuery {
   xml: Document;
@@ -16,7 +15,7 @@ export interface XMLQuery {
  *  x.$$("root", "foo") => <root><foo>1</foo><foo>2</foo></root>
  */
 export const parseXML = (xmlContent: string): XMLQuery => {
-  const xml = parse(xmlContent.replace(/<![\s\S]+?>/g, ''));
+  const xml = new XMLParser(xmlContent).parse();
 
   return {
     xml,

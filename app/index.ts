@@ -3,7 +3,7 @@ import * as path from 'path';
 import * as http from 'http';
 import * as express from 'express';
 import * as alert from './alert';
-import { spawn } from 'child_process';
+import { spawn, exec } from 'child_process';
 import options, { XepubArguments } from './options';
 import parseEpub from './parse-epub';
 import parseFolder from './parse-folder';
@@ -108,7 +108,7 @@ const main = async (option: XepubArguments) => {
   }
 
   if (option.electron) {
-    const which = spawn('where', ['electron']);
+    const which = spawn(process.platform === 'win32' ? 'where' : 'which', ['electron']);
     which.on('close', (code) => {
       if (code) {
         // not found
@@ -116,7 +116,9 @@ const main = async (option: XepubArguments) => {
         alert.error('Please remove -e/--electron flag');
       } else {
         alert.info('Opening in electron...');
-        const electron = spawn('electron', [ url ]);
+        const electron = process.platform === 'win32'
+          ? exec(`electron ${url}`)
+          : spawn('electron', [ url ]);
         electron.on('close', async () => {
           alert.info('Electron closed.');
           await terminate(0);

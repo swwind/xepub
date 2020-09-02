@@ -15,15 +15,13 @@
     "mime-types": "^2.1.22",
     "natural-orderby": "^2.0.1",
     "unzipper": "^0.10.11",
-    "ws": "^7.3.1",
-    "xml-parser": "^1.2.1"
+    "ws": "^7.3.1"
   },
   "devDependencies": {
     "@types/express": "^4.17.7",
     "@types/node": "13",
     "@types/unzipper": "^0.10.3",
     "@types/ws": "^7.2.6",
-    "@types/xml-parser": "^1.2.29",
     "css-loader": "^4.2.2",
     "less-loader": "^6.2.0",
     "style-loader": "^1.2.1",
