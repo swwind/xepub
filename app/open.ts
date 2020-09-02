@@ -1,4 +1,4 @@
-import { spawn } from "child_process";
+import { exec } from "child_process";
 import { error } from "./alert";
 
 const map = {
@@ -17,5 +17,5 @@ export const openExternalLink = (url: string) => {
     return;
   }
 
-  return spawn(command, [ url ]);
+  return exec(`${command} ${url}`);
 }

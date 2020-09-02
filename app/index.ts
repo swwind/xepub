@@ -108,7 +108,7 @@ const main = async (option: XepubArguments) => {
   }
 
   if (option.electron) {
-    const which = spawn('which', ['electron']);
+    const which = spawn('where', ['electron']);
     which.on('close', (code) => {
       if (code) {
         // not found
