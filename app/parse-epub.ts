@@ -2,7 +2,7 @@
 
 import * as url from 'url';
 import { imageSize } from 'image-size';
-import { Node } from 'xml-parser';
+import { Node } from './xml-parser';
 import * as alert from './alert';
 import Zip from './zip';
 import { EpubInfo, NavPoint, Size } from './types';
